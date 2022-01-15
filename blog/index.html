@@ -1,0 +1,17 @@
+---
+layout: default
+title: Blogs
+---
+
+{% for post in site.posts %}
+  <article>
+    <h2>
+      <a href="{{ post.url }}">
+        {{ post.title }}
+      </a>
+    </h2>
+    <time datetime="{{ post.date | date: "%d-%m-%Y" }}">{{ post.date | date_to_long_string }}</time>
+    <h5>category: {{ post.category }}</h5>
+    {{ post.exerpt }}
+  </article>
+{% endfor %}
