@@ -40,7 +40,7 @@ If you open any common files with a hex editor (like PNG's, WAV's, etc...) you w
 ![Demonstration of the header of a PNG file in a hex editor](images/BinaryHeaderExample.png)
 </p>
 
-I went ahead and searched for all sorts of header formats which I knew. The PXO contained uncompressed WAV's and MIDI's, which are relatively easy to extract. You can do this by hand with a hex editor by researching how the file is structured, and then calculating how many bytes you need to copy to get your image. Alternatively, if you know that all the files are stored one after the other, you can simply copy from the start of one file header to the next. Even if the file you rip out is larger than it's supposed to be, that's perfectly fine because the audio player or image viewer program will, for the most part, only take into account the first file header. 
+I went ahead and searched for all sorts of header formats that I knew. The PXO contained uncompressed WAV's and MIDI's, which are relatively easy to extract. You can do this by hand with a hex editor by researching how the file is structured, and then calculating how many bytes you need to copy to get your image. Alternatively, if you know that all the files are stored one after the other, you can simply copy from the start of one file header to the next. Even if the file you rip out is larger than it's supposed to be, that's perfectly fine because the audio player or image viewer program will, for the most part, only take into account the first file header. 
 
 
 ### Ripping Audio With an Audio Editor
