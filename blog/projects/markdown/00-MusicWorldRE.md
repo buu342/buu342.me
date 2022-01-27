@@ -2,7 +2,7 @@
 
 ##### Published 22/01/2022 ###############################################
 
-This is a pretty lengthy article, because I cover a lot of the reverse engineering process and explain how I approached stuff (even if it was a dead end in the end). Hopefully leaving my trains of thoughts like this will teach people about reverse engineering who otherwise wouldn't even know where to begin! Also, I apologize if the website looks a little crude but because I am still in exam season, I haven't had the time to actually make it look presentable. Pure HTML will have to suffice for now...
+This is a pretty lengthy article, because I cover a lot of the reverse engineering process and explain how I approached stuff (even if it was a dead end in the end). Hopefully leaving my trains of thought like this will teach people about reverse engineering who otherwise wouldn't even know where to begin! Also, I apologize if the website looks a little crude but because I am still in exam season, I haven't had the time to actually make it look presentable. Pure HTML will have to suffice for now...
 
 My very first smartphone was when I was about 13, and it was an [LG Cookie Fresh (GS290)](https://www.lg.com/uk/mobile-phones/lg-GS290-cookie-fresh). Not an amazing phone by any means... It had terrible multi-tasking (as in, as soon as you opened more than two applications it'd run out of memory) and a really finicky touch screen, but overall it was pleasant to use. There was one thing I really loved about the Cookie though, and that was a little game that came bundled with it called Music World. As a rhythm game, it's perfectly alright. It's main problem is that characters can appear on any position of the screen, and annoyingly overlap each other, causing you to fail notes simply because something got in the way, but it had great music and endearing graphics. I'm pretty sure I managed to 'S' almost all the levels, minus some of the harder 'Crazy Mode' ones due to the aformentioned gameplay quirk.
 
@@ -57,7 +57,7 @@ Sometimes audio will be sped up from what you're used to hearing. You can either
 
 ### Asset Extraction Tools
 
-What I would recommend you to do is to use an Asset Extraction Tool to help you rip out data. These tools essentially do what we did: Scan a binary file for known file headers and dump out whatever data it can find. Here's a non comprehensive list of tools that can do that:
+What I would recommend you to do is to use an Asset Extraction Tool to help you rip out data. These tools essentially do what we did: Scan a binary file for known file headers and dump out whatever data it can find. Here's a non-comprehensive list of tools that can do that:
 
 * [Binwalk](https://github.com/ReFirmLabs/binwalk)
 * [Ravioli Game Tools](https://www.scampers.org/steve/sms/other.htm#ravioli)
