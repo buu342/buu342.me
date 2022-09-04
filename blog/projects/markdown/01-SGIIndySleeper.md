@@ -193,7 +193,7 @@ I sure hope it fits... And it does, like a glove!
 ![Chassis fit test](images/01-SGIIndySleeper/ChassisFitTest.jpg)
 </p>
 
-The box is almost perfect, if you look at the bottom left you will notice that one of the PSU holes is cracked. It was my fault for putting them so close to the PUS vent hole.
+The box is almost perfect, if you look at the bottom left you will notice that one of the PSU holes is cracked. It was my fault for putting them so close to the PSU vent hole.
 
 
 ### Chassis Modifications
