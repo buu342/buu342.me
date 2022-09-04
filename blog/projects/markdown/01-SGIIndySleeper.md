@@ -236,7 +236,7 @@ Because I want the front to turn the PC on and off, I put some buttons and an LE
 ![Front I/O Protoboard](images/01-SGIIndySleeper/Protoboard.jpg)
 </p>
 
-I got some wires with female pin headers to connect to the motherboard I/O pins. The power LED draws 5V (I checked with my multimeter), and the LED was rated for 3V, so I soldered two 100ohm resistors in series to step the voltage down. Unfortunately, the local electronics store only had one pair of female pin header wires, so the LED is currently unhooked.
+I got some wires with female pin headers to connect to the motherboard I/O pins. The power LED pins on the motherboard draw 5V (I checked with my multimeter), but the LED was rated for 3V, so I soldered two 100ohm resistors in series to step the voltage down. Unfortunately, the local electronics store only had one pair of female pin header wires, so the LED is currently unhooked.
 
 I drilled some holes on the front of the chassis + on the protoboard and screwed it in place. 
 
