@@ -7,7 +7,7 @@ This is a pretty lengthy article, because I cover a lot of the reverse engineeri
 My very first smartphone was when I was about 13, and it was an [LG Cookie Fresh (GS290)](https://www.lg.com/uk/mobile-phones/lg-GS290-cookie-fresh). Not an amazing phone by any means... It had terrible multi-tasking (as in, as soon as you opened more than two applications it'd run out of memory) and a really finicky touch screen, but overall it was pleasant to use. There was one thing I really loved about the Cookie though, and that was a little game that came bundled with it called Music World. As a rhythm game, it's perfectly alright. It's main problem is that characters can appear on any position of the screen, and annoyingly overlap each other, causing you to fail notes simply because something got in the way, but it had great music and endearing graphics. I'm pretty sure I managed to 'S' almost all the levels, minus some of the harder 'Crazy Mode' ones due to the aformentioned gameplay quirk.
 
 <p align="center">
-![Music World screenshot](images/MusicWorldScreenshot.jpg)
+![Music World screenshot](images/00-MusicWorldRE/MusicWorldScreenshot.jpg)
 This is one of few screenshots that I can find of the game that isn't taken with a camera, credit to [this site](https://www.gsmarena.com/lg_gd510_pop-review-407p8.php).
 </p>
 
@@ -37,7 +37,7 @@ This isn't one of my first rodeos when it comes to game reverse engineering. A y
 If you open any common files with a hex editor (like PNG's, WAV's, etc...) you will notice that the first few bytes of the file will always be something you can identify. PNG's, for instance, always start with the same 4 bytes (`89 50 4E 47`) which, if you look on the right side of the program, you should see they represent the word `PNG`. These headers are usually how programs distinguish between different files, not having them makes finding useful data in a big binary blob more challenging.
 
 <p align="center">
-![Demonstration of the header of a PNG file in a hex editor](images/BinaryHeaderExample.png)
+![Demonstration of the header of a PNG file in a hex editor](images/00-MusicWorldRE/BinaryHeaderExample.png)
 </p>
 
 I went ahead and searched for all sorts of header formats that I knew. The PXO contained uncompressed WAV's and MIDI's, which are relatively easy to extract. You can do this by hand with a hex editor by researching how the file is structured, and then calculating how many bytes you need to copy to get your image. Alternatively, if you know that all the files are stored one after the other, you can simply copy from the start of one file header to the next. Even if the file you rip out is larger than it's supposed to be, that's perfectly fine because the audio player or image viewer program will, for the most part, only take into account the first file header. 
@@ -48,7 +48,7 @@ I went ahead and searched for all sorts of header formats that I knew. The PXO c
 This is another cool trick that you can do if the audio is stored uncompressed. Audio editor software, such as [Audacity](https://www.audacityteam.org/), has the ability to import raw files. The program will try to translate what data it finds into audio, the results of which can be very unpleasant to listen to. With enough tweaking though (pretty much just trial and error), you can potentially find good audio located in your file.
 
 <p align="center">
-![Audacity Raw Audio import](images/AudacityRawAudio.png)
+![Audacity Raw Audio import](images/00-MusicWorldRE/AudacityRawAudio.png)
 The highlighted audio is what we're looking for. This was achieved with Raw Import, Signed 16-bit PCM + Big-endian + Mono + 44100Hz.
 </p>
 
@@ -86,7 +86,7 @@ My searching also led to this [Apache Server](http://onj3.andrelouis.com/phoneto
 Sound and Music is pretty cool, but what I really wanted was to get the game's sprites. There were no known image headers in the binary, which I'm not too surprised about considering that it wouldn't make much sense to waste precious CPU time decoding the images on the fly (considering this is a small device with really tight memory and speed constraints). So I decided to use a tool which tries to display the bytes in the file as an image, hoping that I could spot some sprites. Since I do [N64 development](https://www.youtube.com/watch?v=ZgPWE0Wkg7g), I had [Texture64](https://github.com/queueRAM/Texture64) handy, which confirmed that there indeed were sprites in an uncompressed format.
 
 <p align="center">
-![Texture64](images/Texture64.png)
+![Texture64](images/00-MusicWorldRE/Texture64.png)
 </p>
 
 If the sprites were compressed, they would definitely have much worse distortions or outright missing chunks. Thankfully, not the case here...
@@ -96,7 +96,7 @@ The sprites seem to be in 16-bit RGBA format, but their colors are completely of
 While playing with the tool, I came to the conclusion that the sprites were actually stored in 8-bit format, and not 16-bit. I figured this out because the sprites would clearly lose detail if they were previewed with 16-bit mode (while previewing in 4-bit mode would create gaps in the sprite), as can be seen here:
 
 <p align="center">
-![Color depth comparison](images/ColorDepthComparison.png)
+![Color depth comparison](images/00-MusicWorldRE/ColorDepthComparison.png)
 </p>
 
 So I had the size of a sprite, its bit depth, and most importantly the offset where the sprite was located in the big binary blob. I went to that offset with my hex editor and pulled out 38304 bytes worth of data (which is 252 x 152 (the width and height of the sprite) multiplied by one (the bit depth divided by 8)), which I could look at in isolation. I did this for 2 more sprites, and thinking I had enough data to work with I decided to start trying to unpack their secrets.
@@ -149,13 +149,13 @@ The number of colors was very likely also embedded in the header itself, so I to
 I don't like [wxHexEditor](https://www.wxhexeditor.org/) as much as HxD, but it comes with the super useful ability to let me add colors and labels, which is invaluable for getting your bearings in big binary blobs. 
 
 <p align="center">
-![Demonstration of labeling in wxHexEditor](images/wxHexEditor.png)
+![Demonstration of labeling in wxHexEditor](images/00-MusicWorldRE/wxHexEditor.png)
 </p>
 
 Anyway, I already have all the important information I need: the width, height, and the palettes. Now it was just a matter of trying to figure out how the color was stored. Could it be 8 bits per R G B value (no alpha)? 7 bits per R G B + 3 for alpha? Best way to find out was to experiment. I wrote a quick Python script that would take the image header and the image data as two separate binary files and attempt to generate a PNG. I started by assuming that the images were in 8:8:8 format:
 
 <p align="center">
-![The result of the test script](images/ScriptResult1.png)
+![The result of the test script](images/00-MusicWorldRE/ScriptResult1.png)
 </p>
 
 Oh... Well, I'm not gonna lie, I'm both relieved and underwhelmed that it was really that easy...
@@ -165,7 +165,7 @@ Now, at this stage I could write a script to search and rip everything in the PX
 Like for instance, I saw this sprite, which looked like it stored an animation:
 
 <p align="center">
-![A potential animation](images/PotentialAnimation.png)
+![A potential animation](images/00-MusicWorldRE/PotentialAnimation.png)
 </p>
 
 There were no gaps in the image, so one of those mystery bytes in the header could potentially be the amount of frames in an animation. I ripped out the image and the header and started analyzing. Nope, I'm wrong. Turns out I had the wrong sprite size in the preview box, which led ISE to display it as 3 sprites, instead of 1 big one. If I had replayed the game, I would have seen that this boss' hurt state is not actually animated, it's just a static image... Kinda annoying that my touch screen won't behave.
@@ -198,7 +198,7 @@ The next day, I was feeling a bit excited so I decided that those 5 bytes weren'
 So like I did with the 8-bit ones, I ripped out the images and their headers and started analyzing. Fortunately, the header format was exactly the same minus one change: the first byte was `0x8B`. So now I have confirmation that there are multiple different format types stored in the binary and it was a matter of expanding my script to also convert 4-bit images. I assumed that the texel data was stored just like in the 8-bit format, except the first 4 bits would map to the color of the odd column of texels, and the other 4 bits to the even column of texels ([similar to the 4-Bit Color Index mode I use a lot in N64 textures](https://buu342.github.io/GML-N64TextureConverter/103_2_ci.html)). I ran my test image through the script, and it confirmed my deduction:
 
 <p align="center">
-![The 4-bit sprite conversion](images/MusicWorld4BitConverted.png)
+![The 4-bit sprite conversion](images/00-MusicWorldRE/MusicWorld4BitConverted.png)
 </p>
 
 With the help of ISE, I concluded that the image data started at offset `0x11155C` and ended on `0x80CFFC` in the PXO. I expanded my script to start looking for and dumping headers + image data from the binary, but trying to run that script kept giving me problems...
@@ -212,7 +212,7 @@ Knowing that the "dictinary of bad offsets" thing was not a viable long-term sol
 This was very close, but sometimes my script would find images with enormous sizes (like over a thousand pixels wide/tall), which I very much knew could not be correct... While using my manual dictionary approach, the largest images I found were around 500 pixels, so I wrote in a static maximum image width/height of 600, and added that to the valid image conditions. This script finally managed to rip from start to finish without any weird looking sprites being outputted.
 
 <p align="center">
-![All the images that were ripped](images/MusicWorldRipCollection.png)
+![All the images that were ripped](images/00-MusicWorldRE/MusicWorldRipCollection.png)
 </p>
 
 Looking at the program's log, I was worried that I could be potentially jumping over a lot of important data (the script sometimes end up skipping over kilobytes), so I started to wonder if there were other image formats hidden in the file. Sure enough, searching these big offsets with ISE led to me to discover there were also 2-bit and 1-bit formats stored in the binary. 
