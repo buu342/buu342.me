@@ -256,9 +256,11 @@ Currently is not cable managed since I need to disassemble it later to solder th
 
 Time for the moment of truth...
 
-<video width="1920" height="1080" controls>
+<p align="center">
+<video width="50%" controls>
   <source src="images/01-SGIIndySleeper/FinalOn.mp4" type="video/mp4">
 </video>
+</p>
 
 It works (besides the power LED which isn't hooked up yet).
 
@@ -276,6 +278,15 @@ The end!
 
 <p align="center">
 ![The End](images/01-SGIIndySleeper/End.jpg)
+</p>
+
+**Update 16/09/2022**
+I have [soldered the Power LED to the wires and resistors](images/01-SGIIndySleeper/LEDProtoboard), and it works now. I had to connect it to the HDD LED cable though, because apparently the POWER LED cable is to tell you that the motherboard is connected to the socket, not that the PC is on. Whoops!
+
+<p align="center">
+<video width="50%" controls>
+  <source src="images/01-SGIIndySleeper/FrontLED.mp4" type="video/mp4"></br>
+</video>
 </p>
 
 If you want my CAD files, then feel free to grab them from [here](downloads/SGIIndyCAD.zip).
