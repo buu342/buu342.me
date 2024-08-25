@@ -17,7 +17,7 @@
         <property name="image_path_wrapper_function_name"></property>
         <property name="indent_with_spaces"></property>
         <property name="internationalize">0</property>
-        <property name="name">MyProject1</property>
+        <property name="name">Generator</property>
         <property name="namespace"></property>
         <property name="path">.</property>
         <property name="precompiled_header"></property>
@@ -290,11 +290,18 @@
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style">wxTAB_TRAVERSAL</property>
-                                                    <object class="wxBoxSizer" expanded="1">
+                                                    <object class="wxFlexGridSizer" expanded="1">
+                                                        <property name="cols">0</property>
+                                                        <property name="flexible_direction">wxBOTH</property>
+                                                        <property name="growablecols">0</property>
+                                                        <property name="growablerows">0</property>
+                                                        <property name="hgap">0</property>
                                                         <property name="minimum_size"></property>
                                                         <property name="name">m_Sizer_Projects_Tree</property>
-                                                        <property name="orient">wxVERTICAL</property>
+                                                        <property name="non_flexible_grow_mode">wxFLEX_GROWMODE_SPECIFIED</property>
                                                         <property name="permission">none</property>
+                                                        <property name="rows">0</property>
+                                                        <property name="vgap">0</property>
                                                         <object class="sizeritem" expanded="1">
                                                             <property name="border">5</property>
                                                             <property name="flag">wxALL|wxEXPAND</property>
@@ -343,7 +350,7 @@
                                                                 <property name="pos"></property>
                                                                 <property name="resize">Resizable</property>
                                                                 <property name="show">1</property>
-                                                                <property name="size"></property>
+                                                                <property name="size">-1,-1</property>
                                                                 <property name="style">wxTR_DEFAULT_STYLE</property>
                                                                 <property name="subclass">; ; forward_declare</property>
                                                                 <property name="toolbar_pane">0</property>
@@ -736,11 +743,18 @@
                                                     <property name="window_extra_style"></property>
                                                     <property name="window_name"></property>
                                                     <property name="window_style">wxTAB_TRAVERSAL</property>
-                                                    <object class="wxBoxSizer" expanded="1">
+                                                    <object class="wxFlexGridSizer" expanded="1">
+                                                        <property name="cols">0</property>
+                                                        <property name="flexible_direction">wxBOTH</property>
+                                                        <property name="growablecols">0</property>
+                                                        <property name="growablerows">0</property>
+                                                        <property name="hgap">0</property>
                                                         <property name="minimum_size"></property>
                                                         <property name="name">m_Sizer_Blog_Tree</property>
-                                                        <property name="orient">wxVERTICAL</property>
+                                                        <property name="non_flexible_grow_mode">wxFLEX_GROWMODE_SPECIFIED</property>
                                                         <property name="permission">none</property>
+                                                        <property name="rows">0</property>
+                                                        <property name="vgap">0</property>
                                                         <object class="sizeritem" expanded="1">
                                                             <property name="border">5</property>
                                                             <property name="flag">wxALL|wxEXPAND</property>
