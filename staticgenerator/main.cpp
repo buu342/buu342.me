@@ -105,7 +105,19 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
 	this->SetSizer(m_Sizer_Main);
 	this->Layout();
 
+	m_Menubar_Main = new wxMenuBar(0);
+	m_Menu_File = new wxMenu();
+	wxMenuItem* m_MenuItem_OpenDir;
+	m_MenuItem_OpenDir = new wxMenuItem(m_Menu_File, wxID_ANY, wxString(wxT("Open Working Directory")) + wxT('\t') + wxT("CTRL+O"), wxEmptyString, wxITEM_NORMAL);
+	m_Menu_File->Append(m_MenuItem_OpenDir);
+
+	m_Menubar_Main->Append(m_Menu_File, wxT("File"));
+
+	this->SetMenuBar(m_Menubar_Main);
+
 	this->Centre(wxBOTH);
+
+	m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_File_OnMenuSelection), this, m_MenuItem_OpenDir->GetId());
 }
 
 Main::~Main()
@@ -123,4 +135,9 @@ void Main::m_Splitter_BlogOnIdle(wxIdleEvent&)
 {
 	this->m_Splitter_Blog->SetSashPosition(0);
 	this->m_Splitter_Blog->Disconnect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_BlogOnIdle), NULL, this);
+}
+
+void Main::m_MenuItem_File_OnMenuSelection(wxCommandEvent& event)
+{
+
 }

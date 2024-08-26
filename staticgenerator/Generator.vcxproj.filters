@@ -9,6 +9,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="Header Files\include">
+      <UniqueIdentifier>{08497979-77e2-4388-9c62-228d7ca59b50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\include\maddy">
+      <UniqueIdentifier>{24e2685f-9c0d-4d77-80d1-1b741839bcb6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h">
@@ -16,6 +22,75 @@
     </ClInclude>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\blockparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\breaklineparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\checklistparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\codeblockparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\emphasizedparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\headlineparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\horizontallineparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\htmlparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\imageparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\inlinecodeparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\italicparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\latexblockparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\lineparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\linkparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\orderedlistparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\paragraphparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\parser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\parserconfig.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\quoteparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\strikethroughparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\strongparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\tableparser.h">
+      <Filter>Header Files\include\maddy</Filter>
+    </ClInclude>
+    <ClInclude Include="include\maddy\unorderedlistparser.h">
+      <Filter>Header Files\include\maddy</Filter>
     </ClInclude>
     <ClInclude Include="htmlpreview.h">
       <Filter>Header Files</Filter>
