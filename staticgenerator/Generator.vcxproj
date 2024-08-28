@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="htmlpreview.h" />
+    <ClInclude Include="include\json.hpp" />
     <ClInclude Include="include\maddy\blockparser.h" />
     <ClInclude Include="include\maddy\breaklineparser.h" />
     <ClInclude Include="include\maddy\checklistparser.h" />
