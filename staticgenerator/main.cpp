@@ -349,6 +349,8 @@ void Main::Save()
 
     // TODO: Handle blog
 
+    // TODO: Compile the website
+
     // Dump the JSON to a text file
     if (!out.Exists())
         out.Create();
