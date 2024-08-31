@@ -39,7 +39,9 @@ typedef struct Project_s {
 	int index;
 	wxString filename;
 	wxString displayname;
+    wxString image;
 	Category* category;
+    wxTreeItemId treeid;
 	std::vector<Tag*> tags;
 } Project;
 
@@ -87,6 +89,7 @@ class Main : public wxFrame
 		void m_MenuItem_Save_OnMenuSelection(wxCommandEvent& event);
 		void UpdateTree();
 		void Save();
+        void CompileProjects();
 
 };
 

@@ -16,6 +16,23 @@ bool category_sorter(Category* lhs, Category* rhs)
     return lhs->index < rhs->index;
 }
 
+wxString string_fromfile(wxString path)
+{
+    wxTextFile file;
+    wxString str = wxString("");
+
+    // Ensure we managed to open the file
+    file.Open(path);
+    if (!file.IsOpened())
+        return wxString("");
+
+    // Read the file into the string, and return it
+    str += file.GetFirstLine();
+    while(!file.Eof())
+        str += file.GetNextLine();
+    return str;
+}
+
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
 {
     this->m_WorkingDir = wxGetCwd();
@@ -280,7 +297,7 @@ void Main::UpdateTree()
     // First, add all the folders which are already included in the JSON
     for (nlohmann::json::iterator it = projectjson["Categories"].begin(); it != projectjson["Categories"].end(); ++it)
     {
-        // TODO: Check folder still exists before doing this
+        // TODO: Check project folder still exists before doing this
         Category* cat = new Category();
         cat->foldername = wxString(it.key());
         cat->index = (*it)["Index"];
@@ -350,12 +367,56 @@ void Main::Save()
     // TODO: Handle blog
 
     // TODO: Compile the website
+    this->CompileProjects();
 
     // Dump the JSON to a text file
     if (!out.Exists())
         out.Create();
     out.Clear();
     out.AddLine(wxString(projectjson.dump()));
+    out.Write();
+    out.Close();
+}
+
+void Main::CompileProjects()
+{
+    wxTextFile out(this->m_WorkingDir + wxString("/projects.html"));
+    wxDateTime today = wxDateTime::Today();
+    wxString html_final = wxString("");
+    wxString html_categories = wxString("");
+
+    // Read the page template
+    html_final = string_fromfile(this->m_WorkingDir + "/templates/projects.html");
+
+    // Generate the page from the section + project templates
+    for (Category* cat : this->m_Category_Projects)
+    {
+        wxString html_projects = wxString("");
+
+        // Generate the project blocks
+        for (Project* proj : cat->projects)
+        {
+            html_projects += string_fromfile(this->m_WorkingDir + "/templates/projects_project.html");
+            html_projects.Replace("_TEMPLATE_PROJECT_URL_", proj->filename);
+            html_projects.Replace("_TEMPLATE_PROJECT_TITLE_", proj->displayname);
+            html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", proj->image);
+        }
+
+        // Generate the section blocks
+        html_categories += string_fromfile(this->m_WorkingDir + "/templates/projects_section.html");
+        html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
+        html_categories.Replace("_TEMPLATE_PROJECT_LIST_", html_projects);
+    }
+
+    // Finalize the page
+    html_final.Replace("_TEMPLATE_PROJECTS_LIST_", html_categories);
+    html_final.Replace("_TEMPLATE_PROJECTS_DATE_", today.Format("%b %d %Y"));
+
+    // Dump the html
+    if (!out.Exists())
+        out.Create();
+    out.Clear();
+    out.AddLine(html_final);
     out.Write();
     out.Close();
 }
