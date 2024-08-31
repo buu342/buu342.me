@@ -173,6 +173,7 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
     if (dir.ShowModal() == wxID_OK)
     {
         this->m_WorkingDir = dir.GetPath();
+        this->SetTitle(this->m_WorkingDir);
         this->UpdateTree();
     }
 }
@@ -251,7 +252,7 @@ void Main::UpdateTree()
     wxString filename;
     nlohmann::json projectjson = {};
     //nlohmann::json blogjson = {};
-    wxDir projectspath(this->m_WorkingDir + wxString("/projects"));
+    wxDir projectspath;
     //wxDir blogpath(this->m_WorkingDir + wxString("/blog"));
 
     // Initialize the trees
@@ -264,6 +265,9 @@ void Main::UpdateTree()
     // If the projects folder doesn't exist, create it
     if (!wxDirExists(projectspath.GetName()))
         wxMkDir(projectspath.GetName(), wxS_DIR_DEFAULT);
+    projectspath.Open(this->m_WorkingDir + wxString("/projects"));
+    if (!projectspath.IsOpened())
+        return;
 
     // If the blogs folder doesn't exist, create it
     //if (!wxDirExists(blogpath.GetName()))
