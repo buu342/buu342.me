@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <fstream>
 #include "main.h"
-#include "json.hpp"
+#include "include/json.hpp"
 #include <wx/event.h>
 #include <wx/msgdlg.h>
 #include <wx/treelist.h>
@@ -263,11 +263,11 @@ void Main::UpdateTree()
 
     // If the projects folder doesn't exist, create it
     if (!wxDirExists(projectspath.GetName()))
-        wxMkDir(projectspath.GetName());
+        wxMkDir(projectspath.GetName(), wxS_DIR_DEFAULT);
 
     // If the blogs folder doesn't exist, create it
     //if (!wxDirExists(blogpath.GetName()))
-    //	wxMkDir(blogpath.GetName());
+    //	wxMkDir(blogpath.GetName(), wxS_DIR_DEFAULT);
 
     // Open the projects json file
     if (wxFileExists(this->m_WorkingDir + wxString("/projects/projects.json")))
