@@ -249,17 +249,23 @@ void Main::m_TreeCtrl_Projects_OnTreeEndDrag(wxTreeEvent& event)
             dest_elem = cat;
     }
 
-    // Perform a swap of the data structures
-    this->m_Category_Projects.erase(this->m_Category_Projects.begin() + src_elem->index);
-    this->m_Category_Projects.insert(this->m_Category_Projects.begin() + dest_elem->index, src_elem);
+    // Move the elements
+    if (dest_elem->index < src_elem->index)
+    {
+        this->m_Category_Projects.erase(this->m_Category_Projects.begin() + src_elem->index);
+        this->m_Category_Projects.insert(this->m_Category_Projects.begin() + dest_elem->index + 1, src_elem);
+    }
+    else
+    {
+        this->m_Category_Projects.erase(this->m_Category_Projects.begin() + src_elem->index);
+        this->m_Category_Projects.insert(this->m_Category_Projects.begin() + dest_elem->index, src_elem);
+    }
+    this->m_TreeCtrl_Projects->Delete(src);
+    src_elem->treeid = this->m_TreeCtrl_Projects->InsertItem(this->m_TreeCtrl_Projects->GetRootItem(), dest, src_elem->displayname);
 
     // Correct the index values
     for (Category* cat : this->m_Category_Projects)
         cat->index = index++;
-
-    // Move the elements
-    this->m_TreeCtrl_Projects->Delete(src);
-    src_elem->treeid = this->m_TreeCtrl_Projects->InsertItem(this->m_TreeCtrl_Projects->GetRootItem(), dest, src_elem->displayname);
 }
 
 void Main::UpdateTree()
