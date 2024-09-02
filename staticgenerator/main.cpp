@@ -16,6 +16,11 @@ bool category_sorter(Category* lhs, Category* rhs)
     return lhs->index < rhs->index;
 }
 
+bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
+{
+    return tree->GetRootItem() == tree->GetItemParent(item);
+}
+
 wxString string_fromfile(wxString path)
 {
     wxTextFile file;
@@ -36,140 +41,263 @@ wxString string_fromfile(wxString path)
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
 {
     this->m_WorkingDir = wxGetCwd();
-    this->SetSizeHints(wxDefaultSize, wxDefaultSize);
     this->SetTitle(this->m_WorkingDir);
 
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
     wxBoxSizer* m_Sizer_Main;
-    m_Sizer_Main = new wxBoxSizer(wxVERTICAL);
+    m_Sizer_Main = new wxBoxSizer( wxVERTICAL );
 
-    m_ChoiceBook_PageSelection = new wxChoicebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCHB_DEFAULT);
-    m_Panel_Projects = new wxPanel(m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_ChoiceBook_PageSelection = new wxChoicebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCHB_DEFAULT );
+    m_Panel_Projects = new wxPanel( m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* m_Sizer_Projects;
-    m_Sizer_Projects = new wxBoxSizer(wxVERTICAL);
+    m_Sizer_Projects = new wxBoxSizer( wxVERTICAL );
 
-    m_Splitter_Projects = new wxSplitterWindow(m_Panel_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
-    m_Splitter_Projects->SetSashGravity(0);
-    m_Splitter_Projects->Connect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_ProjectsOnIdle), NULL, this);
+    m_Splitter_Projects = new wxSplitterWindow( m_Panel_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+    m_Splitter_Projects->SetSashGravity( 1 );
+    m_Splitter_Projects->Connect( wxEVT_IDLE, wxIdleEventHandler( Main::m_Splitter_ProjectsOnIdle ), NULL, this );
 
-    m_Panel_Projects_Tree = new wxPanel(m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_Panel_Projects_Tree = new wxPanel( m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxFlexGridSizer* m_Sizer_Projects_Tree;
-    m_Sizer_Projects_Tree = new wxFlexGridSizer(0, 0, 0, 0);
-    m_Sizer_Projects_Tree->AddGrowableCol(0);
-    m_Sizer_Projects_Tree->AddGrowableRow(0);
-    m_Sizer_Projects_Tree->SetFlexibleDirection(wxBOTH);
-    m_Sizer_Projects_Tree->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    m_Sizer_Projects_Tree = new wxFlexGridSizer( 0, 0, 0, 0 );
+    m_Sizer_Projects_Tree->AddGrowableCol( 0 );
+    m_Sizer_Projects_Tree->AddGrowableRow( 0 );
+    m_Sizer_Projects_Tree->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Projects_Tree->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_TreeCtrl_Projects = new wxTreeCtrl(m_Panel_Projects_Tree, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT | wxTR_EDIT_LABELS);
-    m_Sizer_Projects_Tree->Add(m_TreeCtrl_Projects, 0, wxALL|wxEXPAND, 5);
+    m_TreeCtrl_Projects = new wxTreeCtrl( m_Panel_Projects_Tree, wxID_ANY, wxDefaultPosition, wxSize( -1,-1 ), wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
+    m_Sizer_Projects_Tree->Add( m_TreeCtrl_Projects, 0, wxALL|wxEXPAND, 5 );
 
-    m_Panel_Projects_Tree->SetSizer(m_Sizer_Projects_Tree);
+
+    m_Panel_Projects_Tree->SetSizer( m_Sizer_Projects_Tree );
     m_Panel_Projects_Tree->Layout();
-    m_Sizer_Projects_Tree->Fit(m_Panel_Projects_Tree);
-    m_Panel_Projects_TextCtrl = new wxPanel(m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
-    wxFlexGridSizer* m_Sizer_Projects_TextCtrl;
-    m_Sizer_Projects_TextCtrl = new wxFlexGridSizer(0, 1, 0, 0);
-    m_Sizer_Projects_TextCtrl->AddGrowableCol(0);
-    m_Sizer_Projects_TextCtrl->AddGrowableRow(0);
-    m_Sizer_Projects_TextCtrl->SetFlexibleDirection(wxBOTH);
-    m_Sizer_Projects_TextCtrl->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    m_Sizer_Projects_Tree->Fit( m_Panel_Projects_Tree );
+    m_Panel_Projects_Editor = new wxPanel( m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
 
-    m_TextCtrl_Projects = new wxRichTextCtrl(m_Panel_Projects_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS);
-    m_Sizer_Projects_TextCtrl->Add(m_TextCtrl_Projects, 1, wxEXPAND | wxALL, 5);
+    wxFlexGridSizer* m_Sizer_Projects_Editor;
+    m_Sizer_Projects_Editor = new wxFlexGridSizer( 2, 1, 0, 0 );
+    m_Sizer_Projects_Editor->AddGrowableCol( 0 );
+    m_Sizer_Projects_Editor->AddGrowableRow( 0 );
+    m_Sizer_Projects_Editor->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Projects_Editor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 
-    m_Button_Projects_Preview = new wxButton(m_Panel_Projects_TextCtrl, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Sizer_Projects_TextCtrl->Add(m_Button_Projects_Preview, 0, wxALIGN_RIGHT|wxALL, 5);
+    m_ScrolledWindow_Project_Editor = new wxScrolledWindow( m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+    m_ScrolledWindow_Project_Editor->SetScrollRate( 5, 5 );
+    m_ScrolledWindow_Project_Editor->SetMinSize( wxSize( 0,0 ) );
 
-    m_Panel_Projects_TextCtrl->SetSizer(m_Sizer_Projects_TextCtrl);
-    m_Panel_Projects_TextCtrl->Layout();
-    m_Sizer_Projects_TextCtrl->Fit(m_Panel_Projects_TextCtrl);
-    m_Splitter_Projects->SplitVertically(m_Panel_Projects_Tree, m_Panel_Projects_TextCtrl, 0);
-    m_Sizer_Projects->Add(m_Splitter_Projects, 1, wxEXPAND, 5);
+    wxFlexGridSizer* m_Sizer_ScrolledWindow_Editor;
+    m_Sizer_ScrolledWindow_Editor = new wxFlexGridSizer( 0, 1, 0, 0 );
+    m_Sizer_ScrolledWindow_Editor->AddGrowableCol( 0 );
+    m_Sizer_ScrolledWindow_Editor->AddGrowableRow( 1 );
+    m_Sizer_ScrolledWindow_Editor->SetFlexibleDirection( wxBOTH );
+    m_Sizer_ScrolledWindow_Editor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_Panel_Projects->SetSizer(m_Sizer_Projects);
+    m_Sizer_ScrolledWindow_Editor->SetMinSize( wxSize( 0,0 ) );
+    wxFlexGridSizer* m_Sizer_Projects_Editor_Basic;
+    m_Sizer_Projects_Editor_Basic = new wxFlexGridSizer( 0, 2, 0, 0 );
+    m_Sizer_Projects_Editor_Basic->AddGrowableCol( 1 );
+    m_Sizer_Projects_Editor_Basic->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Projects_Editor_Basic->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_Sizer_Projects_Editor_Basic->SetMinSize( wxSize( 0,0 ) );
+    m_Label_Projects_Folder = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_Folder->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Folder, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_Folder = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_Folder->Enable( false );
+    m_TextCtrl_Projects_Folder->SetToolTip( wxT("The folder which contains all of these projects") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Folder, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_Name = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_Name->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Name, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_Name = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_Name->SetToolTip( wxT("The display name of the project") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Name, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_Icon = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_Icon->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Icon, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_Icon = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_Icon->SetToolTip( wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png.") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Icon, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_Tags = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_Tags->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Tags, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_Tags = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_Tags->SetToolTip( wxT("Project tags, comma separated.") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Tags, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_Images = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Images:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_Images->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Images, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_Images = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_Images->SetToolTip( wxT("Images for this project, comma separated. Paths should be relative to the working directory.") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Images, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_Date = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Date:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_Date->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Date, 0, wxALL|wxEXPAND, 5 );
+
+    m_TextCtrl_Projects_Date = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_Date->SetToolTip( wxT("The date of this project's release.") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Date, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_URLs = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("URLs:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_URLs->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_URLs, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_URLs = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_URLs->SetToolTip( wxT("URLs for this project, comma separated.") );
+
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_URLs, 0, wxALL|wxEXPAND, 5 );
+
+
+    m_Sizer_ScrolledWindow_Editor->Add( m_Sizer_Projects_Editor_Basic, 1, wxEXPAND, 5 );
+
+    m_TextCtrl_Projects_Description = new wxRichTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+    m_TextCtrl_Projects_Description->SetToolTip( wxT("The project description. Supports markdown.") );
+    m_TextCtrl_Projects_Description->SetMinSize( wxSize( -1,200 ) );
+
+    m_Sizer_ScrolledWindow_Editor->Add( m_TextCtrl_Projects_Description, 1, wxEXPAND | wxALL, 5 );
+
+
+    m_ScrolledWindow_Project_Editor->SetSizer( m_Sizer_ScrolledWindow_Editor );
+    m_ScrolledWindow_Project_Editor->Layout();
+    m_Sizer_ScrolledWindow_Editor->Fit( m_ScrolledWindow_Project_Editor );
+    m_Sizer_Projects_Editor->Add( m_ScrolledWindow_Project_Editor, 0, wxALL|wxEXPAND, 5 );
+
+    m_Button_Projects_Preview = new wxButton( m_Panel_Projects_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Button_Projects_Preview->SetMinSize( wxSize( -1,24 ) );
+
+    m_Sizer_Projects_Editor->Add( m_Button_Projects_Preview, 0, wxALIGN_RIGHT|wxALL, 5 );
+
+
+    m_Panel_Projects_Editor->SetSizer( m_Sizer_Projects_Editor );
+    m_Panel_Projects_Editor->Layout();
+    m_Sizer_Projects_Editor->Fit( m_Panel_Projects_Editor );
+    m_Splitter_Projects->SplitVertically( m_Panel_Projects_Tree, m_Panel_Projects_Editor, 188 );
+    m_Sizer_Projects->Add( m_Splitter_Projects, 1, wxEXPAND, 5 );
+
+
+    m_Panel_Projects->SetSizer( m_Sizer_Projects );
     m_Panel_Projects->Layout();
-    m_Sizer_Projects->Fit(m_Panel_Projects);
-    m_ChoiceBook_PageSelection->AddPage(m_Panel_Projects, wxT("Projects"), false);
-    m_Panel_Blog = new wxPanel(m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_Sizer_Projects->Fit( m_Panel_Projects );
+    m_ChoiceBook_PageSelection->AddPage( m_Panel_Projects, wxT("Projects"), false );
+    m_Panel_Blog = new wxPanel( m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* m_Sizer_Blog;
-    m_Sizer_Blog = new wxBoxSizer(wxVERTICAL);
+    m_Sizer_Blog = new wxBoxSizer( wxVERTICAL );
 
-    m_Splitter_Blog = new wxSplitterWindow(m_Panel_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
-    m_Splitter_Blog->Connect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_BlogOnIdle), NULL, this);
+    m_Splitter_Blog = new wxSplitterWindow( m_Panel_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+    m_Splitter_Blog->Connect( wxEVT_IDLE, wxIdleEventHandler( Main::m_Splitter_BlogOnIdle ), NULL, this );
 
-    m_Panel_Blog_Tree = new wxPanel(m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_Panel_Blog_Tree = new wxPanel( m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxFlexGridSizer* m_Sizer_Blog_Tree;
-    m_Sizer_Blog_Tree = new wxFlexGridSizer(0, 0, 0, 0);
-    m_Sizer_Blog_Tree->AddGrowableCol(0);
-    m_Sizer_Blog_Tree->AddGrowableRow(0);
-    m_Sizer_Blog_Tree->SetFlexibleDirection(wxBOTH);
-    m_Sizer_Blog_Tree->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    m_Sizer_Blog_Tree = new wxFlexGridSizer( 0, 0, 0, 0 );
+    m_Sizer_Blog_Tree->AddGrowableCol( 0 );
+    m_Sizer_Blog_Tree->AddGrowableRow( 0 );
+    m_Sizer_Blog_Tree->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Blog_Tree->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_TreeCtrl_Blog = new wxTreeCtrl(m_Panel_Blog_Tree, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE | wxTR_HIDE_ROOT | wxTR_EDIT_LABELS);
-    m_Sizer_Blog_Tree->Add(m_TreeCtrl_Blog, 0, wxALL|wxEXPAND, 5);
+    m_TreeCtrl_Blog = new wxTreeCtrl( m_Panel_Blog_Tree, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT );
+    m_Sizer_Blog_Tree->Add( m_TreeCtrl_Blog, 0, wxALL|wxEXPAND, 5 );
 
-    m_Panel_Blog_Tree->SetSizer(m_Sizer_Blog_Tree);
+
+    m_Panel_Blog_Tree->SetSizer( m_Sizer_Blog_Tree );
     m_Panel_Blog_Tree->Layout();
-    m_Sizer_Blog_Tree->Fit(m_Panel_Blog_Tree);
-    m_Panel_Blog_TextCtrl = new wxPanel(m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    m_Sizer_Blog_Tree->Fit( m_Panel_Blog_Tree );
+    m_Panel_Blog_TextCtrl = new wxPanel( m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+    m_Panel_Blog_TextCtrl->Enable( false );
+    m_Panel_Blog_TextCtrl->Hide();
+
     wxFlexGridSizer* m_Sizer_Blog_TextCtrl;
-    m_Sizer_Blog_TextCtrl = new wxFlexGridSizer(0, 1, 0, 0);
-    m_Sizer_Blog_TextCtrl->AddGrowableCol(0);
-    m_Sizer_Blog_TextCtrl->AddGrowableRow(0);
-    m_Sizer_Blog_TextCtrl->SetFlexibleDirection(wxBOTH);
-    m_Sizer_Blog_TextCtrl->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    m_Sizer_Blog_TextCtrl = new wxFlexGridSizer( 0, 1, 0, 0 );
+    m_Sizer_Blog_TextCtrl->AddGrowableCol( 0 );
+    m_Sizer_Blog_TextCtrl->AddGrowableRow( 0 );
+    m_Sizer_Blog_TextCtrl->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Blog_TextCtrl->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_TextCtrl_Blog = new wxRichTextCtrl(m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS);
-    m_Sizer_Blog_TextCtrl->Add(m_TextCtrl_Blog, 1, wxEXPAND | wxALL, 5);
+    m_TextCtrl_Blog = new wxRichTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+    m_Sizer_Blog_TextCtrl->Add( m_TextCtrl_Blog, 1, wxEXPAND | wxALL, 5 );
 
-    m_Button_Blog_Preview = new wxButton(m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Sizer_Blog_TextCtrl->Add(m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5);
+    m_Button_Blog_Preview = new wxButton( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Sizer_Blog_TextCtrl->Add( m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5 );
 
-    m_Panel_Blog_TextCtrl->SetSizer(m_Sizer_Blog_TextCtrl);
+
+    m_Panel_Blog_TextCtrl->SetSizer( m_Sizer_Blog_TextCtrl );
     m_Panel_Blog_TextCtrl->Layout();
-    m_Sizer_Blog_TextCtrl->Fit(m_Panel_Blog_TextCtrl);
-    m_Splitter_Blog->SplitVertically(m_Panel_Blog_Tree, m_Panel_Blog_TextCtrl, 0);
-    m_Sizer_Blog->Add(m_Splitter_Blog, 1, wxEXPAND, 5);
+    m_Sizer_Blog_TextCtrl->Fit( m_Panel_Blog_TextCtrl );
+    m_Splitter_Blog->SplitVertically( m_Panel_Blog_Tree, m_Panel_Blog_TextCtrl, 0 );
+    m_Sizer_Blog->Add( m_Splitter_Blog, 1, wxEXPAND, 5 );
 
-    m_Panel_Blog->SetSizer(m_Sizer_Blog);
+
+    m_Panel_Blog->SetSizer( m_Sizer_Blog );
     m_Panel_Blog->Layout();
-    m_Sizer_Blog->Fit(m_Panel_Blog);
-    m_ChoiceBook_PageSelection->AddPage(m_Panel_Blog, wxT("Blog"), false);
-    m_Sizer_Main->Add(m_ChoiceBook_PageSelection, 1, wxEXPAND | wxALL, 5);
+    m_Sizer_Blog->Fit( m_Panel_Blog );
+    m_ChoiceBook_PageSelection->AddPage( m_Panel_Blog, wxT("Blog"), false );
+    m_Sizer_Main->Add( m_ChoiceBook_PageSelection, 1, wxEXPAND | wxALL, 5 );
 
-    this->SetSizer(m_Sizer_Main);
+
+    this->SetSizer( m_Sizer_Main );
     this->Layout();
-
-    m_Menubar_Main = new wxMenuBar(0);
+    m_Menubar_Main = new wxMenuBar( 0 );
     m_Menu_File = new wxMenu();
     wxMenuItem* m_MenuItem_OpenDir;
-    m_MenuItem_OpenDir = new wxMenuItem(m_Menu_File, wxID_ANY, wxString(wxT("Open Working Directory")) + wxT('\t') + wxT("CTRL+O"), wxEmptyString, wxITEM_NORMAL);
-    m_Menu_File->Append(m_MenuItem_OpenDir);
+    m_MenuItem_OpenDir = new wxMenuItem( m_Menu_File, wxID_ANY, wxString( wxT("Open Working Directory") ) + wxT('\t') + wxT("CTRL+O"), wxEmptyString, wxITEM_NORMAL );
+    m_Menu_File->Append( m_MenuItem_OpenDir );
 
     wxMenuItem* m_MenuItem_Save;
-    m_MenuItem_Save = new wxMenuItem(m_Menu_File, wxID_ANY, wxString(wxT("Save Changes")) + wxT('\t') + wxT("CTRL+S"), wxEmptyString, wxITEM_NORMAL);
-    m_Menu_File->Append(m_MenuItem_Save);
+    m_MenuItem_Save = new wxMenuItem( m_Menu_File, wxID_ANY, wxString( wxT("Save Changes") ) + wxT('\t') + wxT("CTRL+S"), wxEmptyString, wxITEM_NORMAL );
+    m_Menu_File->Append( m_MenuItem_Save );
 
-    m_Menubar_Main->Append(m_Menu_File, wxT("File"));
+    m_Menubar_Main->Append( m_Menu_File, wxT("File") );
 
-    this->SetMenuBar(m_Menubar_Main);
+    this->SetMenuBar( m_Menubar_Main );
 
-    this->Centre(wxBOTH);
 
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit), NULL, this);
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeBeginDrag), NULL, this);
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndDrag), NULL, this);
-    m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit), NULL, this);
-    m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_OpenDir_OnMenuSelection), this, m_MenuItem_OpenDir->GetId());
-    m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Save_OnMenuSelection), this, m_MenuItem_Save->GetId());
+    this->Centre( wxBOTH );
 
-    this->UpdateTree();
+    // Connect Events
+    m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeBeginDrag ), NULL, this );
+    m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndDrag ), NULL, this );
+    m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit ), NULL, this );
+    m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeItemMenu ), NULL, this );
+    m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeSelChanged ), NULL, this );
+    m_TextCtrl_Projects_Folder->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Folder_OnText ), NULL, this );
+    m_TextCtrl_Projects_Name->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Name_OnText ), NULL, this );
+    m_TextCtrl_Projects_Icon->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Icon_OnText ), NULL, this );
+    m_TextCtrl_Projects_Tags->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Tags_OnText ), NULL, this );
+    m_TextCtrl_Projects_Images->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Images_OnText ), NULL, this );
+    m_TextCtrl_Projects_Date->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Date_OnText ), NULL, this );
+    m_TextCtrl_Projects_URLs->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_URLs_OnText ), NULL, this );
+    m_TextCtrl_Projects_Description->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Description_OnText ), NULL, this );
+    m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeBeginDrag ), NULL, this );
+    m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndDrag ), NULL, this );
+    m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
+    m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeItemMenu ), NULL, this );
+    m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeSelChanged ), NULL, this );
+    m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_OpenDir_OnMenuSelection ), this, m_MenuItem_OpenDir->GetId());
+    m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_Save_OnMenuSelection ), this, m_MenuItem_Save->GetId());
+
+    this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
 }
 
 Main::~Main()
 {
     m_TreeCtrl_Projects->Disconnect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit), NULL, this);
     m_TreeCtrl_Blog->Disconnect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit), NULL, this);
-
 }
 
 void Main::m_Splitter_ProjectsOnIdle(wxIdleEvent&)
@@ -191,7 +319,8 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
     {
         this->m_WorkingDir = dir.GetPath();
         this->SetTitle(this->m_WorkingDir);
-        this->UpdateTree();
+        this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
+        //this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
     }
 }
 
@@ -214,10 +343,6 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
     }
 }
 
-void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
-{
-    // TODO: Do this
-}
 void Main::m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event)
 {
     this->m_DraggedItem = event.GetItem();
@@ -225,83 +350,110 @@ void Main::m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event)
 }
 void Main::m_TreeCtrl_Projects_OnTreeEndDrag(wxTreeEvent& event)
 {
-    int index = 0;
-    wxTreeItemId src = this->m_DraggedItem;
-    wxTreeItemId dest = event.GetItem();
-    Category* src_elem = NULL;
-    Category* dest_elem = NULL;
-    this->m_DraggedItem = NULL;
-
-    // Ensure we have a valid destination node
-    if (!dest.IsOk() || src == dest)
-        return;
-
-    // Ignore placing the source directly above the destination, since it won't move at all.
-    if (this->m_TreeCtrl_Projects->GetPrevSibling(src) == dest)
-        return;
-
-    // Get the category elements themselves
-    for (Category* cat : this->m_Category_Projects)
-    {
-        if (cat->treeid == src)
-            src_elem = cat;
-        if (cat->treeid == dest)
-            dest_elem = cat;
-    }
-
-    // Move the elements
-    if (dest_elem->index < src_elem->index)
-    {
-        this->m_Category_Projects.erase(this->m_Category_Projects.begin() + src_elem->index);
-        this->m_Category_Projects.insert(this->m_Category_Projects.begin() + dest_elem->index + 1, src_elem);
-    }
-    else
-    {
-        this->m_Category_Projects.erase(this->m_Category_Projects.begin() + src_elem->index);
-        this->m_Category_Projects.insert(this->m_Category_Projects.begin() + dest_elem->index, src_elem);
-    }
-    this->m_TreeCtrl_Projects->Delete(src);
-    src_elem->treeid = this->m_TreeCtrl_Projects->InsertItem(this->m_TreeCtrl_Projects->GetRootItem(), dest, src_elem->displayname);
-
-    // Correct the index values
-    for (Category* cat : this->m_Category_Projects)
-        cat->index = index++;
+    this->EndDrag(event, this->m_TreeCtrl_Projects, &this->m_Category_Projects);
 }
 
-void Main::UpdateTree()
+void Main::m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event )
+{
+
+}
+
+void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Folder_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
+{
+    // TODO: Do this
+}
+
+void Main::m_TreeCtrl_Blog_OnTreeBeginDrag( wxTreeEvent& event )
+{
+
+}
+
+void Main::m_TreeCtrl_Blog_OnTreeEndDrag( wxTreeEvent& event )
+{
+
+}
+
+void Main::m_TreeCtrl_Blog_OnTreeItemMenu( wxTreeEvent& event )
+{
+
+}
+
+void Main::m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event )
+{
+
+}
+
+void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist)
 {
     int index;
     wxTreeItemId root;
     wxString filename;
-    nlohmann::json projectjson = {};
-    //nlohmann::json blogjson = {};
-    wxDir projectspath;
-    //wxDir blogpath(this->m_WorkingDir + wxString("/blog"));
+    nlohmann::json pagejson = {};
+    wxDir pagepath;
 
     // Initialize the trees
-    this->m_Category_Projects.clear();
-    this->m_TreeCtrl_Projects->DeleteAllItems();
-    //this->m_TreeCtrl_Blog->DeleteAllItems();
-    root = this->m_TreeCtrl_Projects->AddRoot("Root");
-    //root = this->m_TreeCtrl_Blog->AddRoot("Root");
+    categorylist->clear();
+    tree->DeleteAllItems();
+    root = tree->AddRoot("Root");
 
-    // If the projects folder doesn't exist, create it
-    if (!wxDirExists(projectspath.GetName()))
-        wxMkDir(projectspath.GetName(), wxS_DIR_DEFAULT);
-    projectspath.Open(this->m_WorkingDir + wxString("/projects"));
-    if (!projectspath.IsOpened())
+    // If the folder doesn't exist, create it
+    if (!wxDirExists(pagepath.GetName()))
+        wxMkDir(pagepath.GetName(), wxS_DIR_DEFAULT);
+    pagepath.Open(this->m_WorkingDir + wxString("/")+folder);
+    if (!pagepath.IsOpened())
         return;
 
-    // If the blogs folder doesn't exist, create it
-    //if (!wxDirExists(blogpath.GetName()))
-    //	wxMkDir(blogpath.GetName(), wxS_DIR_DEFAULT);
-
     // Open the projects json file
-    if (wxFileExists(this->m_WorkingDir + wxString("/projects/projects.json")))
-        projectjson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/projects/projects.json")).ToStdString()));
+    if (wxFileExists(this->m_WorkingDir + wxString("/") + folder + wxString("/") + folder + wxString(".json")))
+        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/") + folder + wxString("/") + folder + wxString(".json")).ToStdString()));
 
     // First, add all the folders which are already included in the JSON
-    for (nlohmann::json::iterator it = projectjson["Categories"].begin(); it != projectjson["Categories"].end(); ++it)
+    for (nlohmann::json::iterator it = pagejson["Categories"].begin(); it != pagejson["Categories"].end(); ++it)
     {
         // TODO: Check project folder still exists before doing this
         Category* cat = new Category();
@@ -309,24 +461,24 @@ void Main::UpdateTree()
         cat->index = (*it)["Index"];
         cat->displayname = wxString((*it)["DisplayName"]);
         cat->treeid = NULL;
-        cat->projects.clear();
-        this->m_Category_Projects.push_back(cat);
+        cat->pages.clear();
+        categorylist->push_back(cat);
     }
 
     // Correct the indices of categories, to make sure they're in proper order
     index = 0;
-    std::sort(this->m_Category_Projects.begin(), this->m_Category_Projects.end(), &category_sorter);
-    for (Category* cat : this->m_Category_Projects)
+    std::sort(categorylist->begin(), categorylist->end(), &category_sorter);
+    for (Category* cat : *categorylist)
         cat->index = index++;
 
     // Now, add all folders which aren't in the JSON
-    bool cont = projectspath.GetFirst(&filename, wxEmptyString, wxDIR_DIRS);
+    bool cont = pagepath.GetFirst(&filename, wxEmptyString, wxDIR_DIRS);
     while (cont)
     {
         bool hasfile = false;
 
         // Check if the folder already exists in our list
-        for (Category* cat : this->m_Category_Projects)
+        for (Category* cat : *categorylist)
         {
             if (cat->foldername == filename)
             {
@@ -343,19 +495,62 @@ void Main::UpdateTree()
             cat->index = index++;
             cat->displayname = filename;
             cat->treeid = NULL;
-            cat->projects.clear();
-            this->m_Category_Projects.push_back(cat);
+            cat->pages.clear();
+            categorylist->push_back(cat);
         }
 
         // Check the next folder
-        cont = projectspath.GetNext(&filename);
+        cont = pagepath.GetNext(&filename);
     }
 
     // Finally, generate the tree
-    for (Category* cat : this->m_Category_Projects)
-        cat->treeid = this->m_TreeCtrl_Projects->AppendItem(root, cat->displayname);
+    for (Category* cat : *categorylist)
+        cat->treeid = tree->AppendItem(root, cat->displayname);
+}
 
-    // TODO: Handle blog
+void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist)
+{
+    int index = 0;
+    wxTreeItemId src = this->m_DraggedItem;
+    wxTreeItemId dest = event.GetItem();
+    Category* src_elem = NULL;
+    Category* dest_elem = NULL;
+    this->m_DraggedItem = NULL;
+
+    // Ensure we have a valid destination node
+    if (!dest.IsOk() || src == dest)
+        return;
+
+    // Ignore placing the source directly above the destination, since it won't move at all.
+    if (tree->GetPrevSibling(src) == dest)
+        return;
+
+    // Get the category elements themselves
+    for (Category* cat : *categorylist)
+    {
+        if (cat->treeid == src)
+            src_elem = cat;
+        if (cat->treeid == dest)
+            dest_elem = cat;
+    }
+
+    // Move the elements
+    if (dest_elem->index < src_elem->index)
+    {
+        categorylist->erase(categorylist->begin() + src_elem->index);
+        categorylist->insert(categorylist->begin() + dest_elem->index + 1, src_elem);
+    }
+    else
+    {
+        categorylist->erase(categorylist->begin() + src_elem->index);
+        categorylist->insert(categorylist->begin() + dest_elem->index, src_elem);
+    }
+    tree->Delete(src);
+    src_elem->treeid = tree->InsertItem(tree->GetRootItem(), dest, src_elem->displayname);
+
+    // Correct the index values
+    for (Category* cat : *categorylist)
+        cat->index = index++;
 }
 
 void Main::Save()
@@ -400,8 +595,9 @@ void Main::CompileProjects()
         wxString html_projects = wxString("");
 
         // Generate the project blocks
-        for (Project* proj : cat->projects)
+        for (void* page : cat->pages)
         {
+            Project* proj = (Project*)page;
             html_projects += string_fromfile(this->m_WorkingDir + "/templates/projects_project.html");
             html_projects.Replace("_TEMPLATE_PROJECT_URL_", proj->filename);
             html_projects.Replace("_TEMPLATE_PROJECT_TITLE_", proj->displayname);
