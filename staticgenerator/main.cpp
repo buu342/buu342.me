@@ -425,7 +425,16 @@ void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
 {
-
+    /*Project* proj = FindProject(this->m_SelectedItem);
+    wxArrayString strarray = wxSplit(event.GetString(), ',');
+    proj->images.clear();
+    for (wxString str : strarray)
+    {
+        str.Trim(true);
+        str.Trim(false);
+        if (str != "")
+            proj->images.push_back(str);
+    }*/
 }
 
 void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
@@ -436,7 +445,16 @@ void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
 {
-
+    /*Project* proj = FindProject(this->m_SelectedItem);
+    wxArrayString strarray = wxSplit(event.GetString(), ',');
+    proj->urls.clear();
+    for (wxString str : strarray)
+    {
+        str.Trim(true);
+        str.Trim(false);
+        if (str != "")
+            proj->urls.push_back(str);
+    }*/
 }
 
 void Main::m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event )
@@ -492,7 +510,7 @@ Project* Main::FindProject(wxTreeItemId item)
         return NULL;
 
     for (void* proj : cat_elem->pages)
-        if (((Project*)proj)->category == cat_elem)
+        if (((Project*)proj)->treeid == item)
             return (Project*)proj;
     return NULL;
 }
