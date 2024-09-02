@@ -458,7 +458,6 @@ Category* Main::FindCategory(wxTreeItemId item)
 Project* Main::FindProject(wxTreeItemId item)
 {
     wxTreeItemId cat_id;
-    Project* proj_elem;
     Category* cat_elem;
 
     if (treeitem_iscategory(this->m_TreeCtrl_Projects, item))
@@ -471,7 +470,7 @@ Project* Main::FindProject(wxTreeItemId item)
 
     for (void* proj : cat_elem->pages)
         if (((Project*)proj)->category == cat_elem)
-            return proj_elem;
+            return (Project*)proj;
     return NULL;
 }
 
