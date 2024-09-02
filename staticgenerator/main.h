@@ -73,8 +73,8 @@ class Main : public wxFrame
         wxTreeCtrl* m_TreeCtrl_Projects;
         wxPanel* m_Panel_Projects_Editor;
         wxScrolledWindow* m_ScrolledWindow_Project_Editor;
-        wxStaticText* m_Label_Projects_Folder;
-        wxTextCtrl* m_TextCtrl_Projects_Folder;
+        wxStaticText* m_Label_Projects_File;
+        wxTextCtrl* m_TextCtrl_Projects_File;
         wxStaticText* m_Label_Projects_Name;
         wxTextCtrl* m_TextCtrl_Projects_Name;
         wxStaticText* m_Label_Projects_Icon;
@@ -110,6 +110,7 @@ class Main : public wxFrame
         void m_TreeCtrl_Projects_OnTreeEndLabelEdit( wxTreeEvent& event );
         void m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event );
         void m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event );
+        void m_TextCtrl_Projects_File_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event );
@@ -126,7 +127,7 @@ class Main : public wxFrame
         void m_MenuItem_Save_OnMenuSelection( wxCommandEvent& event );
         Category* FindCategory(wxTreeItemId item);
         Project* FindProject(wxTreeItemId item);
-        void OnPopupClick(wxCommandEvent& event);
+        void OnPopupClick_Projects(wxCommandEvent& event);
 		void UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist);
         void EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist);
 		void Save();

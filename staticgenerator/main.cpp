@@ -101,15 +101,14 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Projects_Editor_Basic->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
     m_Sizer_Projects_Editor_Basic->SetMinSize( wxSize( 0,0 ) );
-    m_Label_Projects_Folder = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_Label_Projects_Folder->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Folder, 0, wxALL, 5 );
+    m_Label_Projects_File = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_File->Wrap( -1 );
+    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_File, 0, wxALL, 5 );
 
-    m_TextCtrl_Projects_Folder = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    m_TextCtrl_Projects_Folder->Enable( false );
-    m_TextCtrl_Projects_Folder->SetToolTip( wxT("The folder which contains all of these projects") );
+    m_TextCtrl_Projects_File = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_File->SetToolTip( wxT("The filename of the project") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Folder, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_File, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_Name = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_Name->Wrap( -1 );
@@ -277,6 +276,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit ), NULL, this );
     m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeItemMenu ), NULL, this );
     m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeSelChanged ), NULL, this );
+    m_TextCtrl_Projects_File->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_File_OnText ), NULL, this );
     m_TextCtrl_Projects_Name->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Name_OnText ), NULL, this );
     m_TextCtrl_Projects_Icon->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Icon_OnText ), NULL, this );
     m_TextCtrl_Projects_Tags->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Tags_OnText ), NULL, this );
@@ -359,7 +359,7 @@ void Main::m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event )
     wxMenu menu;
     this->m_SelectedItem = event.GetItem();
     menu.Append(wxID_NEW, wxT("Create project"));
-    menu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::OnPopupClick), NULL, this);
+    menu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::OnPopupClick_Projects), NULL, this);
     PopupMenu(&menu, event.GetPoint());
 }
 
@@ -369,32 +369,53 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
     this->m_SelectedItem = item;
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item))
     {
+        wxString wip;
         Project* proj_elem = FindProject(item);
         if (proj_elem == NULL)
             return;
-        printf("Found %p\n", proj_elem);
-        this->m_TextCtrl_Projects_Folder->SetValue(proj_elem->filename);
-        //this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
-        //this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
-        //this->m_TextCtrl_Projects_Tags->SetValue("");
-        //this->m_TextCtrl_Projects_Images->SetValue("");
-        //this->m_TextCtrl_Projects_Date->SetValue(proj_elem->date);
-        //this->m_TextCtrl_Projects_URLs->SetValue("");
-        //this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
+        this->m_TextCtrl_Projects_File->SetValue(proj_elem->filename);
+        this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
+        this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
+        
+        wip = wxString("");
+        for (Tag* tag : proj_elem->tags)
+            wip += tag->name + wxString(", ");
+        this->m_TextCtrl_Projects_Tags->SetValue(wip);
+        
+        wip = wxString("");
+        for (wxString str : proj_elem->images)
+            wip += str + wxString(", ");
+        this->m_TextCtrl_Projects_Images->SetValue(wip);
+        this->m_TextCtrl_Projects_Date->SetValue(proj_elem->date);
+        
+        wip = wxString("");
+        for (wxString str : proj_elem->urls)
+            wip += str + wxString(", ");
+        this->m_TextCtrl_Projects_URLs->SetValue(wip);
+        this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
         this->m_Panel_Projects_Editor->Show();
     }
     else
         this->m_Panel_Projects_Editor->Hide();
 }
 
+void Main::m_TextCtrl_Projects_File_OnText( wxCommandEvent& event )
+{
+    Project* proj = FindProject(this->m_SelectedItem);
+    proj->filename = event.GetString();
+}
+
 void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
 {
-
+    Project* proj = FindProject(this->m_SelectedItem);
+    proj->displayname = event.GetString();
+    this->m_TreeCtrl_Projects->SetItemText(proj->treeid, proj->displayname);
 }
 
 void Main::m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event )
 {
-
+    Project* proj = FindProject(this->m_SelectedItem);
+    proj->icon = event.GetString();
 }
 
 void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
@@ -409,7 +430,8 @@ void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
 {
-
+    Project* proj = FindProject(this->m_SelectedItem);
+    proj->date = event.GetString();
 }
 
 void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
@@ -419,7 +441,8 @@ void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event )
 {
-
+    Project* proj = FindProject(this->m_SelectedItem);
+    proj->description = event.GetString();
 }
 
 void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
@@ -474,9 +497,11 @@ Project* Main::FindProject(wxTreeItemId item)
     return NULL;
 }
 
-void Main::OnPopupClick(wxCommandEvent& event)
+void Main::OnPopupClick_Projects(wxCommandEvent& event)
 {
     wxTreeItemId cat = this->m_SelectedItem;
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
+        cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
     Category* cat_elem = this->FindCategory(cat);
     Project* proj;
 
@@ -492,9 +517,8 @@ void Main::OnPopupClick(wxCommandEvent& event)
     proj->urls.clear();
     proj->category = cat_elem;
     proj->tags.clear();
-    proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->filename);
+    proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
     cat_elem->pages.push_back(proj);
-    printf("new proj = %p in category %p\n", proj, cat_elem);
 }
 
 void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist)
