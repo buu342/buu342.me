@@ -41,6 +41,7 @@ wxString string_fromfile(wxString path)
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
 {
     this->m_WorkingDir = wxGetCwd();
+    this->m_SelectedItem = NULL;
     this->SetTitle(this->m_WorkingDir);
 
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -195,6 +196,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Projects->SetSizer( m_Sizer_Projects );
     m_Panel_Projects->Layout();
     m_Sizer_Projects->Fit( m_Panel_Projects );
+    m_Panel_Projects_Editor->Hide();
     m_ChoiceBook_PageSelection->AddPage( m_Panel_Projects, wxT("Projects"), false );
     m_Panel_Blog = new wxPanel( m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* m_Sizer_Blog;
@@ -275,7 +277,6 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit ), NULL, this );
     m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeItemMenu ), NULL, this );
     m_TreeCtrl_Projects->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeSelChanged ), NULL, this );
-    m_TextCtrl_Projects_Folder->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Folder_OnText ), NULL, this );
     m_TextCtrl_Projects_Name->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Name_OnText ), NULL, this );
     m_TextCtrl_Projects_Icon->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Icon_OnText ), NULL, this );
     m_TextCtrl_Projects_Tags->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Tags_OnText ), NULL, this );
@@ -331,16 +332,16 @@ void Main::m_MenuItem_Save_OnMenuSelection(wxCommandEvent& event)
 
 void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
 {
-    wxTreeItemId id = event.GetItem();
-
-    for (Category* cat : this->m_Category_Projects)
+    if (treeitem_iscategory(this->m_TreeCtrl_Projects, event.GetItem()))
     {
-        if (cat->treeid == id)
-        {
-            cat->displayname = event.GetLabel();
-            break;
-        }
+        wxTreeItemId id = event.GetItem();
+        Category* cat = this->FindCategory(id);
+        if (cat == NULL)
+            return;
+        cat->displayname = event.GetLabel();
     }
+    else
+        event.Skip();
 }
 
 void Main::m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event)
@@ -355,17 +356,35 @@ void Main::m_TreeCtrl_Projects_OnTreeEndDrag(wxTreeEvent& event)
 
 void Main::m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event )
 {
-
+    wxMenu menu;
+    this->m_SelectedItem = event.GetItem();
+    menu.Append(wxID_NEW, wxT("Create project"));
+    menu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::OnPopupClick), NULL, this);
+    PopupMenu(&menu, event.GetPoint());
 }
 
 void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
 {
-
-}
-
-void Main::m_TextCtrl_Projects_Folder_OnText( wxCommandEvent& event )
-{
-
+    wxTreeItemId item = event.GetItem();
+    this->m_SelectedItem = item;
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item))
+    {
+        Project* proj_elem = FindProject(item);
+        if (proj_elem == NULL)
+            return;
+        printf("Found %p\n", proj_elem);
+        this->m_TextCtrl_Projects_Folder->SetValue(proj_elem->filename);
+        //this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
+        //this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
+        //this->m_TextCtrl_Projects_Tags->SetValue("");
+        //this->m_TextCtrl_Projects_Images->SetValue("");
+        //this->m_TextCtrl_Projects_Date->SetValue(proj_elem->date);
+        //this->m_TextCtrl_Projects_URLs->SetValue("");
+        //this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
+        this->m_Panel_Projects_Editor->Show();
+    }
+    else
+        this->m_Panel_Projects_Editor->Hide();
 }
 
 void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
@@ -426,6 +445,57 @@ void Main::m_TreeCtrl_Blog_OnTreeItemMenu( wxTreeEvent& event )
 void Main::m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event )
 {
 
+}
+
+Category* Main::FindCategory(wxTreeItemId item)
+{
+    for (Category* cat : this->m_Category_Projects)
+        if (cat->treeid == item)
+            return cat;
+    return NULL;
+}
+
+Project* Main::FindProject(wxTreeItemId item)
+{
+    wxTreeItemId cat_id;
+    Project* proj_elem;
+    Category* cat_elem;
+
+    if (treeitem_iscategory(this->m_TreeCtrl_Projects, item))
+        return NULL;
+
+    cat_id = this->m_TreeCtrl_Projects->GetItemParent(item);
+    cat_elem = FindCategory(cat_id);
+    if (cat_elem == NULL)
+        return NULL;
+
+    for (void* proj : cat_elem->pages)
+        if (((Project*)proj)->category == cat_elem)
+            return proj_elem;
+    return NULL;
+}
+
+void Main::OnPopupClick(wxCommandEvent& event)
+{
+    wxTreeItemId cat = this->m_SelectedItem;
+    Category* cat_elem = this->FindCategory(cat);
+    Project* proj;
+
+    if (cat_elem == NULL)
+        return;
+
+    proj = new Project();
+    proj->index = cat_elem->pages.size();
+    proj->filename = "new";
+    proj->displayname = "New Project";
+    proj->icon = "";
+    proj->images.clear();
+    proj->urls.clear();
+    proj->category = cat_elem;
+    proj->tags.clear();
+    proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->filename);
+    cat_elem->pages.push_back(proj);
+    printf("new proj = %p in category %p\n", proj, cat_elem);
 }
 
 void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist)
@@ -601,7 +671,7 @@ void Main::CompileProjects()
             html_projects += string_fromfile(this->m_WorkingDir + "/templates/projects_project.html");
             html_projects.Replace("_TEMPLATE_PROJECT_URL_", proj->filename);
             html_projects.Replace("_TEMPLATE_PROJECT_TITLE_", proj->displayname);
-            html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", proj->image);
+            html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", proj->icon);
         }
 
         // Generate the section blocks

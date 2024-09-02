@@ -42,10 +42,14 @@ typedef struct Project_s {
 	int index;
 	wxString filename;
 	wxString displayname;
-    wxString image;
+    wxString icon;
+    wxString date;
+    wxString description;
+    std::vector<wxString> images;
+	std::vector<wxString> urls;
+    std::vector<Tag*> tags;
 	Category* category;
     wxTreeItemId treeid;
-	std::vector<Tag*> tags;
 } Project;
 
 typedef struct Tag_s {
@@ -59,6 +63,7 @@ class Main : public wxFrame
 		std::vector<Category*> m_Category_Projects;
 		wxString m_WorkingDir;
 		wxTreeItemId m_DraggedItem;
+        wxTreeItemId m_SelectedItem;
 
 	protected:
         wxChoicebook* m_ChoiceBook_PageSelection;
@@ -105,7 +110,6 @@ class Main : public wxFrame
         void m_TreeCtrl_Projects_OnTreeEndLabelEdit( wxTreeEvent& event );
         void m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event );
         void m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event );
-        void m_TextCtrl_Projects_Folder_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event );
@@ -120,6 +124,9 @@ class Main : public wxFrame
         void m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event );
         void m_MenuItem_OpenDir_OnMenuSelection( wxCommandEvent& event );
         void m_MenuItem_Save_OnMenuSelection( wxCommandEvent& event );
+        Category* FindCategory(wxTreeItemId item);
+        Project* FindProject(wxTreeItemId item);
+        void OnPopupClick(wxCommandEvent& event);
 		void UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist);
         void EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist);
 		void Save();
