@@ -14,7 +14,6 @@ typedef struct IUnknown IUnknown;
 #include <wx/panel.h>
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
-#include <wx/richtext/richtextctrl.h>
 #include <wx/scrolwin.h>
 #include <wx/button.h>
 #include <wx/bitmap.h>
@@ -60,6 +59,7 @@ typedef struct Tag_s {
 class Main : public wxFrame
 {
 	private:
+        bool m_Modified;
 		std::vector<Category*> m_Category_Projects;
 		wxString m_WorkingDir;
 		wxTreeItemId m_DraggedItem;
@@ -87,14 +87,14 @@ class Main : public wxFrame
         wxTextCtrl* m_TextCtrl_Projects_Date;
         wxStaticText* m_Label_Projects_URLs;
         wxTextCtrl* m_TextCtrl_Projects_URLs;
-        wxRichTextCtrl* m_TextCtrl_Projects_Description;
+        wxTextCtrl* m_TextCtrl_Projects_Description;
         wxButton* m_Button_Projects_Preview;
         wxPanel* m_Panel_Blog;
         wxSplitterWindow* m_Splitter_Blog;
         wxPanel* m_Panel_Blog_Tree;
         wxTreeCtrl* m_TreeCtrl_Blog;
         wxPanel* m_Panel_Blog_TextCtrl;
-        wxRichTextCtrl* m_TextCtrl_Blog;
+        wxTextCtrl* m_TextCtrl_Blog;
         wxButton* m_Button_Blog_Preview;
         wxMenuBar* m_Menubar_Main;
         wxMenu* m_Menu_File;

@@ -45,6 +45,7 @@ wxString string_fromfile(wxString path)
 
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
 {
+    this->m_Modified = false;
     this->m_WorkingDir = wxGetCwd();
     this->m_SelectedItem = NULL;
     this->SetTitle(this->m_WorkingDir);
@@ -172,7 +173,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
 
     m_Sizer_ScrolledWindow_Editor->Add( m_Sizer_Projects_Editor_Basic, 1, wxEXPAND, 5 );
 
-    m_TextCtrl_Projects_Description = new wxRichTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+    m_TextCtrl_Projects_Description = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_MULTILINE );
     m_TextCtrl_Projects_Description->SetToolTip( wxT("The project description. Supports markdown.") );
     m_TextCtrl_Projects_Description->SetMinSize( wxSize( -1,200 ) );
 
@@ -235,7 +236,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Blog_TextCtrl->SetFlexibleDirection( wxBOTH );
     m_Sizer_Blog_TextCtrl->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_TextCtrl_Blog = new wxRichTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0|wxVSCROLL|wxHSCROLL|wxNO_BORDER|wxWANTS_CHARS );
+    m_TextCtrl_Blog = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_MULTILINE );
     m_Sizer_Blog_TextCtrl->Add( m_TextCtrl_Blog, 1, wxEXPAND | wxALL, 5 );
 
     m_Button_Blog_Preview = new wxButton( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -325,9 +326,10 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
     if (dir.ShowModal() == wxID_OK)
     {
         this->m_WorkingDir = dir.GetPath();
-        this->SetTitle(this->m_WorkingDir);
+        this->m_Modified = false;
         this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
         this->LoadProjects();
+        
         //this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
     }
 }
@@ -346,6 +348,11 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
         if (cat == NULL)
             return;
         cat->displayname = event.GetLabel();
+        if (!this->m_Modified)
+        {
+            this->SetTitle(this->m_WorkingDir + wxString(" *"));
+            this->m_Modified = true;
+        }
     }
     else
         event.Skip();
@@ -411,6 +418,11 @@ void Main::m_TextCtrl_Projects_File_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->filename = event.GetString();
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
@@ -418,12 +430,22 @@ void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
     Project* proj = FindProject(this->m_SelectedItem);
     proj->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(proj->treeid, proj->displayname);
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->icon = event.GetString();
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
@@ -443,12 +465,22 @@ void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
         if (str != "")
             proj->images.push_back(str);
     }
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->date = event.GetString();
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
@@ -463,17 +495,27 @@ void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
         if (str != "")
             proj->urls.push_back(str);
     }
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->description = event.GetString();
+    if (!this->m_Modified)
+    {
+        this->SetTitle(this->m_WorkingDir + wxString(" *"));
+        this->m_Modified = true;
+    }
 }
 
 void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
 {
-    // TODO: Do this
+
 }
 
 void Main::m_TreeCtrl_Blog_OnTreeBeginDrag( wxTreeEvent& event )
@@ -766,6 +808,13 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
         // Correct the index values
         for (Category* cat : *categorylist)
             cat->index = index++;
+
+        // Mark the project as modified
+        if (!this->m_Modified)
+        {
+            this->SetTitle(this->m_WorkingDir + wxString(" *"));
+            this->m_Modified = true;
+        }
     }
     // TODO: Support reordering projects
 }
@@ -816,6 +865,10 @@ void Main::Save()
     out.AddLine(wxString(projectjson.dump()));
     out.Write();
     out.Close();
+
+    // Mark the program as no longer modified
+    this->m_Modified = false;
+    this->SetTitle(this->m_WorkingDir);
 }
 
 void Main::CompileProjects()
@@ -825,7 +878,7 @@ void Main::CompileProjects()
     wxString html_final = wxString("");
     wxString html_categories = wxString("");
 
-    // Read the page template
+    // Read the projects page template
     html_final = string_fromfile(this->m_WorkingDir + "/templates/projects.html");
 
     // Generate the page from the section + project templates
@@ -839,7 +892,7 @@ void Main::CompileProjects()
         {
             Project* proj = (Project*)page;
             html_projects += string_fromfile(this->m_WorkingDir + "/templates/projects_project.html");
-            html_projects.Replace("_TEMPLATE_PROJECT_URL_",  relativepath + proj->filename + wxString(".html"));
+            html_projects.Replace("_TEMPLATE_PROJECT_URL_", relativepath + proj->filename + wxString(".html"));
             html_projects.Replace("_TEMPLATE_PROJECT_TITLE_", proj->displayname);
             html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", relativepath + proj->icon);
         }
@@ -850,15 +903,42 @@ void Main::CompileProjects()
         html_categories.Replace("_TEMPLATE_PROJECT_LIST_", html_projects);
     }
 
-    // Finalize the page
+    // Finalize the projects page
     html_final.Replace("_TEMPLATE_PROJECTS_LIST_", html_categories);
     html_final.Replace("_TEMPLATE_PROJECTS_DATE_", today.Format("%b %d %Y"));
 
-    // Dump the html
+    // Dump the html for the projects page
     if (!out.Exists())
         out.Create();
+    out.Open();
     out.Clear();
     out.AddLine(html_final);
     out.Write();
     out.Close();
+
+    // Now create the page for each project
+    for (Category* cat : this->m_Category_Projects)
+    {
+        wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
+        for (void* page : cat->pages)
+        {
+            Project* proj = (Project*)page;
+            wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
+            wxTextFile projout(projoutpath);
+            html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
+
+            html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
+            html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
+            html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", proj->description);
+
+            // Generate the page itself
+            if (!projout.Exists())
+                projout.Create();
+            projout.Open();
+            projout.Clear();
+            projout.AddLine(html_final);
+            projout.Write();
+            projout.Close();
+        }
+    }
 }
