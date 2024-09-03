@@ -129,6 +129,7 @@ class Main : public wxFrame
         Project* FindProject(wxTreeItemId item);
         void OnPopupClick_Projects(wxCommandEvent& event);
 		void UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist);
+        void LoadProjects();
         void EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist);
 		void Save();
         void CompileProjects();

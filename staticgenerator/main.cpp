@@ -16,6 +16,11 @@ bool category_sorter(Category* lhs, Category* rhs)
     return lhs->index < rhs->index;
 }
 
+bool project_sorter(Project* lhs, Project* rhs)
+{
+    return lhs->index < rhs->index;
+}
+
 bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
 {
     return tree->GetRootItem() == tree->GetItemParent(item);
@@ -293,6 +298,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_Save_OnMenuSelection ), this, m_MenuItem_Save->GetId());
 
     this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
+    this->LoadProjects();
 }
 
 Main::~Main()
@@ -321,6 +327,7 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
         this->m_WorkingDir = dir.GetPath();
         this->SetTitle(this->m_WorkingDir);
         this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
+        this->LoadProjects();
         //this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
     }
 }
@@ -376,6 +383,7 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
         this->m_TextCtrl_Projects_File->SetValue(proj_elem->filename);
         this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
         this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
+        this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
         
         wip = wxString("");
         for (Tag* tag : proj_elem->tags)
@@ -420,12 +428,12 @@ void Main::m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
 {
-
+    // TODO: Handle tags
 }
 
 void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
 {
-    /*Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = FindProject(this->m_SelectedItem);
     wxArrayString strarray = wxSplit(event.GetString(), ',');
     proj->images.clear();
     for (wxString str : strarray)
@@ -434,7 +442,7 @@ void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
         str.Trim(false);
         if (str != "")
             proj->images.push_back(str);
-    }*/
+    }
 }
 
 void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
@@ -445,7 +453,7 @@ void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
 {
-    /*Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = FindProject(this->m_SelectedItem);
     wxArrayString strarray = wxSplit(event.GetString(), ',');
     proj->urls.clear();
     for (wxString str : strarray)
@@ -454,7 +462,7 @@ void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
         str.Trim(false);
         if (str != "")
             proj->urls.push_back(str);
-    }*/
+    }
 }
 
 void Main::m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event )
@@ -531,10 +539,12 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
     proj->filename = "new";
     proj->displayname = "New Project";
     proj->icon = "";
+    proj->date = "";
+    proj->description = "";
     proj->images.clear();
     proj->urls.clear();
-    proj->category = cat_elem;
     proj->tags.clear();
+    proj->category = cat_elem;
     proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
     cat_elem->pages.push_back(proj);
 }
@@ -546,6 +556,18 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
     wxString filename;
     nlohmann::json pagejson = {};
     wxDir pagepath;
+
+    // First, free all memory
+    for (Category* cat : *categorylist)
+    {
+        for (void* child : cat->pages)
+        {
+            if (folder == "projects")
+                delete (Project*)child;
+            // TODO: Handle blogs
+        }
+        delete cat;
+    }
 
     // Initialize the trees
     categorylist->clear();
@@ -619,6 +641,74 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
         cat->treeid = tree->AppendItem(root, cat->displayname);
 }
 
+void Main::LoadProjects()
+{
+    nlohmann::json pagejson = {};
+
+    // Open the projects json file
+    if (wxFileExists(this->m_WorkingDir + wxString("/projects/projects.json")))
+        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/projects/projects.json"))));
+
+    for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
+    {
+        int index = 0;
+        wxTreeItemId cat_id;
+        Category* cat_elem;
+        std::vector<Project*> projects;
+
+        // Find the category tree index
+        for (Category* cat : this->m_Category_Projects)
+        {
+            if (wxString(itcat.key()) == cat->foldername)
+            {
+                cat_elem = cat;
+                cat_id = cat->treeid;
+                break;
+            }
+        }
+
+        // Read the project data from the JSON
+        for (nlohmann::json::iterator itproj = (*itcat)["Pages"].begin(); itproj != (*itcat)["Pages"].end(); ++itproj)
+        {
+            Project* proj = new Project();
+            proj->index = (*itproj)["Index"];
+            proj->filename = wxString(itproj.key());
+            proj->displayname = wxString((*itproj)["DisplayName"]);
+            proj->icon = wxString((*itproj)["Icon"]);
+            proj->date = wxString((*itproj)["Date"]);
+            proj->description = wxString((*itproj)["Description"]);
+            proj->images.clear();
+            for (nlohmann::json::iterator it = (*itproj)["Images"].begin(); it != (*itproj)["Images"].end(); ++it)
+                proj->images.push_back(wxString(*it));
+            proj->urls.clear();
+            for (nlohmann::json::iterator it = (*itproj)["URLs"].begin(); it != (*itproj)["URLs"].end(); ++it)
+                proj->urls.push_back(wxString(*it));
+            proj->tags.clear();
+            // TODO: Handle tags
+            proj->category = cat_elem;
+            proj->treeid = NULL;
+            projects.push_back(proj);
+        }
+
+        // Correct the indices of projects, to make sure they're in proper order
+        if (projects.size() > 0)
+        {
+            index = 0;
+            std::sort(projects.begin(), projects.end(), &project_sorter);
+            for (Project* proj : projects)
+                proj->index = index++;
+
+            // Now add the project to the tree
+            for (Project* proj : projects)
+            {
+                proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat_id, proj->displayname);
+                cat_elem->pages.push_back(proj);
+            }
+        }
+    }
+    this->m_Panel_Projects_Editor->Hide();
+}
+
 void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist)
 {
     int index = 0;
@@ -628,40 +718,56 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
     Category* dest_elem = NULL;
     this->m_DraggedItem = NULL;
 
-    // Ensure we have a valid destination node
-    if (!dest.IsOk() || src == dest)
-        return;
+    // If the destination is not a category item, then get the parent
+    if (!treeitem_iscategory(tree, dest))
+        dest = tree->GetItemParent(dest);
 
-    // Ignore placing the source directly above the destination, since it won't move at all.
-    if (tree->GetPrevSibling(src) == dest)
-        return;
-
-    // Get the category elements themselves
-    for (Category* cat : *categorylist)
+    // Only allow moving categories into categories
+    if (treeitem_iscategory(tree, src) && treeitem_iscategory(tree, dest))
     {
-        if (cat->treeid == src)
-            src_elem = cat;
-        if (cat->treeid == dest)
-            dest_elem = cat;
-    }
+        // Ensure we have a valid destination node
+        if (!dest.IsOk() || src == dest)
+            return;
 
-    // Move the elements
-    if (dest_elem->index < src_elem->index)
-    {
-        categorylist->erase(categorylist->begin() + src_elem->index);
-        categorylist->insert(categorylist->begin() + dest_elem->index + 1, src_elem);
-    }
-    else
-    {
-        categorylist->erase(categorylist->begin() + src_elem->index);
-        categorylist->insert(categorylist->begin() + dest_elem->index, src_elem);
-    }
-    tree->Delete(src);
-    src_elem->treeid = tree->InsertItem(tree->GetRootItem(), dest, src_elem->displayname);
+        // Ignore placing the source directly above the destination, since it won't move at all.
+        if (tree->GetPrevSibling(src) == dest)
+            return;
 
-    // Correct the index values
-    for (Category* cat : *categorylist)
-        cat->index = index++;
+        // Get the category elements themselves
+        for (Category* cat : *categorylist)
+        {
+            if (cat->treeid == src)
+                src_elem = cat;
+            if (cat->treeid == dest)
+                dest_elem = cat;
+        }
+
+        // Move the elements
+        if (dest_elem->index < src_elem->index)
+        {
+            categorylist->erase(categorylist->begin() + src_elem->index);
+            categorylist->insert(categorylist->begin() + dest_elem->index + 1, src_elem);
+        }
+        else
+        {
+            categorylist->erase(categorylist->begin() + src_elem->index);
+            categorylist->insert(categorylist->begin() + dest_elem->index, src_elem);
+        }
+        tree->Delete(src);
+        src_elem->treeid = tree->InsertItem(tree->GetRootItem(), dest, src_elem->displayname);
+
+        // Reinsert the children
+        for (void* child : src_elem->pages)
+        {
+            Project* proj = (Project*)child;
+            proj->treeid = tree->InsertItem(src_elem->treeid, proj->index, proj->displayname);
+        }
+
+        // Correct the index values
+        for (Category* cat : *categorylist)
+            cat->index = index++;
+    }
+    // TODO: Support reordering projects
 }
 
 void Main::Save()
@@ -671,14 +777,36 @@ void Main::Save()
     projectjson["Categories"] = {};
     for (Category* cat : this->m_Category_Projects)
     {
-        projectjson["Categories"][cat->foldername.ToStdString()] = {};
-        projectjson["Categories"][cat->foldername.ToStdString()]["Index"] = cat->index;
-        projectjson["Categories"][cat->foldername.ToStdString()]["DisplayName"] = cat->displayname;
+        std::string catstr = cat->foldername.ToStdString();
+        projectjson["Categories"][catstr] = {};
+        projectjson["Categories"][catstr]["Index"] = cat->index;
+        projectjson["Categories"][catstr]["DisplayName"] = cat->displayname;
+        projectjson["Categories"][catstr]["Pages"] = {};
+        for (void* child : cat->pages)
+        {
+            Project* proj = (Project*)child;
+            std::string projstr = proj->filename.ToStdString();
+            projectjson["Categories"][catstr]["Pages"][projstr] = {};
+            projectjson["Categories"][catstr]["Pages"][projstr]["Index"] = proj->index;
+            projectjson["Categories"][catstr]["Pages"][projstr]["DisplayName"] = proj->displayname;
+            projectjson["Categories"][catstr]["Pages"][projstr]["Icon"] = proj->icon;
+            projectjson["Categories"][catstr]["Pages"][projstr]["Date"] = proj->date;
+            projectjson["Categories"][catstr]["Pages"][projstr]["Description"] = proj->description;
+            projectjson["Categories"][catstr]["Pages"][projstr]["Images"] = {};
+            for (wxString str :  proj->images)
+                projectjson["Categories"][catstr]["Pages"][projstr]["Images"].push_back(str);
+            projectjson["Categories"][catstr]["Pages"][projstr]["URLs"] = {};
+            for (wxString str :  proj->urls)
+                projectjson["Categories"][catstr]["Pages"][projstr]["URLs"].push_back(str);
+            projectjson["Categories"][catstr]["Pages"][projstr]["Tags"] = {};
+            for (Tag* tag :  proj->tags)
+                projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(tag->name);
+        }
     }
 
     // TODO: Handle blog
 
-    // TODO: Compile the website
+    // Compile the website
     this->CompileProjects();
 
     // Dump the JSON to a text file
@@ -704,15 +832,16 @@ void Main::CompileProjects()
     for (Category* cat : this->m_Category_Projects)
     {
         wxString html_projects = wxString("");
+        wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
 
         // Generate the project blocks
         for (void* page : cat->pages)
         {
             Project* proj = (Project*)page;
             html_projects += string_fromfile(this->m_WorkingDir + "/templates/projects_project.html");
-            html_projects.Replace("_TEMPLATE_PROJECT_URL_", proj->filename);
+            html_projects.Replace("_TEMPLATE_PROJECT_URL_",  relativepath + proj->filename + wxString(".html"));
             html_projects.Replace("_TEMPLATE_PROJECT_TITLE_", proj->displayname);
-            html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", proj->icon);
+            html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", relativepath + proj->icon);
         }
 
         // Generate the section blocks
