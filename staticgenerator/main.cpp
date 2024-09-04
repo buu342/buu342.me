@@ -381,6 +381,7 @@ void Main::m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event )
 
 void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
 {
+    bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
     this->m_SelectedItem = item;
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item))
@@ -411,6 +412,11 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
         this->m_TextCtrl_Projects_URLs->SetValue(wip);
         this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
         this->m_Panel_Projects_Editor->Show();
+        if (!modifiedbeforechange)
+        {
+            this->m_Modified = false;
+            this->SetTitle(this->m_WorkingDir);
+        }
     }
     else
         this->m_Panel_Projects_Editor->Hide();
