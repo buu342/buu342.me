@@ -609,7 +609,8 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
             proj = this->FindProject(this->m_SelectedItem);
             cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
             this->m_TreeCtrl_Projects->Delete(proj->treeid);
-            wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
+            if (wxFileExists(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
+                wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
             delete proj;
             for (void* projptr : cat_elem->pages)
             {
