@@ -113,11 +113,11 @@ pre
 .projecticonheadertext {
     width: 235px;
     height: 30px;
-    font-size: 15px;
+    font-size: 13px;
     font-family: Verdana, Arial, Helvetica, sans-serif;
     display: table-cell;
     vertical-align: middle;
-    line-height: 10px;
+    line-height: 100%;
     text-shadow: 0px 1px #000000;
 }
 
