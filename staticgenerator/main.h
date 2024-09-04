@@ -33,6 +33,7 @@ typedef struct Category_s {
 	int index;
 	wxString foldername;
 	wxString displayname;
+    wxString description;
 	wxTreeItemId treeid;
 	std::vector<void*> pages;
 } Category;
@@ -43,6 +44,7 @@ typedef struct Project_s {
 	wxString displayname;
     wxString icon;
     wxString date;
+    wxString tooltip;
     wxString description;
     std::vector<wxString> images;
 	std::vector<wxString> urls;
@@ -87,7 +89,16 @@ class Main : public wxFrame
         wxTextCtrl* m_TextCtrl_Projects_Date;
         wxStaticText* m_Label_Projects_URLs;
         wxTextCtrl* m_TextCtrl_Projects_URLs;
+        wxStaticText* m_Label_Projects_ToolTip;
+        wxTextCtrl* m_TextCtrl_Projects_ToolTip;
         wxTextCtrl* m_TextCtrl_Projects_Description;
+        wxScrolledWindow* m_ScrolledWindow_ProjectCategory_Editor;
+        wxStaticText* m_Label_ProjectsCategory_Folder;
+        wxTextCtrl* m_TextCtrl_ProjectsCategory_Folder;
+        wxStaticText* m_Label_ProjectsCategory_DisplayName;
+        wxTextCtrl* m_TextCtrl_ProjectsCategory_DisplayName;
+        wxStaticText* m_Label_ProjectsCategory_Description;
+        wxTextCtrl* m_TextCtrl_ProjectsCategory_Description;
         wxButton* m_Button_Projects_Preview;
         wxPanel* m_Panel_Blog;
         wxSplitterWindow* m_Splitter_Blog;
@@ -117,7 +128,10 @@ class Main : public wxFrame
         void m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event );
+        void m_TextCtrl_Projects_ToolTip_OnText( wxCommandEvent& event );
         void m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event );
+        void m_TextCtrl_ProjectsCategory_DisplayName_OnText( wxCommandEvent& event );
+        void m_TextCtrl_ProjectsCategory_Description_OnText( wxCommandEvent& event );
         void m_TreeCtrl_Blog_OnTreeBeginDrag( wxTreeEvent& event );
         void m_TreeCtrl_Blog_OnTreeEndDrag( wxTreeEvent& event );
         void m_TreeCtrl_Blog_OnTreeEndLabelEdit( wxTreeEvent& event );
@@ -134,4 +148,7 @@ class Main : public wxFrame
         void EndDrag_Project(wxTreeEvent& event);
 		void Save();
         void CompileProjects();
+        void MarkModified(bool modified=true);
+        void ShowProjectEditor(bool show=true);
+        void ShowProjectCategoryEditor(bool show=true);
 };

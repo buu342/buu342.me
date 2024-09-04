@@ -4,6 +4,7 @@
 #include <fstream>
 #include "main.h"
 #include "include/json.hpp"
+#include "include/maddy/parser.h"
 #include <wx/event.h>
 #include <wx/msgdlg.h>
 #include <wx/treelist.h>
@@ -45,10 +46,9 @@ wxString string_fromfile(wxString path)
 
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
 {
-    this->m_Modified = false;
     this->m_WorkingDir = wxGetCwd();
     this->m_SelectedItem = NULL;
-    this->SetTitle(this->m_WorkingDir);
+    this->MarkModified(false);
 
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
@@ -80,16 +80,17 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Projects_Tree->Layout();
     m_Sizer_Projects_Tree->Fit( m_Panel_Projects_Tree );
     m_Panel_Projects_Editor = new wxPanel( m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-
     wxFlexGridSizer* m_Sizer_Projects_Editor;
-    m_Sizer_Projects_Editor = new wxFlexGridSizer( 2, 1, 0, 0 );
+    m_Sizer_Projects_Editor = new wxFlexGridSizer( 3, 1, 0, 0 );
     m_Sizer_Projects_Editor->AddGrowableCol( 0 );
     m_Sizer_Projects_Editor->AddGrowableRow( 0 );
+    m_Sizer_Projects_Editor->AddGrowableRow( 1 );
     m_Sizer_Projects_Editor->SetFlexibleDirection( wxBOTH );
     m_Sizer_Projects_Editor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 
     m_ScrolledWindow_Project_Editor = new wxScrolledWindow( m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
     m_ScrolledWindow_Project_Editor->SetScrollRate( 5, 5 );
+    m_ScrolledWindow_Project_Editor->Hide();
     m_ScrolledWindow_Project_Editor->SetMinSize( wxSize( 0,0 ) );
 
     wxFlexGridSizer* m_Sizer_ScrolledWindow_Editor;
@@ -100,84 +101,93 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_ScrolledWindow_Editor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
     m_Sizer_ScrolledWindow_Editor->SetMinSize( wxSize( 0,0 ) );
-    wxFlexGridSizer* m_Sizer_Projects_Editor_Basic;
-    m_Sizer_Projects_Editor_Basic = new wxFlexGridSizer( 0, 2, 0, 0 );
-    m_Sizer_Projects_Editor_Basic->AddGrowableCol( 1 );
-    m_Sizer_Projects_Editor_Basic->SetFlexibleDirection( wxBOTH );
-    m_Sizer_Projects_Editor_Basic->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    wxFlexGridSizer* m_Sizer_ScrolledWindow_Editor_Main;
+    m_Sizer_ScrolledWindow_Editor_Main = new wxFlexGridSizer( 0, 2, 0, 0 );
+    m_Sizer_ScrolledWindow_Editor_Main->AddGrowableCol( 1 );
+    m_Sizer_ScrolledWindow_Editor_Main->SetFlexibleDirection( wxBOTH );
+    m_Sizer_ScrolledWindow_Editor_Main->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_Sizer_Projects_Editor_Basic->SetMinSize( wxSize( 0,0 ) );
+    m_Sizer_ScrolledWindow_Editor_Main->SetMinSize( wxSize( 0,0 ) );
     m_Label_Projects_File = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_File->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_File, 0, wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_File, 0, wxALL, 5 );
 
     m_TextCtrl_Projects_File = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_File->SetToolTip( wxT("The filename of the project") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_File, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_File, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_Name = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_Name->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Name, 0, wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_Name, 0, wxALL, 5 );
 
     m_TextCtrl_Projects_Name = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_Name->SetToolTip( wxT("The display name of the project") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Name, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_Name, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_Icon = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_Icon->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Icon, 0, wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_Icon, 0, wxALL, 5 );
 
     m_TextCtrl_Projects_Icon = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_Icon->SetToolTip( wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png.") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Icon, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_Icon, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_Tags = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_Tags->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Tags, 0, wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_Tags, 0, wxALL, 5 );
 
     m_TextCtrl_Projects_Tags = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_Tags->SetToolTip( wxT("Project tags, comma separated.") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Tags, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_Tags, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_Images = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Images:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_Images->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Images, 0, wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_Images, 0, wxALL, 5 );
 
     m_TextCtrl_Projects_Images = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_Images->SetToolTip( wxT("Images for this project, comma separated. Paths should be relative to the working directory.") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Images, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_Images, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_Date = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Date:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_Date->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_Date, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_Date, 0, wxALL|wxEXPAND, 5 );
 
     m_TextCtrl_Projects_Date = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_Date->SetToolTip( wxT("The date of this project's release.") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_Date, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_Date, 0, wxALL|wxEXPAND, 5 );
 
     m_Label_Projects_URLs = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("URLs:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Label_Projects_URLs->Wrap( -1 );
-    m_Sizer_Projects_Editor_Basic->Add( m_Label_Projects_URLs, 0, wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_URLs, 0, wxALL, 5 );
 
     m_TextCtrl_Projects_URLs = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     m_TextCtrl_Projects_URLs->SetToolTip( wxT("URLs for this project, comma separated.") );
 
-    m_Sizer_Projects_Editor_Basic->Add( m_TextCtrl_Projects_URLs, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_URLs, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Projects_ToolTip = new wxStaticText( m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Projects_ToolTip->Wrap( -1 );
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_Label_Projects_ToolTip, 0, wxALL, 5 );
+
+    m_TextCtrl_Projects_ToolTip = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Projects_ToolTip->SetToolTip( wxT("Brief description that shows up when hovering over a project with the mouse.") );
+
+    m_Sizer_ScrolledWindow_Editor_Main->Add( m_TextCtrl_Projects_ToolTip, 0, wxALL|wxEXPAND, 5 );
 
 
-    m_Sizer_ScrolledWindow_Editor->Add( m_Sizer_Projects_Editor_Basic, 1, wxEXPAND, 5 );
+    m_Sizer_ScrolledWindow_Editor->Add( m_Sizer_ScrolledWindow_Editor_Main, 1, wxEXPAND, 5 );
 
     m_TextCtrl_Projects_Description = new wxTextCtrl( m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_MULTILINE );
     m_TextCtrl_Projects_Description->SetToolTip( wxT("The project description. Supports markdown.") );
     m_TextCtrl_Projects_Description->SetMinSize( wxSize( -1,200 ) );
 
-    m_Sizer_ScrolledWindow_Editor->Add( m_TextCtrl_Projects_Description, 1, wxEXPAND | wxALL, 5 );
+    m_Sizer_ScrolledWindow_Editor->Add( m_TextCtrl_Projects_Description, 0, wxALL|wxEXPAND, 5 );
 
 
     m_ScrolledWindow_Project_Editor->SetSizer( m_Sizer_ScrolledWindow_Editor );
@@ -185,7 +195,69 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_ScrolledWindow_Editor->Fit( m_ScrolledWindow_Project_Editor );
     m_Sizer_Projects_Editor->Add( m_ScrolledWindow_Project_Editor, 0, wxALL|wxEXPAND, 5 );
 
+    m_ScrolledWindow_ProjectCategory_Editor = new wxScrolledWindow( m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
+    m_ScrolledWindow_ProjectCategory_Editor->SetScrollRate( 5, 5 );
+    m_ScrolledWindow_ProjectCategory_Editor->Hide();
+    m_ScrolledWindow_ProjectCategory_Editor->SetMinSize( wxSize( 0,0 ) );
+
+    wxFlexGridSizer* m_Sizer_ScrolledWindow_ProjectCategory_Editor;
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor = new wxFlexGridSizer( 0, 1, 0, 0 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->AddGrowableCol( 0 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->AddGrowableRow( 1 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->SetFlexibleDirection( wxBOTH );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->SetMinSize( wxSize( 0,0 ) );
+    wxFlexGridSizer* m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main;
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main = new wxFlexGridSizer( 0, 2, 0, 0 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->AddGrowableCol( 1 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->SetFlexibleDirection( wxBOTH );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->SetMinSize( wxSize( 0,0 ) );
+    m_Label_ProjectsCategory_Folder = new wxStaticText( m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_ProjectsCategory_Folder->Wrap( -1 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add( m_Label_ProjectsCategory_Folder, 0, wxALL, 5 );
+
+    m_TextCtrl_ProjectsCategory_Folder = new wxTextCtrl( m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_ProjectsCategory_Folder->Enable( false );
+    m_TextCtrl_ProjectsCategory_Folder->SetToolTip( wxT("The folder that represents this category") );
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add( m_TextCtrl_ProjectsCategory_Folder, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_ProjectsCategory_DisplayName = new wxStaticText( m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_ProjectsCategory_DisplayName->Wrap( -1 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add( m_Label_ProjectsCategory_DisplayName, 0, wxALL, 5 );
+
+    m_TextCtrl_ProjectsCategory_DisplayName = new wxTextCtrl( m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_ProjectsCategory_DisplayName->SetToolTip( wxT("The display name of this category") );
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add( m_TextCtrl_ProjectsCategory_DisplayName, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_ProjectsCategory_Description = new wxStaticText( m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Description:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_ProjectsCategory_Description->Wrap( -1 );
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add( m_Label_ProjectsCategory_Description, 0, wxALL, 5 );
+
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add( 0, 0, 1, wxEXPAND, 5 );
+
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Add( m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main, 1, wxEXPAND, 5 );
+
+    m_TextCtrl_ProjectsCategory_Description = new wxTextCtrl( m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE );
+    m_TextCtrl_ProjectsCategory_Description->SetToolTip( wxT("The filename of the project") );
+    m_TextCtrl_ProjectsCategory_Description->SetMinSize( wxSize( -1,200 ) );
+
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Add( m_TextCtrl_ProjectsCategory_Description, 0, wxALL|wxEXPAND, 5 );
+
+
+    m_ScrolledWindow_ProjectCategory_Editor->SetSizer( m_Sizer_ScrolledWindow_ProjectCategory_Editor );
+    m_ScrolledWindow_ProjectCategory_Editor->Layout();
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Fit( m_ScrolledWindow_ProjectCategory_Editor );
+    m_Sizer_Projects_Editor->Add( m_ScrolledWindow_ProjectCategory_Editor, 0, wxEXPAND | wxALL, 5 );
+
     m_Button_Projects_Preview = new wxButton( m_Panel_Projects_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Button_Projects_Preview->Hide();
     m_Button_Projects_Preview->SetMinSize( wxSize( -1,24 ) );
 
     m_Sizer_Projects_Editor->Add( m_Button_Projects_Preview, 0, wxALIGN_RIGHT|wxALL, 5 );
@@ -201,13 +273,13 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Projects->SetSizer( m_Sizer_Projects );
     m_Panel_Projects->Layout();
     m_Sizer_Projects->Fit( m_Panel_Projects );
-    m_Panel_Projects_Editor->Hide();
-    m_ChoiceBook_PageSelection->AddPage( m_Panel_Projects, wxT("Projects"), false );
+    m_ChoiceBook_PageSelection->AddPage( m_Panel_Projects, wxT("Projects"), true );
     m_Panel_Blog = new wxPanel( m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* m_Sizer_Blog;
     m_Sizer_Blog = new wxBoxSizer( wxVERTICAL );
 
     m_Splitter_Blog = new wxSplitterWindow( m_Panel_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
+    m_Splitter_Blog->SetSashGravity( 1 );
     m_Splitter_Blog->Connect( wxEVT_IDLE, wxIdleEventHandler( Main::m_Splitter_BlogOnIdle ), NULL, this );
 
     m_Panel_Blog_Tree = new wxPanel( m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -236,8 +308,10 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Blog_TextCtrl->SetFlexibleDirection( wxBOTH );
     m_Sizer_Blog_TextCtrl->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_TextCtrl_Blog = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxTE_MULTILINE );
-    m_Sizer_Blog_TextCtrl->Add( m_TextCtrl_Blog, 1, wxEXPAND | wxALL, 5 );
+    m_TextCtrl_Blog = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,200 ), wxTE_MULTILINE );
+    m_TextCtrl_Blog->SetToolTip( wxT("The project description. Supports markdown.") );
+
+    m_Sizer_Blog_TextCtrl->Add( m_TextCtrl_Blog, 0, wxALL|wxEXPAND, 5 );
 
     m_Button_Blog_Preview = new wxButton( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Sizer_Blog_TextCtrl->Add( m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5 );
@@ -246,7 +320,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Blog_TextCtrl->SetSizer( m_Sizer_Blog_TextCtrl );
     m_Panel_Blog_TextCtrl->Layout();
     m_Sizer_Blog_TextCtrl->Fit( m_Panel_Blog_TextCtrl );
-    m_Splitter_Blog->SplitVertically( m_Panel_Blog_Tree, m_Panel_Blog_TextCtrl, 0 );
+    m_Splitter_Blog->SplitVertically( m_Panel_Blog_Tree, m_Panel_Blog_TextCtrl, 188 );
     m_Sizer_Blog->Add( m_Splitter_Blog, 1, wxEXPAND, 5 );
 
 
@@ -289,7 +363,10 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_TextCtrl_Projects_Images->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Images_OnText ), NULL, this );
     m_TextCtrl_Projects_Date->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Date_OnText ), NULL, this );
     m_TextCtrl_Projects_URLs->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_URLs_OnText ), NULL, this );
+    m_TextCtrl_Projects_ToolTip->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_ToolTip_OnText ), NULL, this );
     m_TextCtrl_Projects_Description->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Description_OnText ), NULL, this );
+    m_TextCtrl_ProjectsCategory_DisplayName->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText ), NULL, this );
+    m_TextCtrl_ProjectsCategory_Description->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_Description_OnText ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeBeginDrag ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndDrag ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
@@ -298,6 +375,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_OpenDir_OnMenuSelection ), this, m_MenuItem_OpenDir->GetId());
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_Save_OnMenuSelection ), this, m_MenuItem_Save->GetId());
 
+    this->m_ChoiceBook_PageSelection->SetSelection(0);
     this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
     this->LoadProjects();
 }
@@ -326,7 +404,7 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
     if (dir.ShowModal() == wxID_OK)
     {
         this->m_WorkingDir = dir.GetPath();
-        this->m_Modified = false;
+        this->MarkModified(false);
         this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
         this->LoadProjects();
         
@@ -348,14 +426,22 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
         if (cat == NULL)
             return;
         cat->displayname = event.GetLabel();
-        if (!this->m_Modified)
-        {
-            this->SetTitle(this->m_WorkingDir + wxString(" *"));
-            this->m_Modified = true;
-        }
+        this->MarkModified();
+        return;
     }
     else
-        event.Skip();
+    {
+        Project* proj = this->FindProject(event.GetItem());
+        if (proj != NULL)
+        {
+            proj->displayname = event.GetLabel();
+            if (this->m_SelectedItem == event.GetItem())
+                this->m_TextCtrl_Projects_Name->SetValue(proj->displayname);
+            this->MarkModified();
+            return;
+        }
+    }
+    event.Skip();
 }
 
 void Main::m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event)
@@ -396,6 +482,7 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
         this->m_TextCtrl_Projects_File->SetValue(proj_elem->filename);
         this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
         this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
+        this->m_TextCtrl_Projects_ToolTip->SetValue(proj_elem->tooltip);
         this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
         
         wip = wxString("");
@@ -413,27 +500,33 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
         for (wxString str : proj_elem->urls)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_URLs->SetValue(wip);
+        this->m_TextCtrl_Projects_ToolTip->SetValue(proj_elem->tooltip);
         this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
-        this->m_Panel_Projects_Editor->Show();
+        this->ShowProjectEditor();
         if (!modifiedbeforechange)
-        {
-            this->m_Modified = false;
-            this->SetTitle(this->m_WorkingDir);
-        }
+            this->MarkModified(false);
+    }
+    else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item))
+    {
+        Category* cat_elem = FindCategory(item);
+        if (cat_elem == NULL)
+            return;
+        this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat_elem->foldername);
+        this->m_TextCtrl_ProjectsCategory_DisplayName->SetValue(cat_elem->displayname);
+        this->m_TextCtrl_ProjectsCategory_Description->SetValue(cat_elem->description);
+        this->ShowProjectCategoryEditor(true);
+        if (!modifiedbeforechange)
+            this->MarkModified(false);
     }
     else
-        this->m_Panel_Projects_Editor->Hide();
+        this->ShowProjectEditor(false);
 }
 
 void Main::m_TextCtrl_Projects_File_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->filename = event.GetString();
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
@@ -441,22 +534,14 @@ void Main::m_TextCtrl_Projects_Name_OnText( wxCommandEvent& event )
     Project* proj = FindProject(this->m_SelectedItem);
     proj->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(proj->treeid, proj->displayname);
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->icon = event.GetString();
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
@@ -476,22 +561,14 @@ void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
         if (str != "")
             proj->images.push_back(str);
     }
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Date_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->date = event.GetString();
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
@@ -506,22 +583,36 @@ void Main::m_TextCtrl_Projects_URLs_OnText( wxCommandEvent& event )
         if (str != "")
             proj->urls.push_back(str);
     }
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event )
 {
     Project* proj = FindProject(this->m_SelectedItem);
     proj->description = event.GetString();
-    if (!this->m_Modified)
-    {
-        this->SetTitle(this->m_WorkingDir + wxString(" *"));
-        this->m_Modified = true;
-    }
+    this->MarkModified();
+}
+
+void Main::m_TextCtrl_Projects_ToolTip_OnText( wxCommandEvent& event )
+{
+    Project* proj = FindProject(this->m_SelectedItem);
+    proj->tooltip = event.GetString();
+    this->MarkModified();
+}
+
+void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText( wxCommandEvent& event )
+{
+    Category* cat = FindCategory(this->m_SelectedItem);
+    cat->displayname = event.GetString();
+    this->m_TreeCtrl_Projects->SetItemText(cat->treeid, cat->displayname);
+    this->MarkModified();
+}
+
+void Main::m_TextCtrl_ProjectsCategory_Description_OnText( wxCommandEvent& event )
+{
+    Category* cat = FindCategory(this->m_SelectedItem);
+    cat->description = event.GetString();
+    this->MarkModified();
 }
 
 void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
@@ -597,6 +688,7 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
             proj->displayname = "New Project";
             proj->icon = "";
             proj->date = "";
+            proj->tooltip = "";
             proj->description = "";
             proj->images.clear();
             proj->urls.clear();
@@ -668,6 +760,7 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
         cat->foldername = wxString(it.key());
         cat->index = (*it)["Index"];
         cat->displayname = wxString((*it)["DisplayName"]);
+        cat->description = wxString((*it)["Description"]);
         cat->treeid = NULL;
         cat->pages.clear();
         categorylist->push_back(cat);
@@ -702,6 +795,7 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
             cat->foldername = filename;
             cat->index = index++;
             cat->displayname = filename;
+            cat->description = wxString("");
             cat->treeid = NULL;
             cat->pages.clear();
             categorylist->push_back(cat);
@@ -751,6 +845,7 @@ void Main::LoadProjects()
             proj->displayname = wxString((*itproj)["DisplayName"]);
             proj->icon = wxString((*itproj)["Icon"]);
             proj->date = wxString((*itproj)["Date"]);
+            proj->tooltip = wxString((*itproj)["ToolTip"]);
             proj->description = wxString((*itproj)["Description"]);
             proj->images.clear();
             for (nlohmann::json::iterator it = (*itproj)["Images"].begin(); it != (*itproj)["Images"].end(); ++it)
@@ -781,7 +876,7 @@ void Main::LoadProjects()
             }
         }
     }
-    this->m_Panel_Projects_Editor->Hide();
+    this->ShowProjectEditor(false);
 }
 
 void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist)
@@ -844,11 +939,7 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
             cat->index = index++;
 
         // Mark the project as modified
-        if (!this->m_Modified)
-        {
-            this->SetTitle(this->m_WorkingDir + wxString(" *"));
-            this->m_Modified = true;
-        }
+        this->MarkModified();
     }
 }
 
@@ -900,11 +991,7 @@ void Main::EndDrag_Project(wxTreeEvent& event)
         }
 
         // Mark the project as modified
-        if (!this->m_Modified)
-        {
-            this->SetTitle(this->m_WorkingDir + wxString(" *"));
-            this->m_Modified = true;
-        }
+        this->MarkModified();
     }
 }
 
@@ -919,6 +1006,7 @@ void Main::Save()
         projectjson["Categories"][catstr] = {};
         projectjson["Categories"][catstr]["Index"] = cat->index;
         projectjson["Categories"][catstr]["DisplayName"] = cat->displayname;
+        projectjson["Categories"][catstr]["Description"] = cat->description;
         projectjson["Categories"][catstr]["Pages"] = {};
         for (void* child : cat->pages)
         {
@@ -929,6 +1017,7 @@ void Main::Save()
             projectjson["Categories"][catstr]["Pages"][projstr]["DisplayName"] = proj->displayname;
             projectjson["Categories"][catstr]["Pages"][projstr]["Icon"] = proj->icon;
             projectjson["Categories"][catstr]["Pages"][projstr]["Date"] = proj->date;
+            projectjson["Categories"][catstr]["Pages"][projstr]["ToolTip"] = proj->tooltip;
             projectjson["Categories"][catstr]["Pages"][projstr]["Description"] = proj->description;
             projectjson["Categories"][catstr]["Pages"][projstr]["Images"] = {};
             for (wxString str :  proj->images)
@@ -956,8 +1045,7 @@ void Main::Save()
     out.Close();
 
     // Mark the program as no longer modified
-    this->m_Modified = false;
-    this->SetTitle(this->m_WorkingDir);
+    this->MarkModified(false);
 }
 
 void Main::CompileProjects()
@@ -975,6 +1063,11 @@ void Main::CompileProjects()
     {
         wxString html_projects = wxString("");
         wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
+        std::stringstream mdinput(cat->description.ToStdString());
+        std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+        config->enabledParsers |= maddy::types::HTML_PARSER; 
+        std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+        wxString desc;
 
         // Generate the project blocks
         for (void* page : cat->pages)
@@ -984,11 +1077,16 @@ void Main::CompileProjects()
             html_projects.Replace("_TEMPLATE_PROJECT_URL_", relativepath + proj->filename + wxString(".html"));
             html_projects.Replace("_TEMPLATE_PROJECT_TITLE_", proj->displayname);
             html_projects.Replace("_TEMPLATE_PROJECT_IMAGE_", relativepath + proj->icon);
+            html_projects.Replace("_TEMPLATE_PROJECT_TOOLTIP_", proj->tooltip);
         }
 
         // Generate the section blocks
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/projects_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
+        html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
+        desc = wxString(parser->Parse(mdinput));
+        desc.Replace("<p>", "<p align=\"left\">");
+        html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", desc);
         html_categories.Replace("_TEMPLATE_PROJECT_LIST_", html_projects);
     }
 
@@ -1014,11 +1112,14 @@ void Main::CompileProjects()
             Project* proj = (Project*)page;
             wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
             wxTextFile projout(projoutpath);
-            html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
+            std::stringstream mdinput(proj->description.ToStdString());
+            std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+            std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
 
+            html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
             html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
             html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
-            html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", proj->description);
+            html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput))); // TODO: Markdown support
 
             // Generate the page itself
             if (!projout.Exists())
@@ -1030,4 +1131,55 @@ void Main::CompileProjects()
             projout.Close();
         }
     }
+}
+
+void Main::MarkModified(bool modified)
+{
+    if (modified)
+    {
+        if (!this->m_Modified)
+        {
+            this->SetTitle(this->m_WorkingDir + wxString(" *"));
+            this->m_Modified = true;
+        }
+    }
+    else
+    {
+        this->SetTitle(this->m_WorkingDir);
+        this->m_Modified = false;
+    }
+}
+
+void Main::ShowProjectEditor(bool show)
+{
+    if (show)
+    {
+        this->m_ScrolledWindow_Project_Editor->Show();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+        this->m_Button_Projects_Preview->Show();
+    }
+    else
+    {
+        this->m_ScrolledWindow_Project_Editor->Hide();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+        this->m_Button_Projects_Preview->Hide();
+    }
+    this->m_Panel_Projects_Editor->Layout();
+}
+
+void Main::ShowProjectCategoryEditor(bool show)
+{
+    if (show)
+    {
+        this->m_ScrolledWindow_Project_Editor->Hide();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Show();
+        this->m_Button_Projects_Preview->Show();
+    }
+    else
+    {
+        this->m_ScrolledWindow_Project_Editor->Hide();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+        this->m_Button_Projects_Preview->Hide();
+    }
+    this->m_Panel_Projects_Editor->Layout();
 }

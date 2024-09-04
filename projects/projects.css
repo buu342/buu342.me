@@ -160,6 +160,11 @@ pre
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #ffffff;
+}
+
+.sect-name a {
+    color: inherit;
 }
 
 .section-contents {

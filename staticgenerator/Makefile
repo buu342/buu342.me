@@ -25,9 +25,10 @@ CPPFLAGS ?=
 ifeq ($(OS_NAME),Darwin)
 	HOMEBREW_PREFIX=$(shell brew --prefix)
 	HOMEBREW_CELLAR=$(shell brew --cellar)
-	CXXFLAGS += -I$(HOMEBREW_PREFIX)/include
+	CXXFLAGS += -I$(HOMEBREW_PREFIX)/include -Iinclude/
 	LDFLAGS ?= $(shell pkg-config --libs-only-other)
 else
+	CXXFLAGS += -Iinclude/
 	LDFLAGS ?= 
 endif
 
@@ -78,6 +79,9 @@ ifeq ($(WX_SHARED),1)
 WX_CONFIG_SHARED_FLAG = --static=no
 endif
 
+ifeq ($(DEBUG),1)
+	CFLAGS += -Wall -Wextra -ggdb -O0 -g
+endif
 
 ### Targets: ###
 
