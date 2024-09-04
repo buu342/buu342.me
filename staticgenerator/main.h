@@ -131,6 +131,7 @@ class Main : public wxFrame
 		void UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist);
         void LoadProjects();
         void EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist);
+        void EndDrag_Project(wxTreeEvent& event);
 		void Save();
         void CompileProjects();
 };

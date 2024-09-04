@@ -365,7 +365,10 @@ void Main::m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event)
 }
 void Main::m_TreeCtrl_Projects_OnTreeEndDrag(wxTreeEvent& event)
 {
-    this->EndDrag(event, this->m_TreeCtrl_Projects, &this->m_Category_Projects);
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem))
+        this->EndDrag_Project(event);
+    else
+        this->EndDrag(event, this->m_TreeCtrl_Projects, &this->m_Category_Projects);
 }
 
 void Main::m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event )
@@ -783,7 +786,6 @@ void Main::LoadProjects()
 
 void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist)
 {
-    int index = 0;
     wxTreeItemId src = this->m_DraggedItem;
     wxTreeItemId dest = event.GetItem();
     Category* src_elem = NULL;
@@ -794,16 +796,18 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
     if (!treeitem_iscategory(tree, dest))
         dest = tree->GetItemParent(dest);
 
+    // Ensure we have a valid destination node
+    if (!dest.IsOk() || src == dest)
+        return;
+
+    // Ignore placing the source directly above the destination, since it won't move at all.
+    if (tree->GetPrevSibling(src) == dest)
+        return;
+
     // Only allow moving categories into categories
     if (treeitem_iscategory(tree, src) && treeitem_iscategory(tree, dest))
     {
-        // Ensure we have a valid destination node
-        if (!dest.IsOk() || src == dest)
-            return;
-
-        // Ignore placing the source directly above the destination, since it won't move at all.
-        if (tree->GetPrevSibling(src) == dest)
-            return;
+        int index = 0;
 
         // Get the category elements themselves
         for (Category* cat : *categorylist)
@@ -846,7 +850,62 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
             this->m_Modified = true;
         }
     }
-    // TODO: Support reordering projects
+}
+
+void Main::EndDrag_Project(wxTreeEvent& event)
+{
+    wxTreeItemId src = this->m_DraggedItem;
+    wxTreeItemId dest = event.GetItem();
+    this->m_DraggedItem = NULL;
+
+    // Ensure we have a valid destination node
+    if (!dest.IsOk() || src == dest)
+        return;
+
+    // Ignore placing the source directly above the destination, since it won't move at all.
+    if (this->m_TreeCtrl_Projects->GetPrevSibling(src) == dest)
+        return;
+
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, dest))
+    {
+        int index = 0;
+        Project* proj_src = this->FindProject(src);
+        Project* proj_dest = this->FindProject(dest);
+        Category* cat = proj_src->category;
+        std::vector<void*>* pages = &cat->pages;
+
+        // Ensure both projects are in the same category
+        if (cat != proj_dest->category)
+            return;
+
+        // Move the elements
+        if (proj_dest->index < proj_src->index)
+        {
+            pages->erase(pages->begin() + proj_src->index);
+            pages->insert(pages->begin() + proj_dest->index + 1, proj_src);
+        }
+        else
+        {
+            pages->erase(pages->begin() + proj_src->index);
+            pages->insert(pages->begin() + proj_dest->index, proj_src);
+        }
+        this->m_TreeCtrl_Projects->Delete(src);
+        proj_src->treeid = this->m_TreeCtrl_Projects->InsertItem(cat->treeid, dest, proj_src->displayname);
+
+        // Correct the index values
+        for (void* projptr : *pages)
+        {
+            Project* proj = (Project*)projptr;
+            proj->index = index++;
+        }
+
+        // Mark the project as modified
+        if (!this->m_Modified)
+        {
+            this->SetTitle(this->m_WorkingDir + wxString(" *"));
+            this->m_Modified = true;
+        }
+    }
 }
 
 void Main::Save()
