@@ -601,6 +601,9 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
             proj->category = cat_elem;
             proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
             cat_elem->pages.push_back(proj);
+            this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
+            this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
+            this->m_SelectedItem = proj->treeid;
             break;
         case wxID_DELETE:
             proj = this->FindProject(this->m_SelectedItem);
