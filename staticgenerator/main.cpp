@@ -373,6 +373,8 @@ void Main::m_TreeCtrl_Projects_OnTreeItemMenu( wxTreeEvent& event )
     wxMenu menu;
     this->m_SelectedItem = event.GetItem();
     menu.Append(wxID_NEW, wxT("Create project"));
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, event.GetItem()))
+        menu.Append(wxID_DELETE, wxT("Delete project"));
     menu.Connect(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::OnPopupClick_Projects), NULL, this);
     PopupMenu(&menu, event.GetPoint());
 }
@@ -567,6 +569,7 @@ Project* Main::FindProject(wxTreeItemId item)
 
 void Main::OnPopupClick_Projects(wxCommandEvent& event)
 {
+    int index = 0;
     wxTreeItemId cat = this->m_SelectedItem;
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
         cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
@@ -576,19 +579,36 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
     if (cat_elem == NULL)
         return;
 
-    proj = new Project();
-    proj->index = cat_elem->pages.size();
-    proj->filename = "new";
-    proj->displayname = "New Project";
-    proj->icon = "";
-    proj->date = "";
-    proj->description = "";
-    proj->images.clear();
-    proj->urls.clear();
-    proj->tags.clear();
-    proj->category = cat_elem;
-    proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
-    cat_elem->pages.push_back(proj);
+    switch (event.GetId())
+    {
+        case wxID_NEW:
+            proj = new Project();
+            proj->index = cat_elem->pages.size();
+            proj->filename = "new";
+            proj->displayname = "New Project";
+            proj->icon = "";
+            proj->date = "";
+            proj->description = "";
+            proj->images.clear();
+            proj->urls.clear();
+            proj->tags.clear();
+            proj->category = cat_elem;
+            proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
+            cat_elem->pages.push_back(proj);
+            break;
+        case wxID_DELETE:
+            proj = this->FindProject(this->m_SelectedItem);
+            cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
+            this->m_TreeCtrl_Projects->Delete(proj->treeid);
+            wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
+            delete proj;
+            for (void* projptr : cat_elem->pages)
+            {
+                proj = (Project*)projptr;
+                proj->index = index++;
+            }
+            break;
+    }
 }
 
 void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist)
