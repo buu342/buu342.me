@@ -40,7 +40,7 @@ wxString string_fromfile(wxString path)
     // Read the file into the string, and return it
     str += file.GetFirstLine();
     while(!file.Eof())
-        str += file.GetNextLine();
+        str += file.GetNextLine() + wxString("\r\n");
     return str;
 }
 
