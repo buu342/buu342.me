@@ -156,7 +156,7 @@ pre
 
 .sect-name {
     display: inline-block;
-    width: calc(100% - 300px);
+    width: calc(100% - 30px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -165,10 +165,11 @@ pre
 
 .sect-name a {
     color: inherit;
+    line-height: 30px;
 }
 
 .section-contents {
-    width: calc(100% - 10px);
+    width: calc(100% - 30px);
     padding: 10px 10px 10px 0px;
     text-align: center;
 }
@@ -176,3 +177,14 @@ pre
 .section-contents .iconcontainer {
     margin: 0px 0px 10px 10px;
 }
+
+.collapse-button {
+    float: right;
+    margin-right: 15px;
+    cursor: pointer;
+    height: 30px;
+}
+
+.collapse-button img {
+    padding-top: 7px;
+} 
