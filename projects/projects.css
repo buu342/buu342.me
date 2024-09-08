@@ -152,6 +152,7 @@ pre
     background-color: #d86363;
     text-shadow: 1px 1px 1px #492e2e;
     color: #ffffff;
+    margin-bottom: 10px;
 }
 
 .sect-name {
@@ -170,8 +171,10 @@ pre
 
 .section-contents {
     width: calc(100% - 30px);
-    padding: 10px 10px 10px 0px;
+    padding: 00px 10px 10px 0px;
     text-align: center;
+    transition: max-height 0.2s ease-out;
+    overflow: hidden;
 }
 
 .section-contents .iconcontainer {
