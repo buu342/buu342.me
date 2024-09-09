@@ -157,7 +157,7 @@ pre
 
 .sect-name {
     display: inline-block;
-    width: calc(100% - 30px);
+    width: calc(100% - 40px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
