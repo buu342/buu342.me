@@ -190,4 +190,40 @@ pre
 
 .collapse-button img {
     padding-top: 7px;
-} 
+}
+
+.carousel-container {
+}
+
+.carousel-object {
+    cursor: pointer;
+    width:550px;
+}
+
+.carousel-list {
+    background-color: #AAAAAA;
+    overflow: auto;
+    white-space: nowrap;
+    padding: 5px;
+    width: 540px;
+}
+
+.carousel-list img {
+    margin: 0px;
+}
+
+.carousel-list-object {
+    display: inline;
+}
+
+.carousel-list-object img {
+    width: 116px;
+    vertical-align: middle;
+    text-align: center;
+    cursor: pointer;
+}
+
+.carousel-list-object.selected img {
+    box-sizing: border-box;
+    border: 2px solid cyan;
+}
