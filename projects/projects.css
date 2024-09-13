@@ -227,3 +227,14 @@ pre
     box-sizing: border-box;
     border: 2px solid cyan;
 }
+
+.fade {
+    animation-name: fade;
+    animation-duration: 0.5s;
+}
+
+@keyframes fade {
+    from {opacity: 1}
+    50% {opacity: 0}
+    to {opacity: 1}
+}
