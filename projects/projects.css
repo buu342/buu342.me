@@ -196,8 +196,18 @@ pre
 }
 
 .carousel-object {
-    cursor: pointer;
-    width:550px;
+    width: 540px;
+    height: 310px;
+}
+
+.carousel-object img {
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-object iframe {
+    width: 100%;
+    height: 100%;
 }
 
 .carousel-list {
@@ -228,13 +238,22 @@ pre
     border: 2px solid cyan;
 }
 
-.fade {
-    animation-name: fade;
-    animation-duration: 0.5s;
+.fadeout {
+    animation-name: fadeout;
+    animation-duration: 0.25s;
 }
 
-@keyframes fade {
+@keyframes fadeout {
     from {opacity: 1}
-    50% {opacity: 0}
+    to {opacity: 0}
+}
+
+.fadein {
+    animation-name: fadein;
+    animation-duration: 0.25s;
+}
+
+@keyframes fadein {
+    from {opacity: 0}
     to {opacity: 1}
 }

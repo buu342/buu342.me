@@ -12,7 +12,7 @@ function main()
                 var content = this.parentElement.nextElementSibling;
                 if (!(content.style.maxHeight === "0px"))
                 {
-                    setTimeout(HideElements, 200, content);
+                    setTimeout(HideElementsInCollapsedCategory, 200, content);
                     content.style.maxHeight = "0px";
                     this.children[0].src = "projects/collapse-closed.png";
                 }
@@ -30,37 +30,90 @@ function main()
     if (carouselobject != null)
     {
         var carouselimage = carouselobject.children[0];
-        var projimgbuts = document.getElementsByClassName("carousel-list-object");
-        for (i = 0; i < projimgbuts.length; i++)
+        var carouselvideo = carouselobject.children[1];
+        var projobjbuts = document.getElementsByClassName("carousel-list-object");
+        for (i = 0; i < projobjbuts.length; i++)
         {
-            projimgbuts[i].addEventListener("click",
+            projobjbuts[i].addEventListener("click",
                 function()
                 {
                     var oldselected = document.getElementsByClassName("carousel-list-object selected")[0];
                     if (oldselected == this)
                         return;
-
-                    oldselected.classList.remove("selected")
-                    carouselimage.classList.remove("fade")
-                    carouselimage.offsetWidth
-                    carouselimage.classList.add("fade")
-                    setTimeout(ChangeImage, 250, carouselimage, this.id);
-                    this.classList.add("selected")
+                    if (this.classList.contains("img"))
+                    {
+                        oldselected.classList.remove("selected");
+                        if (canfadeout)
+                        {
+                            FadeObject(carouselimage);
+                            FadeObject(carouselvideo);
+                        }
+                        this.classList.add("selected")
+                        setTimeout(ChangeImage, 250, carouselimage, carouselvideo, this.id);
+                    }
+                    else
+                    {
+                        oldselected.classList.remove("selected")
+                        if (canfadeout)
+                        {
+                            FadeObject(carouselimage);
+                            FadeObject(carouselvideo);
+                        }
+                        this.classList.add("selected")
+                        setTimeout(ChangeVideo, 250, carouselimage, carouselvideo, this.id);
+                    }
                 }
             );
         }
     }
 }
 
-function HideElements(content)
+function HideElementsInCollapsedCategory(content)
 {
     if (content.style.maxHeight === "0px")
         content.style.visibility = 'hidden';
 }
 
-function ChangeImage(content, src)
+function ChangeImage(image, video, src)
 {
-    content.src = src;
+    SetObjectVisiblity(video, false);
+    image.src = src;
+    setTimeout(FadeObject, 250, image, true);
+}
+
+function ChangeVideo(image, video, src)
+{
+    SetObjectVisiblity(image, false);
+    video.src = "https://www.youtube.com/embed/" + src;
+    setTimeout(FadeObject, 250, video, true);
+}
+
+function FadeObject(content, fadein)
+{
+    if (fadein)
+    {
+        content.classList.remove("fadeout");
+        content.classList.remove("fadein");
+        content.offsetWidth;
+        content.classList.add("fadein");
+        SetObjectVisiblity(content, true);
+    }
+    else
+    {
+        content.classList.remove("fadein");
+        content.classList.remove("fadeout");
+        content.offsetWidth;
+        content.classList.add("fadeout");
+        setTimeout(SetObjectVisiblity, 200, content, false);
+    }
+}
+
+function SetObjectVisiblity(content, visible)
+{
+    if (visible)
+        content.style.display = 'block';
+    else
+        content.style.display = 'none';
 }
 
 main();
