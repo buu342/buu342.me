@@ -1,7 +1,3 @@
-// TODO:
-// Horizontal scroll the div on selection
-// Implement the page generation
-
 var STATE_IDLE = 0;
 var STATE_FADINGOUT = 1;
 var STATE_FADINGIN = 2;
@@ -37,6 +33,7 @@ function main()
         );
     }
 
+    var carousellist = document.getElementsByClassName("carousel-list")[0];
     var carouselobject = document.getElementsByClassName("carousel-object")[0];
     if (carouselobject != null)
     {
@@ -48,6 +45,7 @@ function main()
             projobjbuts[i].addEventListener("click",
                 function()
                 {
+                    var offsets;
                     var oldselected = document.getElementsByClassName("carousel-list-object selected")[0];
                     if (oldselected == this || global_carouselstate == STATE_FADINGIN)
                         return;
@@ -63,6 +61,18 @@ function main()
                         setTimeout(ChangeObject, 250, carouselimage, carouselvideo, this);
                         global_carouselstate = STATE_FADINGOUT;
                     }
+                    if (carousellist.getBoundingClientRect().right < this.getBoundingClientRect().right)
+                        carousellist.scrollBy({
+                            top: 0,
+                            left: this.getBoundingClientRect().right - carousellist.getBoundingClientRect().right,
+                            behavior: "smooth",
+                        });
+                    else if (this.getBoundingClientRect().left < carousellist.getBoundingClientRect().left)
+                        carousellist.scrollBy({
+                            top: 0,
+                            left: (this.getBoundingClientRect().left - carousellist.getBoundingClientRect().left) - 3,
+                            behavior: "smooth",
+                        });
                 }
             );
         }
