@@ -1,3 +1,14 @@
+// TODO:
+// Horizontal scroll the div on selection
+// Implement the page generation
+
+var STATE_IDLE = 0;
+var STATE_FADINGOUT = 1;
+var STATE_FADINGIN = 2;
+
+var global_carouselstate = STATE_IDLE;
+var global_carouseltarget = null;
+
 function main()
 {
     var i;
@@ -38,29 +49,19 @@ function main()
                 function()
                 {
                     var oldselected = document.getElementsByClassName("carousel-list-object selected")[0];
-                    if (oldselected == this)
+                    if (oldselected == this || global_carouselstate == STATE_FADINGIN)
                         return;
-                    if (this.classList.contains("img"))
+                    oldselected.classList.remove("selected");
+                    global_carouseltarget = this;
+                    this.classList.add("selected")
+                    if (global_carouselstate == STATE_IDLE)
                     {
-                        oldselected.classList.remove("selected");
-                        if (canfadeout)
-                        {
-                            FadeObject(carouselimage);
-                            FadeObject(carouselvideo);
-                        }
-                        this.classList.add("selected")
-                        setTimeout(ChangeImage, 250, carouselimage, carouselvideo, this.id);
-                    }
-                    else
-                    {
-                        oldselected.classList.remove("selected")
-                        if (canfadeout)
-                        {
-                            FadeObject(carouselimage);
-                            FadeObject(carouselvideo);
-                        }
-                        this.classList.add("selected")
-                        setTimeout(ChangeVideo, 250, carouselimage, carouselvideo, this.id);
+                        FadeObject(carouselimage);
+                        if (this.classList.contains("video") && oldselected.classList.contains("video"))
+                            carouselvideo.src = "https://www.youtube.com/embed/" + global_carouseltarget.id;
+                        FadeObject(carouselvideo);
+                        setTimeout(ChangeObject, 250, carouselimage, carouselvideo, this);
+                        global_carouselstate = STATE_FADINGOUT;
                     }
                 }
             );
@@ -74,18 +75,12 @@ function HideElementsInCollapsedCategory(content)
         content.style.visibility = 'hidden';
 }
 
-function ChangeImage(image, video, src)
+function SetObjectVisiblity(content, visible)
 {
-    SetObjectVisiblity(video, false);
-    image.src = src;
-    setTimeout(FadeObject, 250, image, true);
-}
-
-function ChangeVideo(image, video, src)
-{
-    SetObjectVisiblity(image, false);
-    video.src = "https://www.youtube.com/embed/" + src;
-    setTimeout(FadeObject, 250, video, true);
+    if (visible)
+        content.style.display = 'block';
+    else
+        content.style.display = 'none';
 }
 
 function FadeObject(content, fadein)
@@ -96,7 +91,6 @@ function FadeObject(content, fadein)
         content.classList.remove("fadein");
         content.offsetWidth;
         content.classList.add("fadein");
-        SetObjectVisiblity(content, true);
     }
     else
     {
@@ -104,16 +98,38 @@ function FadeObject(content, fadein)
         content.classList.remove("fadeout");
         content.offsetWidth;
         content.classList.add("fadeout");
-        setTimeout(SetObjectVisiblity, 200, content, false);
     }
 }
 
-function SetObjectVisiblity(content, visible)
+function ChangeObject(image, video, src)
 {
-    if (visible)
-        content.style.display = 'block';
+    global_carouselstate = STATE_FADINGIN;
+    if (src.classList.contains("img"))
+    {
+        image.src = global_carouseltarget.id;
+        SetObjectVisiblity(image, false);
+        SetObjectVisiblity(video, false);
+        FadeObject(image, true);
+        SetObjectVisiblity(image, true);
+        setTimeout(FinishFadein, 200);
+    }
     else
-        content.style.display = 'none';
+    {
+        video.src = "";
+        SetObjectVisiblity(image, false);
+        SetObjectVisiblity(video, false);
+        FadeObject(video, true);
+        SetObjectVisiblity(video, true);
+        setTimeout(FinishFadein, 200, video, "https://www.youtube.com/embed/" + global_carouseltarget.id);
+    }
+}
+
+function FinishFadein(video, src)
+{
+    global_carouselstate = STATE_IDLE;
+    global_carouseltarget = null;
+    if (video)
+        video.src = src
 }
 
 main();
