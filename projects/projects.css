@@ -245,6 +245,22 @@ pre
     display: inline-block;
 }
 
+.carousel-list-object.video
+{
+    position: relative;
+    z-index: 1;
+}
+
+.video-player
+{
+    position: absolute; 
+    top: 28px;
+    left: 42px;
+    z-index: 2;
+    width:32px;
+    border: none;
+}
+
 .carousel-list-object img
 {
     width: 116px;
@@ -258,7 +274,6 @@ pre
     padding-right: 5px;
 }
 
-
 .carousel-list-object.selected img
 {
     box-sizing: border-box;
@@ -268,12 +283,13 @@ pre
 .fadeout
 {
     animation-name: fadeout;
-    animation-duration: 0.25s;
+    animation-duration: 0.5s;
 }
 
 @keyframes fadeout
 {
     from {opacity: 1}
+    50% {opacity: 0}
     to {opacity: 0}
 }
 

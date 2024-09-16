@@ -116,6 +116,7 @@ function ChangeObject(image, video, src)
     global_carouselstate = STATE_FADINGIN;
     if (src.classList.contains("img"))
     {
+        video.src = "";
         image.src = global_carouseltarget.id;
         SetObjectVisiblity(image, false);
         SetObjectVisiblity(video, false);
