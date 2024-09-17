@@ -40,7 +40,7 @@ wxString string_fromfile(wxString path)
     // Read the file into the string, and return it
     str += file.GetFirstLine();
     while(!file.Eof())
-        str += file.GetNextLine() + wxString("\r\n");
+        str += wxString("\r\n") + file.GetNextLine();
     return str;
 }
 
@@ -1115,11 +1115,74 @@ void Main::CompileProjects()
             std::stringstream mdinput(proj->description.ToStdString());
             std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
             std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+            std::vector<wxString> images;
+            std::vector<wxString> youtubes;
 
+            // Replace most of the basic page info
             html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
             html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
             html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
-            html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput))); // TODO: Markdown support
+            html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput)));
+
+            // Handle image carousel
+            for (wxString str : proj->images)
+            {
+                str.Replace("\"", wxString(""));
+                if (str.Contains("youtube.com"))
+                    youtubes.push_back(str.AfterFirst('=').Left(11));
+                else if (str.Contains("youtu.be"))
+                    youtubes.push_back(str.Mid(str.Find('/', true), 11));
+                else
+                    images.push_back(str);
+            }
+            if (images.size() > 0 || youtubes.size() > 0)
+            {
+                int i;
+                wxString carousel = string_fromfile(this->m_WorkingDir + "/templates/project_carousel.html");
+                wxString carousel_object = wxString("");
+                wxString carousel_list = wxString("");
+                if (images.size() > 0)
+                {
+                    carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_img.html");
+                    carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_IMAGE_", images[0]);
+                }
+                if (youtubes.size() > 0)
+                {
+                    carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_youtube.html");
+                    carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", youtubes[0]);
+                }
+                i=0;
+                for (wxString str : youtubes)
+                {
+                    wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_youtube.html");
+                    if (i == 0 && images.size() == 0)
+                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
+                    else
+                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
+                    obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", str);
+                    carousel_list += obj;
+                    i++;
+                }
+                i=0;
+                for (wxString str : images)
+                {
+                    wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_img.html");
+                    if (i == 0)
+                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
+                    else
+                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
+                    obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_IMAGE_", str);
+                    carousel_list += obj;
+                    i++;
+                }
+                carousel.Replace("_TEMPLATE_PROJECTS_CAROUSEL_OBJECTS_", carousel_object);
+                carousel.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_", carousel_list);
+                html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", carousel);
+            }
+            else
+                html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", wxString(""));
+
+            // TODO: Handle page URLS
 
             // Generate the page itself
             if (!projout.Exists())
