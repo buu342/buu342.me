@@ -1182,7 +1182,29 @@ void Main::CompileProjects()
             else
                 html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", wxString(""));
 
-            // TODO: Handle page URLS
+            // Handle page URLS
+            if (proj->urls.size() > 0)
+            {
+                wxString url_list = wxString("");
+                for (wxString str : proj->urls)
+                {
+                    wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_url.html");
+                    str.Replace("\"", wxString(""));
+                    if (str.Contains("github.com"))
+                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadgh.png");
+                    else if (str.Contains("store.steampowered.com"))
+                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadst.png");
+                    else if (str.Contains("steamcommunity.com"))
+                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadsw.png");
+                    else
+                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadzp.png");
+                    obj.Replace("_TEMPLATE_PROJECTS_URL_", str);
+                    url_list += obj;
+                }
+                html_final.Replace("_TEMPLATE_PROJECTS_LINKS_", url_list);
+            }
+            else
+                html_final.Replace("_TEMPLATE_PROJECTS_LINKS_", wxString(""));
 
             // Generate the page itself
             if (!projout.Exists())

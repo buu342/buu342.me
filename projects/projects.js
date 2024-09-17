@@ -56,7 +56,7 @@ function main()
                     {
                         FadeObject(carouselimage);
                         if (this.classList.contains("video") && oldselected.classList.contains("video"))
-                            carouselvideo.src = "https://www.youtube.com/embed/" + global_carouseltarget.id;
+                            SetIFrameVideo(carouselvideo, "https://www.youtube.com/embed/" + global_carouseltarget.id);
                         FadeObject(carouselvideo);
                         setTimeout(ChangeObject, 250, carouselimage, carouselvideo, this);
                         global_carouselstate = STATE_FADINGOUT;
@@ -116,7 +116,7 @@ function ChangeObject(image, video, src)
     global_carouselstate = STATE_FADINGIN;
     if (src.classList.contains("img"))
     {
-        video.src = "";
+        SetIFrameVideo(video, "");
         image.src = global_carouseltarget.id;
         SetObjectVisiblity(image, false);
         SetObjectVisiblity(video, false);
@@ -126,7 +126,7 @@ function ChangeObject(image, video, src)
     }
     else
     {
-        video.src = "";
+        SetIFrameVideo(video, "");
         SetObjectVisiblity(image, false);
         SetObjectVisiblity(video, false);
         FadeObject(video, true);
@@ -140,7 +140,16 @@ function FinishFadein(video, src)
     global_carouselstate = STATE_IDLE;
     global_carouseltarget = null;
     if (video)
-        video.src = src
+        SetIFrameVideo(video, src);
+}
+
+function SetIFrameVideo(video, src)
+{
+    console.log(video);
+    var container = video.parentNode;
+    video.remove();
+    video.setAttribute("src", src);
+    container.append(video);
 }
 
 main();
