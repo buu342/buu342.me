@@ -367,6 +367,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_TextCtrl_Projects_Description->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Description_OnText ), NULL, this );
     m_TextCtrl_ProjectsCategory_DisplayName->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText ), NULL, this );
     m_TextCtrl_ProjectsCategory_Description->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_Description_OnText ), NULL, this );
+    m_Button_Projects_Preview->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Projects_Preview_OnButtonClick ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeBeginDrag ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndDrag ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
@@ -382,8 +383,29 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
 
 Main::~Main()
 {
-    m_TreeCtrl_Projects->Disconnect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit), NULL, this);
-    m_TreeCtrl_Blog->Disconnect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit), NULL, this);
+    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeBeginDrag ), NULL, this );
+    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndDrag ), NULL, this );
+    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit ), NULL, this );
+    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeItemMenu ), NULL, this );
+    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeSelChanged ), NULL, this );
+    m_TextCtrl_Projects_File->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_File_OnText ), NULL, this );
+    m_TextCtrl_Projects_Name->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Name_OnText ), NULL, this );
+    m_TextCtrl_Projects_Icon->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Icon_OnText ), NULL, this );
+    m_TextCtrl_Projects_Tags->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Tags_OnText ), NULL, this );
+    m_TextCtrl_Projects_Images->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Images_OnText ), NULL, this );
+    m_TextCtrl_Projects_Date->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Date_OnText ), NULL, this );
+    m_TextCtrl_Projects_URLs->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_URLs_OnText ), NULL, this );
+    m_TextCtrl_Projects_ToolTip->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_ToolTip_OnText ), NULL, this );
+    m_TextCtrl_Projects_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Description_OnText ), NULL, this );
+    m_TextCtrl_ProjectsCategory_DisplayName->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText ), NULL, this );
+    m_TextCtrl_ProjectsCategory_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_Description_OnText ), NULL, this );
+    m_Button_Projects_Preview->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Projects_Preview_OnButtonClick ), NULL, this );
+    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeBeginDrag ), NULL, this );
+    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndDrag ), NULL, this );
+    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
+    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeItemMenu ), NULL, this );
+    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeSelChanged ), NULL, this );
+    //m_TextCtrl_Blog->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_OnText ), NULL, this );
 }
 
 void Main::m_Splitter_ProjectsOnIdle(wxIdleEvent&)
@@ -613,6 +635,25 @@ void Main::m_TextCtrl_ProjectsCategory_Description_OnText( wxCommandEvent& event
     Category* cat = FindCategory(this->m_SelectedItem);
     cat->description = event.GetString();
     this->MarkModified();
+}
+
+void Main::m_Button_Projects_Preview_OnButtonClick( wxCommandEvent& event )
+{
+    wxString content;
+    wxString url = wxString("");
+    if (treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem))
+    {
+        Category* cat = FindCategory(this->m_SelectedItem);
+        CompileProjects_List();
+        url = this->m_WorkingDir + wxString("/projects.html") + wxString("#") + cat->foldername;
+    }
+    else
+    {
+        Project* proj = this->FindProject(this->m_SelectedItem);
+        CompileProjects_Project(proj);
+        url = this->m_WorkingDir + wxString("/projects/") + proj->category->foldername + wxString("/") + proj->filename + wxString(".html");
+    }
+    wxLaunchDefaultBrowser(wxString("file:") + url);
 }
 
 void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
@@ -1050,6 +1091,16 @@ void Main::Save()
 
 void Main::CompileProjects()
 {
+    CompileProjects_List();
+
+    // Now create the page for each project
+    for (Category* cat : this->m_Category_Projects)
+        for (void* page : cat->pages)
+            CompileProjects_Project((Project*)page);
+}
+
+void Main::CompileProjects_List()
+{
     wxTextFile out(this->m_WorkingDir + wxString("/projects.html"));
     wxDateTime today = wxDateTime::Today();
     wxString html_final = wxString("");
@@ -1102,120 +1153,117 @@ void Main::CompileProjects()
     out.AddLine(html_final);
     out.Write();
     out.Close();
+}
 
-    // Now create the page for each project
-    for (Category* cat : this->m_Category_Projects)
+void Main::CompileProjects_Project(Project* proj)
+{
+    wxString html_final = wxString("");
+    Category* cat = proj->category;
+    wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
+    wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
+    wxTextFile projout(projoutpath);
+    std::stringstream mdinput(proj->description.ToStdString());
+    std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+    std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+    std::vector<wxString> images;
+    std::vector<wxString> youtubes;
+
+    // Replace most of the basic page info
+    html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
+    html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
+    html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
+    html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput)));
+
+    // Handle image carousel
+    for (wxString str : proj->images)
     {
-        wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
-        for (void* page : cat->pages)
-        {
-            Project* proj = (Project*)page;
-            wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
-            wxTextFile projout(projoutpath);
-            std::stringstream mdinput(proj->description.ToStdString());
-            std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-            std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
-            std::vector<wxString> images;
-            std::vector<wxString> youtubes;
-
-            // Replace most of the basic page info
-            html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
-            html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
-            html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
-            html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput)));
-
-            // Handle image carousel
-            for (wxString str : proj->images)
-            {
-                str.Replace("\"", wxString(""));
-                if (str.Contains("youtube.com"))
-                    youtubes.push_back(str.AfterFirst('=').Left(11));
-                else if (str.Contains("youtu.be"))
-                    youtubes.push_back(str.Mid(str.Find('/', true), 11));
-                else
-                    images.push_back(str);
-            }
-            if (images.size() > 0 || youtubes.size() > 0)
-            {
-                int i;
-                wxString carousel = string_fromfile(this->m_WorkingDir + "/templates/project_carousel.html");
-                wxString carousel_object = wxString("");
-                wxString carousel_list = wxString("");
-                if (images.size() > 0)
-                {
-                    carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_img.html");
-                    carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_IMAGE_", images[0]);
-                }
-                if (youtubes.size() > 0)
-                {
-                    carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_youtube.html");
-                    carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", youtubes[0]);
-                }
-                i=0;
-                for (wxString str : youtubes)
-                {
-                    wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_youtube.html");
-                    if (i == 0 && images.size() == 0)
-                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
-                    else
-                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
-                    obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", str);
-                    carousel_list += obj;
-                    i++;
-                }
-                i=0;
-                for (wxString str : images)
-                {
-                    wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_img.html");
-                    if (i == 0)
-                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
-                    else
-                        obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
-                    obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_IMAGE_", str);
-                    carousel_list += obj;
-                    i++;
-                }
-                carousel.Replace("_TEMPLATE_PROJECTS_CAROUSEL_OBJECTS_", carousel_object);
-                carousel.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_", carousel_list);
-                html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", carousel);
-            }
-            else
-                html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", wxString(""));
-
-            // Handle page URLS
-            if (proj->urls.size() > 0)
-            {
-                wxString url_list = wxString("");
-                for (wxString str : proj->urls)
-                {
-                    wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_url.html");
-                    str.Replace("\"", wxString(""));
-                    if (str.Contains("github.com"))
-                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadgh.png");
-                    else if (str.Contains("store.steampowered.com"))
-                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadst.png");
-                    else if (str.Contains("steamcommunity.com"))
-                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadsw.png");
-                    else
-                        obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadzp.png");
-                    obj.Replace("_TEMPLATE_PROJECTS_URL_", str);
-                    url_list += obj;
-                }
-                html_final.Replace("_TEMPLATE_PROJECTS_LINKS_", url_list);
-            }
-            else
-                html_final.Replace("_TEMPLATE_PROJECTS_LINKS_", wxString(""));
-
-            // Generate the page itself
-            if (!projout.Exists())
-                projout.Create();
-            projout.Open();
-            projout.Clear();
-            projout.AddLine(html_final);
-            projout.Write();
-            projout.Close();
-        }
+        str.Replace("\"", wxString(""));
+        if (str.Contains("youtube.com"))
+            youtubes.push_back(str.AfterFirst('=').Left(11));
+        else if (str.Contains("youtu.be"))
+            youtubes.push_back(str.Mid(str.Find('/', true), 11));
+        else
+            images.push_back(str);
     }
+    if (images.size() > 0 || youtubes.size() > 0)
+    {
+        int i;
+        wxString carousel = string_fromfile(this->m_WorkingDir + "/templates/project_carousel.html");
+        wxString carousel_object = wxString("");
+        wxString carousel_list = wxString("");
+        if (images.size() > 0)
+        {
+            carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_img.html");
+            carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_IMAGE_", images[0]);
+        }
+        if (youtubes.size() > 0)
+        {
+            carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_youtube.html");
+            carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", youtubes[0]);
+        }
+        i=0;
+        for (wxString str : youtubes)
+        {
+            wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_youtube.html");
+            if (i == 0 && images.size() == 0)
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
+            else
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
+            obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", str);
+            carousel_list += obj;
+            i++;
+        }
+        i=0;
+        for (wxString str : images)
+        {
+            wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_img.html");
+            if (i == 0)
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
+            else
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
+            obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_IMAGE_", str);
+            carousel_list += obj;
+            i++;
+        }
+        carousel.Replace("_TEMPLATE_PROJECTS_CAROUSEL_OBJECTS_", carousel_object);
+        carousel.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_", carousel_list);
+        html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", carousel);
+    }
+    else
+        html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", wxString(""));
+
+    // Handle page URLS
+    if (proj->urls.size() > 0)
+    {
+        wxString url_list = wxString("");
+        for (wxString str : proj->urls)
+        {
+            wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_url.html");
+            str.Replace("\"", wxString(""));
+            if (str.Contains("github.com"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadgh.png");
+            else if (str.Contains("store.steampowered.com"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadst.png");
+            else if (str.Contains("steamcommunity.com"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadsw.png");
+            else
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadzp.png");
+            obj.Replace("_TEMPLATE_PROJECTS_URL_", str);
+            url_list += obj;
+        }
+        html_final.Replace("_TEMPLATE_PROJECTS_LINKS_", url_list);
+    }
+    else
+        html_final.Replace("_TEMPLATE_PROJECTS_LINKS_", wxString(""));
+
+    // Generate the page itself
+    if (!projout.Exists())
+        projout.Create();
+    projout.Open();
+    projout.Clear();
+    projout.AddLine(html_final);
+    projout.Write();
+    projout.Close();
 }
 
 void Main::MarkModified(bool modified)

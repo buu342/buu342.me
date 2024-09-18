@@ -1,4 +1,4 @@
-CODEFILES   = app.cpp main.cpp htmlpreview.cpp
+CODEFILES   = app.cpp main.cpp tags.cpp
 LIBFILES    = 
 BUILDDIR = build
 CODEOBJECTS = $(CODEFILES:%.cpp=${BUILDDIR}/%.o)

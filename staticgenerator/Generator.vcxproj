@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
-    <ClInclude Include="htmlpreview.h" />
     <ClInclude Include="include\json.hpp" />
     <ClInclude Include="include\maddy\blockparser.h" />
     <ClInclude Include="include\maddy\breaklineparser.h" />
@@ -46,11 +45,12 @@
     <ClInclude Include="include\maddy\tableparser.h" />
     <ClInclude Include="include\maddy\unorderedlistparser.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="tags.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
-    <ClCompile Include="htmlpreview.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="tags.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

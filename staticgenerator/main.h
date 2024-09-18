@@ -24,10 +24,11 @@ typedef struct IUnknown IUnknown;
 #include <wx/menu.h>
 #include <wx/frame.h>
 #include <wx/filefn.h>
+#include "tags.h"
 
 typedef struct Category_s Category;
 typedef struct Project_s Project;
-typedef struct Tag_s Tag;
+typedef struct Blog_s Blog;
 
 typedef struct Category_s {
 	int index;
@@ -53,16 +54,25 @@ typedef struct Project_s {
     wxTreeItemId treeid;
 } Project;
 
-typedef struct Tag_s {
-	wxString name;
-	std::vector<Project*> projects;
-} Tag;
+typedef struct Blog_s {
+    int index;
+    wxString filename;
+    wxString displayname;
+    wxString icon;
+    wxString date;
+    wxString tooltip;
+    wxString content;
+    std::vector<Tag*> tags;
+    Category* category;
+    wxTreeItemId treeid;
+} Blog;
 
 class Main : public wxFrame
 {
 	private:
         bool m_Modified;
-		std::vector<Category*> m_Category_Projects;
+		std::vector<Category*> m_Category_Blogs;
+        std::vector<Category*> m_Category_Projects;
 		wxString m_WorkingDir;
 		wxTreeItemId m_DraggedItem;
         wxTreeItemId m_SelectedItem;
@@ -132,6 +142,7 @@ class Main : public wxFrame
         void m_TextCtrl_Projects_Description_OnText( wxCommandEvent& event );
         void m_TextCtrl_ProjectsCategory_DisplayName_OnText( wxCommandEvent& event );
         void m_TextCtrl_ProjectsCategory_Description_OnText( wxCommandEvent& event );
+        void m_Button_Projects_Preview_OnButtonClick( wxCommandEvent& event );
         void m_TreeCtrl_Blog_OnTreeBeginDrag( wxTreeEvent& event );
         void m_TreeCtrl_Blog_OnTreeEndDrag( wxTreeEvent& event );
         void m_TreeCtrl_Blog_OnTreeEndLabelEdit( wxTreeEvent& event );
@@ -148,6 +159,8 @@ class Main : public wxFrame
         void EndDrag_Project(wxTreeEvent& event);
 		void Save();
         void CompileProjects();
+        void CompileProjects_List();
+        void CompileProjects_Project(Project* proj);
         void MarkModified(bool modified=true);
         void ShowProjectEditor(bool show=true);
         void ShowProjectCategoryEditor(bool show=true);
