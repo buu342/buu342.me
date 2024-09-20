@@ -115,6 +115,16 @@ class Main : public wxFrame
         wxPanel* m_Panel_Blog_Tree;
         wxTreeCtrl* m_TreeCtrl_Blog;
         wxPanel* m_Panel_Blog_TextCtrl;
+        wxStaticText* m_Label_Blog_File;
+        wxTextCtrl* m_TextCtrl_Blog_File;
+        wxStaticText* m_Label_Blog_Name;
+        wxTextCtrl* m_TextCtrl_Blog_Name;
+        wxStaticText* m_Label_Blog_Icon;
+        wxTextCtrl* m_TextCtrl_Blog_Icon;
+        wxStaticText* m_Label_Blog_Tags;
+        wxTextCtrl* m_TextCtrl_Blog_Tags;
+        wxStaticText* m_Label_Blog_ToolTip;
+        wxTextCtrl* m_TextCtrl_Blog_ToolTip;
         wxTextCtrl* m_TextCtrl_Blog;
         wxButton* m_Button_Blog_Preview;
         wxMenuBar* m_Menubar_Main;
@@ -125,7 +135,6 @@ class Main : public wxFrame
 		~Main();
         void m_Splitter_ProjectsOnIdle(wxIdleEvent& event);
         void m_Splitter_BlogOnIdle(wxIdleEvent& event);
-
         void m_TreeCtrl_Projects_OnTreeBeginDrag( wxTreeEvent& event );
         void m_TreeCtrl_Projects_OnTreeEndDrag( wxTreeEvent& event );
         void m_TreeCtrl_Projects_OnTreeEndLabelEdit( wxTreeEvent& event );
@@ -148,6 +157,13 @@ class Main : public wxFrame
         void m_TreeCtrl_Blog_OnTreeEndLabelEdit( wxTreeEvent& event );
         void m_TreeCtrl_Blog_OnTreeItemMenu( wxTreeEvent& event );
         void m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event );
+        void m_TextCtrl_Blog_File_OnText( wxCommandEvent& event );
+        void m_TextCtrl_Blog_Name_OnText( wxCommandEvent& event );
+        void m_TextCtrl_Blog_Icon_OnText( wxCommandEvent& event );
+        void m_TextCtrl_Blog_Tags_OnText( wxCommandEvent& event );
+        void m_TextCtrl_Blog_ToolTip_OnText( wxCommandEvent& event );
+        void m_TextCtrl_Blog_OnText( wxCommandEvent& event );
+        void m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event );
         void m_MenuItem_OpenDir_OnMenuSelection( wxCommandEvent& event );
         void m_MenuItem_Save_OnMenuSelection( wxCommandEvent& event );
         Category* FindCategory(wxTreeItemId item);

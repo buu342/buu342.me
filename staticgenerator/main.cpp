@@ -301,25 +301,79 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Blog_TextCtrl->Enable( false );
     m_Panel_Blog_TextCtrl->Hide();
 
-    wxFlexGridSizer* m_Sizer_Blog_TextCtrl;
-    m_Sizer_Blog_TextCtrl = new wxFlexGridSizer( 0, 1, 0, 0 );
-    m_Sizer_Blog_TextCtrl->AddGrowableCol( 0 );
-    m_Sizer_Blog_TextCtrl->AddGrowableRow( 0 );
-    m_Sizer_Blog_TextCtrl->SetFlexibleDirection( wxBOTH );
-    m_Sizer_Blog_TextCtrl->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+    wxFlexGridSizer* m_Sizer_Blog_Editor;
+    m_Sizer_Blog_Editor = new wxFlexGridSizer( 0, 1, 0, 0 );
+    m_Sizer_Blog_Editor->AddGrowableCol( 0 );
+    m_Sizer_Blog_Editor->AddGrowableRow( 1 );
+    m_Sizer_Blog_Editor->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Blog_Editor->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    wxFlexGridSizer* m_Sizer_Blog_Editor_Details;
+    m_Sizer_Blog_Editor_Details = new wxFlexGridSizer( 0, 2, 0, 0 );
+    m_Sizer_Blog_Editor_Details->AddGrowableCol( 1 );
+    m_Sizer_Blog_Editor_Details->SetFlexibleDirection( wxBOTH );
+    m_Sizer_Blog_Editor_Details->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_Label_Blog_File = new wxStaticText( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Blog_File->Wrap( -1 );
+    m_Sizer_Blog_Editor_Details->Add( m_Label_Blog_File, 0, wxALL, 5 );
+
+    m_TextCtrl_Blog_File = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Blog_File->SetToolTip( wxT("The filename of the project") );
+
+    m_Sizer_Blog_Editor_Details->Add( m_TextCtrl_Blog_File, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Blog_Name = new wxStaticText( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Blog_Name->Wrap( -1 );
+    m_Sizer_Blog_Editor_Details->Add( m_Label_Blog_Name, 0, wxALL, 5 );
+
+    m_TextCtrl_Blog_Name = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Blog_Name->SetToolTip( wxT("The display name of the project") );
+
+    m_Sizer_Blog_Editor_Details->Add( m_TextCtrl_Blog_Name, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Blog_Icon = new wxStaticText( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Blog_Icon->Wrap( -1 );
+    m_Sizer_Blog_Editor_Details->Add( m_Label_Blog_Icon, 0, wxALL, 5 );
+
+    m_TextCtrl_Blog_Icon = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Blog_Icon->SetToolTip( wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png.") );
+
+    m_Sizer_Blog_Editor_Details->Add( m_TextCtrl_Blog_Icon, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Blog_Tags = new wxStaticText( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Blog_Tags->Wrap( -1 );
+    m_Sizer_Blog_Editor_Details->Add( m_Label_Blog_Tags, 0, wxALL, 5 );
+
+    m_TextCtrl_Blog_Tags = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Blog_Tags->SetToolTip( wxT("Project tags, comma separated.") );
+
+    m_Sizer_Blog_Editor_Details->Add( m_TextCtrl_Blog_Tags, 0, wxALL|wxEXPAND, 5 );
+
+    m_Label_Blog_ToolTip = new wxStaticText( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_Label_Blog_ToolTip->Wrap( -1 );
+    m_Sizer_Blog_Editor_Details->Add( m_Label_Blog_ToolTip, 0, wxALL, 5 );
+
+    m_TextCtrl_Blog_ToolTip = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    m_TextCtrl_Blog_ToolTip->SetToolTip( wxT("Brief description that shows up when hovering over a project with the mouse.") );
+
+    m_Sizer_Blog_Editor_Details->Add( m_TextCtrl_Blog_ToolTip, 0, wxALL|wxEXPAND, 5 );
+
+
+    m_Sizer_Blog_Editor->Add( m_Sizer_Blog_Editor_Details, 1, wxEXPAND, 5 );
 
     m_TextCtrl_Blog = new wxTextCtrl( m_Panel_Blog_TextCtrl, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,200 ), wxTE_MULTILINE );
     m_TextCtrl_Blog->SetToolTip( wxT("The project description. Supports markdown.") );
 
-    m_Sizer_Blog_TextCtrl->Add( m_TextCtrl_Blog, 0, wxALL|wxEXPAND, 5 );
+    m_Sizer_Blog_Editor->Add( m_TextCtrl_Blog, 0, wxALL|wxEXPAND, 5 );
 
     m_Button_Blog_Preview = new wxButton( m_Panel_Blog_TextCtrl, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_Sizer_Blog_TextCtrl->Add( m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5 );
+    m_Sizer_Blog_Editor->Add( m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5 );
 
 
-    m_Panel_Blog_TextCtrl->SetSizer( m_Sizer_Blog_TextCtrl );
+    m_Panel_Blog_TextCtrl->SetSizer( m_Sizer_Blog_Editor );
     m_Panel_Blog_TextCtrl->Layout();
-    m_Sizer_Blog_TextCtrl->Fit( m_Panel_Blog_TextCtrl );
+    m_Sizer_Blog_Editor->Fit( m_Panel_Blog_TextCtrl );
     m_Splitter_Blog->SplitVertically( m_Panel_Blog_Tree, m_Panel_Blog_TextCtrl, 188 );
     m_Sizer_Blog->Add( m_Splitter_Blog, 1, wxEXPAND, 5 );
 
@@ -373,6 +427,13 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeItemMenu ), NULL, this );
     m_TreeCtrl_Blog->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeSelChanged ), NULL, this );
+    m_TextCtrl_Blog_File->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_File_OnText ), NULL, this );
+    m_TextCtrl_Blog_Name->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Name_OnText ), NULL, this );
+    m_TextCtrl_Blog_Icon->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Icon_OnText ), NULL, this );
+    m_TextCtrl_Blog_Tags->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Tags_OnText ), NULL, this );
+    m_TextCtrl_Blog_ToolTip->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_ToolTip_OnText ), NULL, this );
+    m_TextCtrl_Blog->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_OnText ), NULL, this );
+    m_Button_Blog_Preview->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Blog_Preview_OnButtonClick ), NULL, this );
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_OpenDir_OnMenuSelection ), this, m_MenuItem_OpenDir->GetId());
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_Save_OnMenuSelection ), this, m_MenuItem_Save->GetId());
 
@@ -405,7 +466,13 @@ Main::~Main()
     m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
     m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeItemMenu ), NULL, this );
     m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeSelChanged ), NULL, this );
-    //m_TextCtrl_Blog->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_OnText ), NULL, this );
+    m_TextCtrl_Blog_File->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_File_OnText ), NULL, this );
+    m_TextCtrl_Blog_Name->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Name_OnText ), NULL, this );
+    m_TextCtrl_Blog_Icon->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Icon_OnText ), NULL, this );
+    m_TextCtrl_Blog_Tags->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Tags_OnText ), NULL, this );
+    m_TextCtrl_Blog_ToolTip->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_ToolTip_OnText ), NULL, this );
+    m_TextCtrl_Blog->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_OnText ), NULL, this );
+    m_Button_Blog_Preview->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Blog_Preview_OnButtonClick ), NULL, this );
 }
 
 void Main::m_Splitter_ProjectsOnIdle(wxIdleEvent&)
@@ -681,6 +748,41 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event )
 
 }
 
+void Main::m_TextCtrl_Blog_File_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Blog_Name_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Blog_Icon_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Blog_Tags_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Blog_ToolTip_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_TextCtrl_Blog_OnText( wxCommandEvent& event )
+{
+
+}
+
+void Main::m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event )
+{
+
+}
+    
 Category* Main::FindCategory(wxTreeItemId item)
 {
     for (Category* cat : this->m_Category_Projects)
@@ -1173,6 +1275,7 @@ void Main::CompileProjects_Project(Project* proj)
     html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
     html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
     html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput)));
+    html_final.Replace("_TEMPLATE_PROJECTS_CATEGORY_", proj->category->foldername);
 
     // Handle image carousel
     for (wxString str : proj->images)
