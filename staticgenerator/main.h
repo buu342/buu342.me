@@ -71,7 +71,7 @@ class Main : public wxFrame
 {
 	private:
         bool m_Modified;
-		std::vector<Category*> m_Category_Blogs;
+		std::vector<Category*> m_Category_Blog;
         std::vector<Category*> m_Category_Projects;
 		wxString m_WorkingDir;
 		wxTreeItemId m_DraggedItem;
@@ -166,18 +166,26 @@ class Main : public wxFrame
         void m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event );
         void m_MenuItem_OpenDir_OnMenuSelection( wxCommandEvent& event );
         void m_MenuItem_Save_OnMenuSelection( wxCommandEvent& event );
-        Category* FindCategory(wxTreeItemId item);
+        Category* FindCategory_Projects(wxTreeItemId item);
+        Category* FindCategory_Blog(wxTreeItemId item);
         Project* FindProject(wxTreeItemId item);
+        Blog* FindBlog(wxTreeItemId item);
         void OnPopupClick_Projects(wxCommandEvent& event);
+        void OnPopupClick_Blog(wxCommandEvent& event);
 		void UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist);
         void LoadProjects();
+        void LoadBlog();
         void EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist);
         void EndDrag_Project(wxTreeEvent& event);
+        void EndDrag_Blog(wxTreeEvent& event);
 		void Save();
         void CompileProjects();
         void CompileProjects_List();
         void CompileProjects_Project(Project* proj);
+        void CompileProjects_Blog(Blog* proj);
         void MarkModified(bool modified=true);
         void ShowProjectEditor(bool show=true);
         void ShowProjectCategoryEditor(bool show=true);
+        void ShowBlogEditor(bool show=true);
+        void ShowBlogCategoryEditor(bool show=true);
 };

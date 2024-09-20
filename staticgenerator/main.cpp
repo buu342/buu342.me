@@ -22,6 +22,11 @@ bool project_sorter(Project* lhs, Project* rhs)
     return lhs->index < rhs->index;
 }
 
+bool blog_sorter(Blog* lhs, Blog* rhs)
+{
+    return lhs->index < rhs->index;
+}
+
 bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
 {
     return tree->GetRootItem() == tree->GetItemParent(item);
@@ -439,6 +444,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
 
     this->m_ChoiceBook_PageSelection->SetSelection(0);
     this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
+    this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
     this->LoadProjects();
 }
 
@@ -494,10 +500,11 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
     {
         this->m_WorkingDir = dir.GetPath();
         this->MarkModified(false);
+
         this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
         this->LoadProjects();
-        
-        //this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
+        this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
+        this->LoadBlog();
     }
 }
 
@@ -511,7 +518,7 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
     if (treeitem_iscategory(this->m_TreeCtrl_Projects, event.GetItem()))
     {
         wxTreeItemId id = event.GetItem();
-        Category* cat = this->FindCategory(id);
+        Category* cat = this->FindCategory_Projects(id);
         if (cat == NULL)
             return;
         cat->displayname = event.GetLabel();
@@ -597,7 +604,7 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item))
     {
-        Category* cat_elem = FindCategory(item);
+        Category* cat_elem = FindCategory_Projects(item);
         if (cat_elem == NULL)
             return;
         this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat_elem->foldername);
@@ -691,7 +698,7 @@ void Main::m_TextCtrl_Projects_ToolTip_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText( wxCommandEvent& event )
 {
-    Category* cat = FindCategory(this->m_SelectedItem);
+    Category* cat = FindCategory_Projects(this->m_SelectedItem);
     cat->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(cat->treeid, cat->displayname);
     this->MarkModified();
@@ -699,7 +706,7 @@ void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText( wxCommandEvent& event
 
 void Main::m_TextCtrl_ProjectsCategory_Description_OnText( wxCommandEvent& event )
 {
-    Category* cat = FindCategory(this->m_SelectedItem);
+    Category* cat = FindCategory_Projects(this->m_SelectedItem);
     cat->description = event.GetString();
     this->MarkModified();
 }
@@ -710,7 +717,7 @@ void Main::m_Button_Projects_Preview_OnButtonClick( wxCommandEvent& event )
     wxString url = wxString("");
     if (treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem))
     {
-        Category* cat = FindCategory(this->m_SelectedItem);
+        Category* cat = FindCategory_Projects(this->m_SelectedItem);
         CompileProjects_List();
         url = this->m_WorkingDir + wxString("/projects.html") + wxString("#") + cat->foldername;
     }
@@ -783,9 +790,17 @@ void Main::m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event )
 
 }
     
-Category* Main::FindCategory(wxTreeItemId item)
+Category* Main::FindCategory_Projects(wxTreeItemId item)
 {
     for (Category* cat : this->m_Category_Projects)
+        if (cat->treeid == item)
+            return cat;
+    return NULL;
+}
+    
+Category* Main::FindCategory_Blog(wxTreeItemId item)
+{
+    for (Category* cat : this->m_Category_Blog)
         if (cat->treeid == item)
             return cat;
     return NULL;
@@ -800,7 +815,7 @@ Project* Main::FindProject(wxTreeItemId item)
         return NULL;
 
     cat_id = this->m_TreeCtrl_Projects->GetItemParent(item);
-    cat_elem = FindCategory(cat_id);
+    cat_elem = FindCategory_Projects(cat_id);
     if (cat_elem == NULL)
         return NULL;
 
@@ -810,13 +825,32 @@ Project* Main::FindProject(wxTreeItemId item)
     return NULL;
 }
 
+Blog* Main::FindBlog(wxTreeItemId item)
+{
+    wxTreeItemId cat_id;
+    Category* cat_elem;
+
+    if (treeitem_iscategory(this->m_TreeCtrl_Blog, item))
+        return NULL;
+
+    cat_id = this->m_TreeCtrl_Blog->GetItemParent(item);
+    cat_elem = FindCategory_Blog(cat_id);
+    if (cat_elem == NULL)
+        return NULL;
+
+    for (void* bentry : cat_elem->pages)
+        if (((Blog*)bentry)->treeid == item)
+            return (Blog*)bentry;
+    return NULL;
+}
+
 void Main::OnPopupClick_Projects(wxCommandEvent& event)
 {
     int index = 0;
     wxTreeItemId cat = this->m_SelectedItem;
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
         cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
-    Category* cat_elem = this->FindCategory(cat);
+    Category* cat_elem = this->FindCategory_Projects(cat);
     Project* proj;
 
     if (cat_elem == NULL)
@@ -874,7 +908,8 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
         {
             if (folder == "projects")
                 delete (Project*)child;
-            // TODO: Handle blogs
+            if (folder == "blog")
+                delete (Blog*)child;
         }
         delete cat;
     }
@@ -1003,7 +1038,7 @@ void Main::LoadProjects()
             projects.push_back(proj);
         }
 
-        // Correct the indices of projects, to make sure they're in proper order
+        // Correct the indices of the projects, to make sure they're in proper order
         if (projects.size() > 0)
         {
             index = 0;
@@ -1016,6 +1051,69 @@ void Main::LoadProjects()
             {
                 proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat_id, proj->displayname);
                 cat_elem->pages.push_back(proj);
+            }
+        }
+    }
+    this->ShowProjectEditor(false);
+}
+
+void Main::LoadBlog()
+{
+    nlohmann::json pagejson = {};
+
+    // Open the blog json file
+    if (wxFileExists(this->m_WorkingDir + wxString("/blog/blog.json")))
+        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/blog/blog.json"))));
+
+    for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
+    {
+        int index = 0;
+        wxTreeItemId cat_id;
+        Category* cat_elem;
+        std::vector<Blog*> blogs;
+
+        // Find the category tree index
+        for (Category* cat : this->m_Category_Blog)
+        {
+            if (wxString(itcat.key()) == cat->foldername)
+            {
+                cat_elem = cat;
+                cat_id = cat->treeid;
+                break;
+            }
+        }
+
+        // Read the blog data from the JSON
+        for (nlohmann::json::iterator itblog = (*itcat)["Pages"].begin(); itblog != (*itcat)["Pages"].end(); ++itblog)
+        {
+            Blog* bentry = new Blog();
+            bentry->index = (*itblog)["Index"];
+            bentry->filename = wxString(itblog.key());
+            bentry->displayname = wxString((*itblog)["DisplayName"]);
+            bentry->icon = wxString((*itblog)["Icon"]);
+            bentry->date = wxString((*itblog)["Date"]);
+            bentry->tooltip = wxString((*itblog)["ToolTip"]);
+            bentry->content = string_fromfile(wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
+            bentry->tags.clear();
+            // TODO: Handle tags
+            bentry->category = cat_elem;
+            bentry->treeid = NULL;
+            blogs.push_back(bentry);
+        }
+
+        // Correct the blog entry indices, to make sure they're in proper order
+        if (blogs.size() > 0)
+        {
+            index = 0;
+            std::sort(blogs.begin(), blogs.end(), &blog_sorter);
+            for (Blog* bentry : blogs)
+                bentry->index = index++;
+
+            // Now add the blog entry to the tree
+            for (Blog* bentry : blogs)
+            {
+                bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat_id, bentry->displayname);
+                cat_elem->pages.push_back(bentry);
             }
         }
     }
@@ -1073,8 +1171,16 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
         // Reinsert the children
         for (void* child : src_elem->pages)
         {
-            Project* proj = (Project*)child;
-            proj->treeid = tree->InsertItem(src_elem->treeid, proj->index, proj->displayname);
+            if (tree == this->m_TreeCtrl_Projects)
+            {
+                Project* proj = (Project*)child;
+                proj->treeid = tree->InsertItem(src_elem->treeid, proj->index, proj->displayname);
+            }
+            else
+            {
+                Blog* bentry = (Blog*)child;
+                bentry->treeid = tree->InsertItem(src_elem->treeid, bentry->index, bentry->displayname);
+            }
         }
 
         // Correct the index values
@@ -1134,6 +1240,58 @@ void Main::EndDrag_Project(wxTreeEvent& event)
         }
 
         // Mark the project as modified
+        this->MarkModified();
+    }
+}
+
+void Main::EndDrag_Blog(wxTreeEvent& event)
+{
+    wxTreeItemId src = this->m_DraggedItem;
+    wxTreeItemId dest = event.GetItem();
+    this->m_DraggedItem = NULL;
+
+    // Ensure we have a valid destination node
+    if (!dest.IsOk() || src == dest)
+        return;
+
+    // Ignore placing the source directly above the destination, since it won't move at all.
+    if (this->m_TreeCtrl_Blog->GetPrevSibling(src) == dest)
+        return;
+
+    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, dest))
+    {
+        int index = 0;
+        Blog* blog_src = this->FindBlog(src);
+        Blog* blog_dest = this->FindBlog(dest);
+        Category* cat = blog_src->category;
+        std::vector<void*>* pages = &cat->pages;
+
+        // Ensure both blog entries are in the same category
+        if (cat != blog_dest->category)
+            return;
+
+        // Move the elements
+        if (blog_dest->index < blog_src->index)
+        {
+            pages->erase(pages->begin() + blog_src->index);
+            pages->insert(pages->begin() + blog_dest->index + 1, blog_src);
+        }
+        else
+        {
+            pages->erase(pages->begin() + blog_src->index);
+            pages->insert(pages->begin() + blog_dest->index, blog_src);
+        }
+        this->m_TreeCtrl_Blog->Delete(src);
+        blog_src->treeid = this->m_TreeCtrl_Blog->InsertItem(cat->treeid, dest, blog_src->displayname);
+
+        // Correct the index values
+        for (void* blogptr : *pages)
+        {
+            Blog* bentry = (Blog*)blogptr;
+            bentry->index = index++;
+        }
+
+        // Mark the blog as modified
         this->MarkModified();
     }
 }
@@ -1418,4 +1576,44 @@ void Main::ShowProjectCategoryEditor(bool show)
         this->m_Button_Projects_Preview->Hide();
     }
     this->m_Panel_Projects_Editor->Layout();
+}
+
+void Main::ShowBlogEditor(bool show)
+{
+    // TODO
+    /*
+    if (show)
+    {
+        this->m_ScrolledWindow_Project_Editor->Show();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+        this->m_Button_Projects_Preview->Show();
+    }
+    else
+    {
+        this->m_ScrolledWindow_Project_Editor->Hide();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+        this->m_Button_Projects_Preview->Hide();
+    }
+    this->m_Panel_Projects_Editor->Layout();
+    */
+}
+
+void Main::ShowBlogCategoryEditor(bool show)
+{
+    // TODO
+    /*
+    if (show)
+    {
+        this->m_ScrolledWindow_Project_Editor->Hide();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Show();
+        this->m_Button_Projects_Preview->Show();
+    }
+    else
+    {
+        this->m_ScrolledWindow_Project_Editor->Hide();
+        this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+        this->m_Button_Projects_Preview->Hide();
+    }
+    this->m_Panel_Projects_Editor->Layout();
+    */
 }
