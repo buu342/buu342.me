@@ -4,6 +4,11 @@
         <title>Ripping Assets From An Old Mobile Game - Music World</title>
         <link rel="shortcut icon">
         <link href="../blog.css" rel="stylesheet" type="text/css">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://buu342.me/blog/projects/MusicWorldRE.html">
+        <meta property="og:title" content="Ripping Assets From An Old Mobile Game - Music World">
+        <meta property="og:image" content="https://buu342.me/blog/projects/icons/MusicWorldRE.png">
+        <meta property="og:description" content="" />
     </head>
     
     <body>
@@ -14,7 +19,7 @@
             <p>This is a pretty lengthy article, because I cover a lot of the reverse engineering process and explain how I approached stuff (even if it was a dead end in the end). Hopefully leaving my trains of thought like this will teach people about reverse engineering who otherwise wouldn't even know where to begin! Also, I apologize if the website looks a little crude but because I am still in exam season, I haven't had the time to actually make it look presentable. Pure HTML will have to suffice for now...</p>
 <p>My very first smartphone was when I was about 13, and it was an <a href="https://www.lg.com/uk/mobile-phones/lg-GS290-cookie-fresh">LG Cookie Fresh (GS290)</a>. Not an amazing phone by any means... It had terrible multi-tasking (as in, as soon as you opened more than two applications it'd run out of memory) and a really finicky touch screen, but overall it was pleasant to use. There was one thing I really loved about the Cookie though, and that was a little game that came bundled with it called Music World. As a rhythm game, it's perfectly alright. It's main problem is that characters can appear on any position of the screen, and annoyingly overlap each other, causing you to fail notes simply because something got in the way, but it had great music and endearing graphics. I'm pretty sure I managed to 'S' almost all the levels, minus some of the harder 'Crazy Mode' ones due to the aformentioned gameplay quirk.</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/MusicWorldScreenshot.jpg" alt="" title="Music World screenshot"><br>
+<img src="images/MusicWorldRE/MusicWorldScreenshot.jpg" alt="" title="Music World screenshot"><br>
 This is one of few screenshots that I can find of the game that isn't taken with a camera, credit to <a href="https://www.gsmarena.com/lg_gd510_pop-review-407p8.php">this site</a>.
 </p></p>
 <p>Last week, when I was taking a break from studying for my insane exam season this semester, I randomly remembered this game and decided to search it up on Google. Unsurpsingly, this game is considered <a href="https://en.wikipedia.org/wiki/Lost_media">lost media</a> because it was exclusive to LG devices, which have long since been discontinued. Most footage of the game online is very rough (it's camera recordings of people playing the game on a phone), and there's <a href="https://www.youtube.com/playlist?list=PL5REnD4nRgv5Fk94mdAXV2KMwQnm91aNg">a soundtrack of the game on YouTube</a>, although it differs from how it sounds on my device (for reasons that will become clear soon). I found <a href="https://www.reddit.com/r/lostmedia/comments/kytgdo/anyone_has_this_mobile_game_for_download_music/">this</a> and <a href="https://www.reddit.com/r/lostmedia/comments/mrg97u/music_world_a_lost_phone_game_from_the_early_2000s/">this</a> Reddit post on the r/lostmedia subreddits about the game, and it seems that I am not the only one with fond memories of it.</p>
@@ -29,13 +34,13 @@ This is one of few screenshots that I can find of the game that isn't taken with
 <p>This isn't one of my first rodeos when it comes to game reverse engineering. A year ago I ripped out the assets from an old ShockWave 3D game called Escape the Boogeyman, which I intend on writing an article about some day as well (now that I have this super cool website!) because it was quite a wild ride. The first thing I always do is whip out a Hex Editor, with <a href="https://mh-nexus.de/en/hxd/">HxD</a> being my editor of choice, and I start searching for any obvious file headers.</p>
 <p>If you open any common files with a hex editor (like PNG's, WAV's, etc...) you will notice that the first few bytes of the file will always be something you can identify. PNG's, for instance, always start with the same 4 bytes (<code>89 50 4E 47</code>) which, if you look on the right side of the program, you should see they represent the word <code>PNG</code>. These headers are usually how programs distinguish between different files, not having them makes finding useful data in a big binary blob more challenging.</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/BinaryHeaderExample.png" alt="" title="Demonstration of the header of a PNG file in a hex editor">
+<img src="images/MusicWorldRE/BinaryHeaderExample.png" alt="" title="Demonstration of the header of a PNG file in a hex editor">
 </p></p>
 <p>I went ahead and searched for all sorts of header formats that I knew. The PXO contained uncompressed WAV's and MIDI's, which are relatively easy to extract. You can do this by hand with a hex editor by researching how the file is structured, and then calculating how many bytes you need to copy to get your image. Alternatively, if you know that all the files are stored one after the other, you can simply copy from the start of one file header to the next. Even if the file you rip out is larger than it's supposed to be, that's perfectly fine because the audio player or image viewer program will, for the most part, only take into account the first file header.</p>
 </br><h3 id="ripping-audio-with-an-audio-editor"> <a href="#ripping-audio-with-an-audio-editor">Ripping Audio With an Audio Editor</a></h3>
 <p>This is another cool trick that you can do if the audio is stored uncompressed. Audio editor software, such as <a href="https://www.audacityteam.org/">Audacity</a>, has the ability to import raw files. The program will try to translate what data it finds into audio, the results of which can be very unpleasant to listen to. With enough tweaking though (pretty much just trial and error), you can potentially find good audio located in your file.</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/AudacityRawAudio.png" alt="" title="Audacity Raw Audio import"><br>
+<img src="images/MusicWorldRE/AudacityRawAudio.png" alt="" title="Audacity Raw Audio import"><br>
 The highlighted audio is what we're looking for. This was achieved with Raw Import, Signed 16-bit PCM + Big-endian + Mono + 44100Hz.
 </p></p>
 <p>Sometimes audio will be sped up from what you're used to hearing. You can either lower the Sample Rate on import, or slow the audio down yourself. Speeding up audio is a common compression technique, as sped up audio is shorter, therefore it takes up less memory (when the game is running, the audio is played back slower).</p>
@@ -60,13 +65,13 @@ The highlighted audio is what we're looking for. This was achieved with Raw Impo
 </br><h3 id="searching-for-sprites"> <a href="#searching-for-sprites">Searching For Sprites</a></h3>
 <p>Sound and Music is pretty cool, but what I really wanted was to get the game's sprites. There were no known image headers in the binary, which I'm not too surprised about considering that it wouldn't make much sense to waste precious CPU time decoding the images on the fly (considering this is a small device with really tight memory and speed constraints). So I decided to use a tool which tries to display the bytes in the file as an image, hoping that I could spot some sprites. Since I do <a href="https://www.youtube.com/watch?v=ZgPWE0Wkg7g">N64 development</a>, I had <a href="https://github.com/queueRAM/Texture64">Texture64</a> handy, which confirmed that there indeed were sprites in an uncompressed format.</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/Texture64.png" alt="" title="Texture64">
+<img src="images/MusicWorldRE/Texture64.png" alt="" title="Texture64">
 </p></p>
 <p>If the sprites were compressed, they would definitely have much worse distortions or outright missing chunks. Thankfully, not the case here...</p>
 <p>The sprites seem to be in 16-bit RGBA format, but their colors are completely off. This means that either the images are paletted, or that the color information is stored in some other format (On the N64, it's 5 bits per color component and 1 bit for alpha, it could be that this game forgoes the alpha bit or uses some other combination of color data bits). Texture64 is good but I would need something a bit more heavy duty, so I got <a href="downloads/ISE.zip">Image Search Editor</a> (which seems to be really hard to find, so I uploaded an old copy of mine here). ISE has a lot of handy features, namely I can very easily scale the preview box to whatever size I need, I can bookmark offsets, and it has a few more color formats (like 24-bit and 1-bit).</p>
 <p>While playing with the tool, I came to the conclusion that the sprites were actually stored in 8-bit format, and not 16-bit. I figured this out because the sprites would clearly lose detail if they were previewed with 16-bit mode (while previewing in 4-bit mode would create gaps in the sprite), as can be seen here:</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/ColorDepthComparison.png" alt="" title="Color depth comparison">
+<img src="images/MusicWorldRE/ColorDepthComparison.png" alt="" title="Color depth comparison">
 </p></p>
 <p>So I had the size of a sprite, its bit depth, and most importantly the offset where the sprite was located in the big binary blob. I went to that offset with my hex editor and pulled out 38304 bytes worth of data (which is 252 x 152 (the width and height of the sprite) multiplied by one (the bit depth divided by 8)), which I could look at in isolation. I did this for 2 more sprites, and thinking I had enough data to work with I decided to start trying to unpack their secrets.</p>
 </br><h3 id="figuring-out-the-sprite-format"> <a href="#figuring-out-the-sprite-format">Figuring Out the Sprite Format</a></h3>
@@ -107,17 +112,17 @@ typedef struct {
 <p>The number of colors was very likely also embedded in the header itself, so I took the number of colors each image had, converted to hexadecimal, and found that it consistently matched the 11th byte of each header.</p>
 <p>I don't like <a href="https://www.wxhexeditor.org/">wxHexEditor</a> as much as HxD, but it comes with the super useful ability to let me add colors and labels, which is invaluable for getting your bearings in big binary blobs.</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/wxHexEditor.png" alt="" title="Demonstration of labeling in wxHexEditor">
+<img src="images/MusicWorldRE/wxHexEditor.png" alt="" title="Demonstration of labeling in wxHexEditor">
 </p></p>
 <p>Anyway, I already have all the important information I need: the width, height, and the palettes. Now it was just a matter of trying to figure out how the color was stored. Could it be 8 bits per R G B value (no alpha)? 7 bits per R G B + 3 for alpha? Best way to find out was to experiment. I wrote a quick Python script that would take the image header and the image data as two separate binary files and attempt to generate a PNG. I started by assuming that the images were in 8:8:8 format:</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/ScriptResult1.png" alt="" title="The result of the test script">
+<img src="images/MusicWorldRE/ScriptResult1.png" alt="" title="The result of the test script">
 </p></p>
 <p>Oh... Well, I'm not gonna lie, I'm both relieved and underwhelmed that it was really that easy...</p>
 <p>Now, at this stage I could write a script to search and rip everything in the PXO, but there's still a few bytes in the header that are left to be figured out. I decided to search around a bit more with ISE to see if I could find some more sprites that could potentially break my current header struct.</p>
 <p>Like for instance, I saw this sprite, which looked like it stored an animation:</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/PotentialAnimation.png" alt="" title="A potential animation">
+<img src="images/MusicWorldRE/PotentialAnimation.png" alt="" title="A potential animation">
 </p></p>
 <p>There were no gaps in the image, so one of those mystery bytes in the header could potentially be the amount of frames in an animation. I ripped out the image and the header and started analyzing. Nope, I'm wrong. Turns out I had the wrong sprite size in the preview box, which led ISE to display it as 3 sprites, instead of 1 big one. If I had replayed the game, I would have seen that this boss' hurt state is not actually animated, it's just a static image... Kinda annoying that my touch screen won't behave.</p>
 <p>Digging around, there was actually one very large sprite (135 x 293), so I wanted to see how the sprite header took this into account (as it would need more than one byte to store the value 293). Turns out that the image width and height is actually 2 bytes long, not just 1. And interestingly enough, the data is byte swapped (it showed up as 0x25 0x01) implying that the data is stored in little endian format. So the header is actually supposed to be like this:</p>
@@ -140,7 +145,7 @@ typedef struct {
 <p>The next day, I was feeling a bit excited so I decided that those 5 bytes weren't important, and that instead I would start expanding my script to search and rip assets from the PXO. In order to do that, however, I needed to find out where the sprite data begins in the PXO. I started searching the entire binary with ISE, and I found a potential offset, but there was something that was bugging me. There were a bunch of bytes there that <em>looked</em> like sprites, but weren't displaying correctly. I decided to play around with the different preview formats, and sure enough turns out that there are some 4-bit images in there too.</p>
 <p>So like I did with the 8-bit ones, I ripped out the images and their headers and started analyzing. Fortunately, the header format was exactly the same minus one change: the first byte was <code>0x8B</code>. So now I have confirmation that there are multiple different format types stored in the binary and it was a matter of expanding my script to also convert 4-bit images. I assumed that the texel data was stored just like in the 8-bit format, except the first 4 bits would map to the color of the odd column of texels, and the other 4 bits to the even column of texels (<a href="https://buu342.github.io/GML-N64TextureConverter/103_2_ci.html">similar to the 4-Bit Color Index mode I use a lot in N64 textures</a>). I ran my test image through the script, and it confirmed my deduction:</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/MusicWorld4BitConverted.png" alt="" title="The 4-bit sprite conversion">
+<img src="images/MusicWorldRE/MusicWorld4BitConverted.png" alt="" title="The 4-bit sprite conversion">
 </p></p>
 <p>With the help of ISE, I concluded that the image data started at offset <code>0x11155C</code> and ended on <code>0x80CFFC</code> in the PXO. I expanded my script to start looking for and dumping headers + image data from the binary, but trying to run that script kept giving me problems...</p>
 <p>I was under the impression that the data was contigous (IE it was always the image header followed by the image data, no stray bytes), but turns out that this wasn't always the case. There was <em>a lot</em> of stray bytes. Maybe skipping over those 5 mystery bytes wasn't such a good idea.</p>
@@ -148,7 +153,7 @@ typedef struct {
 <p>Knowing that the &quot;dictinary of bad offsets&quot; thing was not a viable long-term solution, I tried to devise my script to be a bit smarter. Instead, the script will read bytes until it encounters one of the known image headers (so either <code>0x8B</code> or <code>0x8C</code>), and then assume that the rest of the header is correct <em>with a few caveats</em>. For instance, if the image header said that the sprite was 4-bit, but the palette value said that the image had more than 16 colors, then I would know that this was not a valid header. Similarly, I would throw out images with width/height size 0.</p>
 <p>This was very close, but sometimes my script would find images with enormous sizes (like over a thousand pixels wide/tall), which I very much knew could not be correct... While using my manual dictionary approach, the largest images I found were around 500 pixels, so I wrote in a static maximum image width/height of 600, and added that to the valid image conditions. This script finally managed to rip from start to finish without any weird looking sprites being outputted.</p>
 <p><p align="center">
-<img src="images/00-MusicWorldRE/MusicWorldRipCollection.png" alt="" title="All the images that were ripped">
+<img src="images/MusicWorldRE/MusicWorldRipCollection.png" alt="" title="All the images that were ripped">
 </p></p>
 <p>Looking at the program's log, I was worried that I could be potentially jumping over a lot of important data (the script sometimes end up skipping over kilobytes), so I started to wonder if there were other image formats hidden in the file. Sure enough, searching these big offsets with ISE led to me to discover there were also 2-bit and 1-bit formats stored in the binary.</p>
 <p>The 2-bit format begun with <code>0x8A</code>, and the 1-bit format with <code>0x89</code>. I assumed that the texel format was stored in a similar method to the 4-bit format (so it would be 2 bits per palette index value in the 2-bit format, and 1 bit per palette index in the 1-bit format). Running those headers+image data through my script yielded correct looking results. So I updated the script to also try to find these images.</p>

@@ -4,6 +4,11 @@
         <title>Building a Sleeper Computer from an SGI Indy</title>
         <link rel="shortcut icon">
         <link href="../blog.css" rel="stylesheet" type="text/css">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://buu342.me/blog/projects/SGIIndySleeper.html">
+        <meta property="og:title" content="Building a Sleeper Computer from an SGI Indy">
+        <meta property="og:image" content="https://buu342.me/blog/projects/icons/SGIIndySleeper.png">
+        <meta property="og:description" content="" />
     </head>
     
     <body>
@@ -32,7 +37,7 @@
 <li>A GPU, I chose the AMD RX 6900XT at random, 267mm x 120mm x 5mm</li>
 </ul>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Sketchup.png" alt="" title="Sketchup screenshot"><br>
+<img src="images/SGIIndySleeper/Sketchup.png" alt="" title="Sketchup screenshot"><br>
 They seem to fit.
 </p></p>
 <p>They not only fit, but there's quite a bit of space left. I originally thought about water cooling, but after reading measurements online I realized it would be really hard, if not impossible in such a compact space. Two 120mm fans will fit (one for intake, one for exhaust), so regular air cooling it is...</p>
@@ -53,20 +58,20 @@ They seem to fit.
 </ul>
 <p>I loaded up the models and started placing them around my box to ensure that everything truly still fit:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD1.png" alt="" title="FreeCAD early chassis"><br>
+<img src="images/SGIIndySleeper/CAD1.png" alt="" title="FreeCAD early chassis"><br>
 And they do.
 </p></p>
 <p>Notice how the SSD is placed on top of the GPU. It was either there, or on top of the power supply... Unfortunately the space behind the GPU was just a centimeter too short to fit the SSD, so it will need to go on top of something, if I end up going with one. I intended on having an NVME as well, but I wanted a disk on the side as backup.</p>
 <p>All of this, of course, was hinging on the fact that the measurements of the box were actually correct... So I decided to buy some cardboard and make a test box:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Cardboard1.jpg" alt="" title="First cardboard model"><br>
+<img src="images/SGIIndySleeper/Cardboard1.jpg" alt="" title="First cardboard model"><br>
 The cardboard box and the paper I printed out with the measurements.
 </p></p>
-<p>This cardboard box taught me two things: First, the top bend on the left side was too long. The box would end up hitting <a href="images/01-SGIIndySleeper/PlasticTab.jpg">a plastic tab that sticks out on the top of the case</a>. The second was that the fit was incredibly tight. Just to be extra safe, I decided to shave off 1 milimeter off the side, so the final width would be 389 mm.</p>
+<p>This cardboard box taught me two things: First, the top bend on the left side was too long. The box would end up hitting <a href="images/SGIIndySleeper/PlasticTab.jpg">a plastic tab that sticks out on the top of the case</a>. The second was that the fit was incredibly tight. Just to be extra safe, I decided to shave off 1 milimeter off the side, so the final width would be 389 mm.</p>
 </br><h3 id="parts"> <a href="#parts">Parts</a></h3>
 <p>Feeling comfortable that this build was very much possible, I decided to take the jump and buy the parts. These were what I settled on:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Parts.png" alt="" title="Parts"><br>
+<img src="images/SGIIndySleeper/Parts.png" alt="" title="Parts"><br>
 I used <a href="https://pcpartpicker.com/">PCPartPicker</a> since it lets me select parts available on stores in my country, and will warn me of incompatibilities.
 </p></p>
 <p>I originally wanted to go with an 6900XT, but I decided to go for a 6700 instead because the 6800 and 6900 from Sapphire (I had settled on a Sapphire card due to warranty + general recommendation) were actually bigger than the GPU model I had. This would make the fit too tight to my liking, so I scaled down the power. You might have also noticed I went with full AMD. I intend on running Linux as my daily driver, so a AMD GPU is usually a better choice due to compatibility. For these sort of compact builds, blower style cards are usually the better option, but unfortunately there aren't any for sale for the 6000 series of graphics cards.</p>
@@ -74,20 +79,20 @@ I used <a href="https://pcpartpicker.com/">PCPartPicker</a> since it lets me sel
 <p>Almost everything was bought from Europe, with the exception of the PSU which was sold by OverTek in the UK. Things arrived in a day or two, with the riser and PSU taking the longest.</p>
 <p>Having everything here, I decided to build the PC on top of the boxes to ensure all the components worked before I potentially massacred them.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Outside.jpg" alt="" title="PC built on cardboard boxes"><br>
+<img src="images/SGIIndySleeper/Outside.jpg" alt="" title="PC built on cardboard boxes"><br>
 A beautiful mess of a computer.
 </p></p>
-<p>Turning a computer on without a power button is just a matter of shorting two pins on the motherboard with a screwdriver <a href="images/01-SGIIndySleeper/TurningOn.mp4">like so</a>. That's all a power button does, really. It just connects the two pins together when pressed.</p>
+<p>Turning a computer on without a power button is just a matter of shorting two pins on the motherboard with a screwdriver <a href="images/SGIIndySleeper/TurningOn.mp4">like so</a>. That's all a power button does, really. It just connects the two pins together when pressed.</p>
 </br><h3 id="finishing-the-cad-model"> <a href="#finishing-the-cad-model">Finishing the CAD Model</a></h3>
 <p>I have a working computer, now I just need a box to put it in. I kept working on the model, I even made a small model of the riser from measurements to ensure the GPU was correctly offset to the side. I also made a neat discovery: The GPU is actually slightly shorter than what was said online, meaning I could mount the SSD behind it instead of on top of something, hooray!</p>
 <p>Some CAD work later, I finished the design of the box:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD2.png" alt="" title="Final CAD model">
+<img src="images/SGIIndySleeper/CAD2.png" alt="" title="Final CAD model">
 </p></p>
 <p>I should use this opportunity to talk about design decisions.</p>
-<p>If you look at what an Indy looks like <a href="images/01-SGIIndySleeper/IndyBottom.jpg">from below</a>, you will notice that the metal completely touches the side wall on one side, but has a gap on the other side and in the front. This lets me have screws and stuff poking out. This was one of the reasons for placing the GPU where I did (the other was that the intake fans could suck from the bottom).</p>
+<p>If you look at what an Indy looks like <a href="images/SGIIndySleeper/IndyBottom.jpg">from below</a>, you will notice that the metal completely touches the side wall on one side, but has a gap on the other side and in the front. This lets me have screws and stuff poking out. This was one of the reasons for placing the GPU where I did (the other was that the intake fans could suck from the bottom).</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD_ChassisBottom.png" alt="" title="CAD Chassis Bottom">
+<img src="images/SGIIndySleeper/CAD_ChassisBottom.png" alt="" title="CAD Chassis Bottom">
 </p></p>
 <p>The bottom of the chassis has two big fan holes, one for intake and one for exhaust, as well as two smaller holes for the GPU intake fans. It also has holes for the fan screws, motherboard standoff, and the SSD. It's a good idea to check what the size of each screw is, as you want the hole to be the exact same size as the screw. The hole doesn't need to be threaded! If it's the same size as the screw, the screw will thread itself.</p>
 <p>The screw diameters are as follows:</p>
@@ -97,32 +102,32 @@ A beautiful mess of a computer.
 <li>SSD: 3mm</li>
 </ul>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD_ChassisRear.png" alt="" title="CAD Chassis Back">
+<img src="images/SGIIndySleeper/CAD_ChassisRear.png" alt="" title="CAD Chassis Back">
 </p></p>
 <p>The GPU backplate was removed and the output ports + screw holes were measured. I could not find a nice way of having the backplate mounted, so cutting to fit was the next best thing. It does mean that if I need to change the GPU, then the back will need to be redone... But considering how long I kept my laptop around, I probably won't be upgrading any time soon. The size of motherboard backplate is standardized, you can find the ATX standard <a href="https://web.aub.edu.lb/pub/docs/atx_201.pdf">here</a> (the backplate is on page 16). Just remember to have it 7mm off the ground (1mm for the aluminum thickness, and 6mm for the standoff screw).</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD_ChassisRight.png" alt="" title="CAD Chassis Right">
+<img src="images/SGIIndySleeper/CAD_ChassisRight.png" alt="" title="CAD Chassis Right">
 </p></p>
 <p>The right side has a hole on the bottom left that corresponds with the vent grill on the case, two holes for mounting the riser card with some screws, and in the floppy drive section on the top right I added a USB and Headphone hole for some side IO. I collect CD's, and while it would be nice to have a CD player, I don't want to perform <a href="http://www.maestling.com/indy-cdrom/index.html">this cursed mod</a>.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD_ChassisFront.png" alt="" title="CAD Chassis Front">
+<img src="images/SGIIndySleeper/CAD_ChassisFront.png" alt="" title="CAD Chassis Front">
 </p></p>
 <p>The front has some holes on the left for the front buttons and the green power LED, a vent hole below it, three holes on the bottom for the plastic tabs, and some small holes on the sides to hold the sheet metal together with the help of some tabs. The holes on the left are lower because I was afraid that the plastic that holds the front buttons would get in the way.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/CAD_ChassisTabs.png" alt="" title="CAD Chassis Tabs"><br>
+<img src="images/SGIIndySleeper/CAD_ChassisTabs.png" alt="" title="CAD Chassis Tabs"><br>
 Interior shot of one of the tabs.
 </p></p>
 <p>In order to keep the box's shape, there needs to be some way to hold the walls in place. What I did was extend out the sides to create the tabs in that picture. The idea was that I would use a pop rivet gun to rivet the tabs, keeping the shape. Because the rivets will stick out a bit, I needed to be careful with the hole placement.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/TabsDiagram.png" alt="" title="CAD Chassis Tabs"><br>
+<img src="images/SGIIndySleeper/TabsDiagram.png" alt="" title="CAD Chassis Tabs"><br>
 Here's a top down diagram of the walls and their tabs
 </p></p>
 <p>Since there's that space between the front plastic and the chassis, I had no concerns placing the front tabs. Same goes of the one on the right. The left tab was the problem... I could've had the tab sticking out to the right, but I feared that the 1mm gap between the PSU and the chassis would make it harder to screw in. I kept the tab pointing downwards, but I didn't make rivet holes since rivets would not be possible on that side of the case. Perhaps I could have someone weld the tab to the interior wall instead?</p>
 <p>Be careful when making tabs. Remember that the box needs to be bent into shape, so you can't have tabs designed in a way which would make the folding process impossible.</p>
 <p>Feeling confident, I decided to make some technical drawings, print them out on paper, cut them out on cardboard, and screw the parts onto them to ensure everything was in place:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Cardboard2.jpg" alt="" title="Second cardboard model">
-<img src="images/01-SGIIndySleeper/Cardboard3.jpg" alt="" title="Parts attached">
+<img src="images/SGIIndySleeper/Cardboard2.jpg" alt="" title="Second cardboard model">
+<img src="images/SGIIndySleeper/Cardboard3.jpg" alt="" title="Parts attached">
 </p></p>
 <p>Here I made an annoying discovery: the CPU Cooler is actually slightly larger than the model, so it would make fitting the motherboard impossible. I had to shift it up a bit, being careful not to block the holes where the tabs on the bottom of the case were.</p>
 <p>After making the corrections and confirming in another model that everything fit this time, I felt like it was time to move onto the next step.</p>
@@ -131,54 +136,54 @@ Here's a top down diagram of the walls and their tabs
 <p>I originally sent them an STL model of the box before and after folding, but they asked me for PDFs/DXFs. I thought it was like 3D printing, where the model was important, but I guess not. I sent them Technical Drawings, but they complained that the measurements weren't adding up, and they were also obscuring parts of the drawing. One phone call later, it turns out they just needed a 1:1 ratio drawing of just the unfolded box. Not what I was expecting at all, but fair enough.</p>
 <p>A few days later, the pickup was ready:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Chassis.jpg" alt="" title="Chassis">
+<img src="images/SGIIndySleeper/Chassis.jpg" alt="" title="Chassis">
 </p></p>
 <p>I sure hope it fits... And it does, like a glove!</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/ChassisFitTest.jpg" alt="" title="Chassis fit test">
+<img src="images/SGIIndySleeper/ChassisFitTest.jpg" alt="" title="Chassis fit test">
 </p></p>
 <p>The box is almost perfect, if you look at the bottom left you will notice that one of the PSU holes is cracked. It was my fault for putting them so close to the PSU vent hole.</p>
 </br><h3 id="chassis-modifications"> <a href="#chassis-modifications">Chassis Modifications</a></h3>
 <p>Despite the nice fit, the chassis wasn't perfect, and this was entirely oversights from my part.</p>
 <p>The first main issue was that I could feel the plastic tabs at the front of the case being stressed hard by the chassis. I decided to whip out my dremel (I bought one years ago for <a href="https://imgur.com/gallery/NsLUxGI">Cosplay work</a>) and to grind out the tabs to give the tabs some breathing room.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/AdjustmentsFront.jpg" alt="" title="Adjustments front"><br>
+<img src="images/SGIIndySleeper/AdjustmentsFront.jpg" alt="" title="Adjustments front"><br>
 A beautiful straight line
 </p></p>
-<p>The second issue was that the Indy has <a href="images/01-SGIIndySleeper/FrontNudge.png">a little nudge on the back</a> to keep the chassis in place. I don't need the nudge, and it was actively making removing of the chassis really difficult. The Indy originally has a plastic piece that lets you use your finger strength to <a href="https://www.youtube.com/watch?v=HdHRtP2WtxE">pull the chassis apart</a>, but because this design is such a tight fit the extra security isn't needed. So I took the dremel with a cutting disk and did some hand work:</p>
+<p>The second issue was that the Indy has <a href="images/SGIIndySleeper/FrontNudge.png">a little nudge on the back</a> to keep the chassis in place. I don't need the nudge, and it was actively making removing of the chassis really difficult. The Indy originally has a plastic piece that lets you use your finger strength to <a href="https://www.youtube.com/watch?v=HdHRtP2WtxE">pull the chassis apart</a>, but because this design is such a tight fit the extra security isn't needed. So I took the dremel with a cutting disk and did some hand work:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/AdjustmentsBack.jpg" alt="" title="Adjustments back"><br>
+<img src="images/SGIIndySleeper/AdjustmentsBack.jpg" alt="" title="Adjustments back"><br>
 Never have I seen such a steady hand!
 </p></p>
 <p>While aluminum dust isn't toxic, you should still wear a mask and some goggles. Aluminum dust is <strong>highly conductive</strong> however, so be sure to give it a good wash and pass with a damp cloth.</p>
 <p>Another oversight I ran into was that the rivets on the GPU side were actually hitting the plastic, because it sticks out a bit. Doh! Thankfully you can remove pop rivets with a hammer and a screw driver. No one will ever see the scuffs on the inside of the chassis anyway ^^'</p>
 <p>Obviously, the fan holes are a fantastic way to turn the inside of my case into a dust bunny. Aluminum is not magnetic, so I couldn't get those nice magnetic dust filters. I went to the hardware store and bough some wire mesh, which I made some small paper stencils and then transfered over and cut. I originally tried to cut the mesh with the dremel's cutting disk, but it broke three of my disks. Instead, I took a pair of scissors, and with much brute force, I had something I was happy with:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/WireMesh.jpg" alt="" title="Adjustments back"><br>
+<img src="images/SGIIndySleeper/WireMesh.jpg" alt="" title="Adjustments back"><br>
 Bent by hand too. This wire mesh was really sharp, managed to cut myself a few times. Should've worn gloves...
 </p></p>
 <p>The holes were originally made with a drill, but the drill bit either got stuck or would flex the mesh. So instead I took a grindy dremel bit and made the holes very patiently...</p>
 </br><h3 id="putting-everything-together"> <a href="#putting-everything-together">Putting everything together</a></h3>
 <p>Because I want the front to turn the PC on and off, I put some buttons and an LED on a protoboard and soldered some wires to them.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/Protoboard.jpg" alt="" title="Front I/O Protoboard">
+<img src="images/SGIIndySleeper/Protoboard.jpg" alt="" title="Front I/O Protoboard">
 </p></p>
 <p>I got some wires with female pin headers to connect to the motherboard I/O pins. The power LED pins on the motherboard draw 5V (I checked with my multimeter), but the LED was rated for 3V, so I soldered two 100ohm resistors in series to step the voltage down. Unfortunately, the local electronics store only had one pair of female pin header wires, so the LED is currently unhooked.</p>
 <p>I drilled some holes on the front of the chassis + on the protoboard and screwed it in place.</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/FrontIO.jpg" alt="" title="Front I/O"><br>
+<img src="images/SGIIndySleeper/FrontIO.jpg" alt="" title="Front I/O"><br>
 A little scuffed from the drill bit slipping, but again, no one will see it.
 </p></p>
 <p>The screwheads sticking out isn't a problem because the buttons already stick out, so it will never scratch the case plastic. The volume buttons don't do anything for the time being,</p>
 <p>Putting everything together:</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/PCInside.jpg" alt="" title="Inside the PC"><br>
+<img src="images/SGIIndySleeper/PCInside.jpg" alt="" title="Inside the PC"><br>
 Currently is not cable managed since I need to disassemble it later to solder the LED wires.
 </p></p>
 <p>Time for the moment of truth...</p>
 <p><p align="center">
 <video width="50%" controls>
-<source src="images/01-SGIIndySleeper/FinalOn.mp4" type="video/mp4">
+<source src="images/SGIIndySleeper/FinalOn.mp4" type="video/mp4">
 </video>
 </p></p>
 <p>It works (besides the power LED which isn't hooked up yet).</p>
@@ -189,17 +194,17 @@ Currently is not cable managed since I need to disassemble it later to solder th
 <li>Remember the holes I made to screw in the GPU riser? The right-most one is useless due to it hitting the plastic at the back (aka the same problem as the rivets), the other one is fine.</li>
 <li>The screw holes for the GPU are slightly too big, so a washer needs to be placed to prevent them from going into the case. The washers need to be trimmed or they block the DVI output.</li>
 <li>Due to the lack of rivets on the left side tab, there's a small gap between the two walls. Again, I should look into welding those. Next time, I should have the tabs riveted to the back face (similar to the front face), but just having a section cut out to fit the PSU + GPU.</li>
-<li>The side I/O is a <a href="images/01-SGIIndySleeper/SideIO.jpg">milimeter too much to the bottom</a>, making it useless. I'm not sure where I went wrong in my measurements, but I know I didn't test the side I/O in my cardboard model. Basically I was stupid. I wasn't planning on populating those just yet anyway, but looks like I'll need to do some grinding to fix that...</li>
+<li>The side I/O is a <a href="images/SGIIndySleeper/SideIO.jpg">milimeter too much to the bottom</a>, making it useless. I'm not sure where I went wrong in my measurements, but I know I didn't test the side I/O in my cardboard model. Basically I was stupid. I wasn't planning on populating those just yet anyway, but looks like I'll need to do some grinding to fix that...</li>
 </ul>
 <p>The end!</p>
 <p><p align="center">
-<img src="images/01-SGIIndySleeper/End.jpg" alt="" title="The End">
+<img src="images/SGIIndySleeper/End.jpg" alt="" title="The End">
 </p></p>
 <p><strong>Update 16/09/2022</strong>
-I have <a href="images/01-SGIIndySleeper/LEDProtoboard">soldered the Power LED to the wires and resistors</a>, and it works now. I had to connect it to the HDD LED cable though, because apparently the POWER LED cable is to tell you that the motherboard is connected to the socket, not that the PC is on. Whoops!</p>
+I have <a href="images/SGIIndySleeper/LEDProtoboard">soldered the Power LED to the wires and resistors</a>, and it works now. I had to connect it to the HDD LED cable though, because apparently the POWER LED cable is to tell you that the motherboard is connected to the socket, not that the PC is on. Whoops!</p>
 <p><p align="center">
 <video width="50%" controls>
-<source src="images/01-SGIIndySleeper/FrontLED.mp4" type="video/mp4"></br>
+<source src="images/SGIIndySleeper/FrontLED.mp4" type="video/mp4"></br>
 </video>
 </p></p>
 <p>If you want my CAD files, then feel free to grab them from <a href="downloads/SGIIndyCAD.zip">here</a>.</p>

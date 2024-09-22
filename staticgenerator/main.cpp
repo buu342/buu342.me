@@ -1,14 +1,14 @@
 // TODO:
-// * HTML Meta tags should be part of template
-// * Sash gravity when resizing
-// * Make old pages redirect
-// * Windows fixes
-// * Fix how a newline gets appended to the end of the markdown file
-// * Throw warning when markdown parsing is problematic
-// * Implement homepage with latest stuff list
-// * Make project/blog list section's resize properly with window resize
-// * Make images properly resize with window resize if going out of margin
-// * Implement tag system
+// * (SSG)      Sash gravity when resizing
+// * (MANUAL)   Make old pages redirect
+// * (SSG)      Windows fixes
+// * (SSG)      Fix how a newline gets appended to the end of the markdown file
+// * (SSG)      Throw warning when markdown parsing is problematic
+// * (JS)       Make project/blog list section's resize properly with window resize
+// * (JS)       Make images properly resize with window resize if going out of margin
+// * (JS)       Click image to open it in new tab
+// * (SSG)      Implement tag system
+// * (SSG)      Implement homepage with latest stuff list
 
 #include <map>
 #include <vector>
@@ -1773,6 +1773,9 @@ void Main::CompileProjects_Project(Project* proj)
     md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
     html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", html_md);
     html_final.Replace("_TEMPLATE_PROJECTS_CATEGORY_", proj->category->foldername);
+    html_final.Replace("_TEMPLATE_PROJECT_URL_", relativepath + proj->filename + wxString(".html"));
+    html_final.Replace("_TEMPLATE_PROJECT_IMAGE_", relativepath + proj->icon);
+    html_final.Replace("_TEMPLATE_PROJECT_TOOLTIP_", proj->tooltip);
 
     // Handle image carousel
     for (wxString str : proj->images)
@@ -1939,6 +1942,9 @@ void Main::CompileBlog_Entry(Blog* bentry)
     md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
     html_final.Replace("_TEMPLATE_BLOG_CONTENT_", *md_unsanitize(&html_md));
     html_final.Replace("_TEMPLATE_BLOG_CATEGORY_", bentry->category->foldername);
+    html_final.Replace("_TEMPLATE_BLOG_URL_", relativepath + bentry->filename + wxString(".html"));
+    html_final.Replace("_TEMPLATE_BLOG_IMAGE_", relativepath + bentry->icon);
+    html_final.Replace("_TEMPLATE_BLOG_TOOLTIP_", bentry->tooltip);
     
     // Generate the page itself
     if (!bentryout.Exists())
