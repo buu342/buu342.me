@@ -8,6 +8,7 @@ My very first smartphone was when I was about 13, and it was an [LG Cookie Fresh
 
 <p align="center">
 ![Music World screenshot](images/00-MusicWorldRE/MusicWorldScreenshot.jpg)
+
 This is one of few screenshots that I can find of the game that isn't taken with a camera, credit to [this site](https://www.gsmarena.com/lg_gd510_pop-review-407p8.php).
 </p>
 

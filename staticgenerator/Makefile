@@ -1,4 +1,4 @@
-CODEFILES   = app.cpp main.cpp tags.cpp
+CODEFILES   = app.cpp main.cpp tags.cpp include/md4c/entity.c include/md4c/md4c-html.c include/md4c/md4c.c
 LIBFILES    = 
 BUILDDIR = build
 CODEOBJECTS = $(CODEFILES:%.cpp=${BUILDDIR}/%.o)
@@ -19,16 +19,16 @@ ifeq ($(OS_NAME),Darwin)
 endif
 
 # Standard preprocessor flags (common for CC and CXX) 
-CPPFLAGS ?= 
+CPPFLAGS ?= -Iinclude/ -Iinclude/md4c/
 
 # Standard linker flags 
 ifeq ($(OS_NAME),Darwin)
 	HOMEBREW_PREFIX=$(shell brew --prefix)
 	HOMEBREW_CELLAR=$(shell brew --cellar)
-	CXXFLAGS += -I$(HOMEBREW_PREFIX)/include -Iinclude/
+	CXXFLAGS += -I$(HOMEBREW_PREFIX)/include 
 	LDFLAGS ?= $(shell pkg-config --libs-only-other)
 else
-	CXXFLAGS += -Iinclude/
+	CXXFLAGS +=
 	LDFLAGS ?= 
 endif
 
@@ -67,16 +67,16 @@ PROGRAM_CXXFLAGS = -I. `$(WX_CONFIG) --cxxflags $(WX_CONFIG_FLAGS)` $(CPPFLAGS) 
 ### Conditionally set variables: ###
 
 ifeq ($(WX_UNICODE),0)
-WX_CONFIG_UNICODE_FLAG = --unicode=no
+	WX_CONFIG_UNICODE_FLAG = --unicode=no
 endif
 ifeq ($(WX_UNICODE),1)
-WX_CONFIG_UNICODE_FLAG = --unicode=yes
+	WX_CONFIG_UNICODE_FLAG = --unicode=yes
 endif
 ifeq ($(WX_SHARED),0)
-WX_CONFIG_SHARED_FLAG = --static=yes
+	WX_CONFIG_SHARED_FLAG = --static=yes
 endif
 ifeq ($(WX_SHARED),1)
-WX_CONFIG_SHARED_FLAG = --static=no
+	WX_CONFIG_SHARED_FLAG = --static=no
 endif
 
 ifeq ($(DEBUG),1)

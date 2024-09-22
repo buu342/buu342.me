@@ -1,7 +1,3 @@
-# Building a Sleeper Computer from an SGI Indy
-
-##### Published 04/09/2022 ###############################################
-
 I've had my hands on the blue outer shell of a [Silicon Graphics Indy](https://en.wikipedia.org/wiki/SGI_Indy) for a while. It was originally intended for something that ended up falling apart, so I just left it in storage until I could find a use for it. SGI computers, in general, are something I find quite cool due to their history relating to CGI in cinema, but the Indy is a particular standout for me due to its frequent use in making Nintendo 64 games ([I make N64 homebrew](https://www.youtube.com/watch?v=ZgPWE0Wkg7g), in case you weren't aware!).
 
 2020 came along and I had quite a bit of money saved up, so I thought it was time I finally build a PC. Unfortunately, that was the start of the COVID pandemic, and the subsequent rise in costs for PC hardware worldwide. Bummer.
@@ -17,7 +13,7 @@ I'm not the first person to make a sleeper computer. The YouTube channel Linus T
 
 1. Keep it as close to the original as possible. This means that I can't cheat by have parts sticking out from the sides or hiding from behind where one won't see it normally.
 2. Absolutely **no modification of the shell in any way**. I want the shell to be removable and to be put on a real SGI Indy with no mutilations. The original hardware won't be getting any less rare...
-3. Budget of around 2000€. I originally had about 1500€, but saving up those two years I had about 3000 to splurge.
+3. Budget of around 2000EURO_SYMBOL. I originally had about 1500EURO_SYMBOL, but saving up those two years I had about 3000 to splurge.
 
 Also, to make the article clear: Shell/Case = Blue outer plastic. Chassis = Inner metal box.
 
@@ -32,7 +28,7 @@ I whipped out the tape measure and eyeballed the dimensions of the inner box. My
 * A GPU, I chose the AMD RX 6900XT at random, 267mm x 120mm x 5mm
 
 <p align="center">
-![Sketchup screenshot](images/01-SGIIndySleeper/Sketchup.png)
+![Sketchup screenshot](images/01-SGIIndySleeper/Sketchup.png)<br>
 They seem to fit.
 </p>
 
@@ -62,7 +58,7 @@ So I modeled a box, and then I went to [GrabCAD](https://grabcad.com/library) an
 I loaded up the models and started placing them around my box to ensure that everything truly still fit:
 
 <p align="center">
-![FreeCAD early chassis](images/01-SGIIndySleeper/CAD1.png)
+![FreeCAD early chassis](images/01-SGIIndySleeper/CAD1.png)<br>
 And they do.
 </p>
 
@@ -71,7 +67,7 @@ Notice how the SSD is placed on top of the GPU. It was either there, or on top o
 All of this, of course, was hinging on the fact that the measurements of the box were actually correct... So I decided to buy some cardboard and make a test box:
 
 <p align="center">
-![First cardboard model](images/01-SGIIndySleeper/Cardboard1.jpg)
+![First cardboard model](images/01-SGIIndySleeper/Cardboard1.jpg)<br>
 The cardboard box and the paper I printed out with the measurements.
 </p>
 
@@ -83,7 +79,7 @@ This cardboard box taught me two things: First, the top bend on the left side wa
 Feeling comfortable that this build was very much possible, I decided to take the jump and buy the parts. These were what I settled on:
 
 <p align="center">
-![Parts](images/01-SGIIndySleeper/Parts.png)
+![Parts](images/01-SGIIndySleeper/Parts.png)<br>
 I used [PCPartPicker](https://pcpartpicker.com/) since it lets me select parts available on stores in my country, and will warn me of incompatibilities.
 </p>
 
@@ -96,7 +92,7 @@ Almost everything was bought from Europe, with the exception of the PSU which wa
 Having everything here, I decided to build the PC on top of the boxes to ensure all the components worked before I potentially massacred them.
 
 <p align="center">
-![PC built on cardboard boxes](images/01-SGIIndySleeper/Outside.jpg)
+![PC built on cardboard boxes](images/01-SGIIndySleeper/Outside.jpg)<br>
 A beautiful mess of a computer.
 </p>
 
@@ -148,14 +144,14 @@ The right side has a hole on the bottom left that corresponds with the vent gril
 The front has some holes on the left for the front buttons and the green power LED, a vent hole below it, three holes on the bottom for the plastic tabs, and some small holes on the sides to hold the sheet metal together with the help of some tabs. The holes on the left are lower because I was afraid that the plastic that holds the front buttons would get in the way.
 
 <p align="center">
-![CAD Chassis Tabs](images/01-SGIIndySleeper/CAD_ChassisTabs.png)
+![CAD Chassis Tabs](images/01-SGIIndySleeper/CAD_ChassisTabs.png)<br>
 Interior shot of one of the tabs.
 </p>
 
 In order to keep the box's shape, there needs to be some way to hold the walls in place. What I did was extend out the sides to create the tabs in that picture. The idea was that I would use a pop rivet gun to rivet the tabs, keeping the shape. Because the rivets will stick out a bit, I needed to be careful with the hole placement. 
 
 <p align="center">
-![CAD Chassis Tabs](images/01-SGIIndySleeper/TabsDiagram.png)
+![CAD Chassis Tabs](images/01-SGIIndySleeper/TabsDiagram.png)<br>
 Here's a top down diagram of the walls and their tabs
 </p>
 
@@ -203,14 +199,14 @@ Despite the nice fit, the chassis wasn't perfect, and this was entirely oversigh
 The first main issue was that I could feel the plastic tabs at the front of the case being stressed hard by the chassis. I decided to whip out my dremel (I bought one years ago for [Cosplay work](https://imgur.com/gallery/NsLUxGI)) and to grind out the tabs to give the tabs some breathing room.
 
 <p align="center">
-![Adjustments front](images/01-SGIIndySleeper/AdjustmentsFront.jpg)
+![Adjustments front](images/01-SGIIndySleeper/AdjustmentsFront.jpg)<br>
 A beautiful straight line
 </p>
 
 The second issue was that the Indy has [a little nudge on the back](images/01-SGIIndySleeper/FrontNudge.png) to keep the chassis in place. I don't need the nudge, and it was actively making removing of the chassis really difficult. The Indy originally has a plastic piece that lets you use your finger strength to [pull the chassis apart](https://www.youtube.com/watch?v=HdHRtP2WtxE), but because this design is such a tight fit the extra security isn't needed. So I took the dremel with a cutting disk and did some hand work:
 
 <p align="center">
-![Adjustments back](images/01-SGIIndySleeper/AdjustmentsBack.jpg)
+![Adjustments back](images/01-SGIIndySleeper/AdjustmentsBack.jpg)<br>
 Never have I seen such a steady hand!
 </p>
 
@@ -221,7 +217,7 @@ Another oversight I ran into was that the rivets on the GPU side were actually h
 Obviously, the fan holes are a fantastic way to turn the inside of my case into a dust bunny. Aluminum is not magnetic, so I couldn't get those nice magnetic dust filters. I went to the hardware store and bough some wire mesh, which I made some small paper stencils and then transfered over and cut. I originally tried to cut the mesh with the dremel's cutting disk, but it broke three of my disks. Instead, I took a pair of scissors, and with much brute force, I had something I was happy with:
 
 <p align="center">
-![Adjustments back](images/01-SGIIndySleeper/WireMesh.jpg)
+![Adjustments back](images/01-SGIIndySleeper/WireMesh.jpg)<br>
 Bent by hand too. This wire mesh was really sharp, managed to cut myself a few times. Should've worn gloves...
 </p>
 
@@ -241,7 +237,7 @@ I got some wires with female pin headers to connect to the motherboard I/O pins.
 I drilled some holes on the front of the chassis + on the protoboard and screwed it in place. 
 
 <p align="center">
-![Front I/O](images/01-SGIIndySleeper/FrontIO.jpg)
+![Front I/O](images/01-SGIIndySleeper/FrontIO.jpg)<br>
 A little scuffed from the drill bit slipping, but again, no one will see it.
 </p>
 
@@ -250,7 +246,7 @@ The screwheads sticking out isn't a problem because the buttons already stick ou
 Putting everything together:
 
 <p align="center">
-![Inside the PC](images/01-SGIIndySleeper/PCInside.jpg)
+![Inside the PC](images/01-SGIIndySleeper/PCInside.jpg)<br>
 Currently is not cable managed since I need to disassemble it later to solder the LED wires.
 </p>
 

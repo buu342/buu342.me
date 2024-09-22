@@ -98,7 +98,7 @@ pre
 /* Project header box */
 .projecticonheader
 {
-    width: 235px;
+    width: 233px;
     height: 30px;
     text-align: center;
     vertical-align: middle;
@@ -108,10 +108,10 @@ pre
     color: #e8e8e8;
     outline: 3px solid #e8e8e8;
     background-color: #a34d4d;
-    border-top: 1px solid #ca6f6f;
-    border-left: 1px solid #ca6f6f;
-    border-right: 1px solid #911414;
-    border-bottom: 1px solid #911414;
+    border-top: 2px solid #ca6f6f;
+    border-left: 2px solid #ca6f6f;
+    border-right: 2px solid #911414;
+    border-bottom: 2px solid #911414;
 }
 
 /* Project header text */

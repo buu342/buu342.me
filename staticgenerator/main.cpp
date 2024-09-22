@@ -1,10 +1,22 @@
+// TODO:
+// * HTML Meta tags should be part of template
+// * Sash gravity when resizing
+// * Make old pages redirect
+// * Windows fixes
+// * Fix how a newline gets appended to the end of the markdown file
+// * Throw warning when markdown parsing is problematic
+// * Implement homepage with latest stuff list
+// * Make project/blog list section's resize properly with window resize
+// * Make images properly resize with window resize if going out of margin
+// * Implement tag system
+
 #include <map>
 #include <vector>
 #include <algorithm>
 #include <fstream>
 #include "main.h"
 #include "include/json.hpp"
-#include "include/maddy/parser.h"
+#include "include/md4c/md4c-html.h"
 #include <wx/event.h>
 #include <wx/msgdlg.h>
 #include <wx/treelist.h>
@@ -32,6 +44,11 @@ bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
     return tree->GetRootItem() == tree->GetItemParent(item);
 }
 
+void md4c_funcptr_handlestr(const MD_CHAR* input, MD_SIZE inputsize, void* output)
+{
+    ((wxString*)output)->Append(input, inputsize);
+}
+
 wxString string_fromfile(wxString path)
 {
     wxTextFile file;
@@ -47,6 +64,18 @@ wxString string_fromfile(wxString path)
     while (!file.Eof())
         str += wxString("\r\n") + file.GetNextLine();
     return str;
+}
+
+wxString* md_sanitize(wxString* input)
+{
+    input->Replace(wxString::FromUTF8("€"), "EURO_SYMBOL");
+    return input;
+}
+
+wxString* md_unsanitize(wxString* input)
+{
+    input->Replace("EURO_SYMBOL", "&euro;");
+    return input;
 }
 
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
@@ -1684,11 +1713,11 @@ void Main::CompileProjects_List()
     {
         wxString html_projects = wxString("");
         wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
-        std::stringstream mdinput(cat->description.ToStdString());
-        std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-        config->enabledParsers |= maddy::types::HTML_PARSER; 
-        std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+        const char* mdstr = md_sanitize(&cat->description)->mb_str();
         wxString desc;
+
+        if (cat->pages.size() == 0)
+            continue;
 
         // Generate the project blocks
         for (void* page : cat->pages)
@@ -1705,9 +1734,9 @@ void Main::CompileProjects_List()
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/projects_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
         html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
-        desc = wxString(parser->Parse(mdinput));
+        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
         desc.Replace("<p>", "<p align=\"left\">");
-        html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", desc);
+        html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", *md_unsanitize(&desc));
         html_categories.Replace("_TEMPLATE_PROJECT_LIST_", html_projects);
     }
 
@@ -1732,10 +1761,8 @@ void Main::CompileProjects_Project(Project* proj)
     wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
     wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
     wxTextFile projout(projoutpath);
-    std::stringstream mdinput(proj->description.ToStdString());
-    std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-    config->enabledParsers |= maddy::types::HTML_PARSER | maddy::types::HEADLINE_PARSER | maddy::types::CODE_BLOCK_PARSER | maddy::types::UNORDERED_LIST_PARSER;
-    std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+    wxString html_md = wxString("");
+    const char* mdstr = proj->description.mb_str();
     std::vector<wxString> images;
     std::vector<wxString> youtubes;
 
@@ -1743,7 +1770,8 @@ void Main::CompileProjects_Project(Project* proj)
     html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
     html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
     html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
-    html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", wxString(parser->Parse(mdinput)));
+    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+    html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", html_md);
     html_final.Replace("_TEMPLATE_PROJECTS_CATEGORY_", proj->category->foldername);
 
     // Handle image carousel
@@ -1853,11 +1881,11 @@ void Main::CompileBlog_List()
     {
         wxString html_blogentries = wxString("");
         wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
-        std::stringstream mdinput(cat->description.ToStdString());
-        std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-        config->enabledParsers |= maddy::types::HTML_PARSER;
-        std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
-        wxString desc;
+        const char* mdstr = cat->description.mb_str();
+        wxString desc = wxString("");
+
+        if (cat->pages.size() == 0)
+            continue;
 
         // Generate the blog blocks
         for (void* page : cat->pages)
@@ -1874,7 +1902,7 @@ void Main::CompileBlog_List()
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/blog_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
         html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
-        desc = wxString(parser->Parse(mdinput));
+        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
         desc.Replace("<p>", "<p align=\"left\">");
         html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", desc);
         html_categories.Replace("_TEMPLATE_BLOG_LIST_", html_blogentries);
@@ -1901,16 +1929,15 @@ void Main::CompileBlog_Entry(Blog* bentry)
     wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
     wxString bentryoutpath = this->m_WorkingDir + wxString("/") + relativepath + bentry->filename + wxString(".html");
     wxTextFile bentryout(bentryoutpath);
-    std::stringstream mdinput(bentry->content.ToStdString());
-    std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-    config->enabledParsers |= maddy::types::HTML_PARSER | maddy::types::HEADLINE_PARSER | maddy::types::CODE_BLOCK_PARSER | maddy::types::UNORDERED_LIST_PARSER;
-    std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+    wxString html_md = wxString("");
+    const char* mdstr = md_sanitize(&bentry->content)->mb_str();
 
     // Replace most of the basic page info
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog_entry.html");
     html_final.Replace("_TEMPLATE_BLOG_TITLE_", bentry->displayname);
     html_final.Replace("_TEMPLATE_BLOG_DATE_", bentry->date);
-    html_final.Replace("_TEMPLATE_BLOG_CONTENT_", wxString(parser->Parse(mdinput)));
+    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+    html_final.Replace("_TEMPLATE_BLOG_CONTENT_", *md_unsanitize(&html_md));
     html_final.Replace("_TEMPLATE_BLOG_CATEGORY_", bentry->category->foldername);
     
     // Generate the page itself

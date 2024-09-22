@@ -3,7 +3,7 @@ This is a pretty lengthy article, because I cover a lot of the reverse engineeri
 My very first smartphone was when I was about 13, and it was an [LG Cookie Fresh (GS290)](https://www.lg.com/uk/mobile-phones/lg-GS290-cookie-fresh). Not an amazing phone by any means... It had terrible multi-tasking (as in, as soon as you opened more than two applications it'd run out of memory) and a really finicky touch screen, but overall it was pleasant to use. There was one thing I really loved about the Cookie though, and that was a little game that came bundled with it called Music World. As a rhythm game, it's perfectly alright. It's main problem is that characters can appear on any position of the screen, and annoyingly overlap each other, causing you to fail notes simply because something got in the way, but it had great music and endearing graphics. I'm pretty sure I managed to 'S' almost all the levels, minus some of the harder 'Crazy Mode' ones due to the aformentioned gameplay quirk.
 
 <p align="center">
-![Music World screenshot](images/00-MusicWorldRE/MusicWorldScreenshot.jpg)
+![Music World screenshot](images/00-MusicWorldRE/MusicWorldScreenshot.jpg)<br>
 This is one of few screenshots that I can find of the game that isn't taken with a camera, credit to [this site](https://www.gsmarena.com/lg_gd510_pop-review-407p8.php).
 </p>
 
@@ -44,7 +44,7 @@ I went ahead and searched for all sorts of header formats that I knew. The PXO c
 This is another cool trick that you can do if the audio is stored uncompressed. Audio editor software, such as [Audacity](https://www.audacityteam.org/), has the ability to import raw files. The program will try to translate what data it finds into audio, the results of which can be very unpleasant to listen to. With enough tweaking though (pretty much just trial and error), you can potentially find good audio located in your file.
 
 <p align="center">
-![Audacity Raw Audio import](images/00-MusicWorldRE/AudacityRawAudio.png)
+![Audacity Raw Audio import](images/00-MusicWorldRE/AudacityRawAudio.png)<br>
 The highlighted audio is what we're looking for. This was achieved with Raw Import, Signed 16-bit PCM + Big-endian + Mono + 44100Hz.
 </p>
 
@@ -246,4 +246,23 @@ My goal was to rip out whatever art assets that I could from the game itself, an
 Ripping out the soundbank does seem like a fun challenge though. This will require me to properly investigate how the phone works, and potentially either write an exploit for root access, or figure out where the data is in a firmware dump of the device. These phones are powered by something called Infineon, which seems to be an offshoot of Android. Therefore, it should be possible to root the device and access the filesystem, allowing me to find the soundbank in the phone's data and pull it out. Maybe I can write something in Java, which the phone readily allows me to upload via USB and run. It's a wild west, a lot of the information about these old devices was on forums that are long since dead (with the archives being partially incomplete or downright missing. Of the archives that do exist, download links are locked behind logins...). Ideally, I'd also like to figure out how to extract PXO's and dump my phone's firmware myself, instead of having to rely on third parties for having done it for me. Ideally, I'd also like to figure out how to extract PXO's and dump my phone's firmware myself, instead of having to rely on third parties for having done it for me.
 
 But first, I really have to do something about that touch screen...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
