@@ -1,8 +1,9 @@
 // TODO:
-// * (SSG)      Fix how a newline gets appended to the end of the markdown file
-// * (SSG)      Throw warning when markdown parsing is problematic
-// * (SSG)      Implement tag system
-// * (SSG)      Implement homepage with latest stuff list
+// * (SSG)  Add support for all Portuguese diacritics, just in case...
+// * (SSG)  Fix how a newline gets appended to the end of the markdown file
+// * (SSG)  Throw warning when markdown parsing is problematic
+// * (SSG)  Implement homepage with latest stuff list
+// * (SSG)  Implement tag system
 
 #include <map>
 #include <vector>
@@ -62,6 +63,7 @@ wxString string_fromfile(wxString path)
 
 wxString* md_sanitize(wxString* input)
 {
+    input->Replace(wxString::FromUTF8("&"), "AMPERSAND_SYMBOL");
     input->Replace(wxString::FromUTF8("€"), "EURO_SYMBOL");
     input->Replace(wxString::FromUTF8("£"), "POUND_SYMBOL");
     input->Replace(wxString::FromUTF8("¥"), "YEN_SYMBOL");
@@ -84,7 +86,14 @@ wxString* md_sanitize(wxString* input)
 
 wxString* md_unsanitize(wxString* input)
 {
+    input->Replace("AMPERSAND_SYMBOL", "&amp;");
     input->Replace("EURO_SYMBOL", "&euro;");
+    input->Replace("POUND_SYMBOL", "&pound;");
+    input->Replace("YEN_SYMBOL", "&yen;");
+    input->Replace("SECTION_SYMBOL", "&sect;");
+    input->Replace("TRADEMARK_SYMBOL", "&trade;");
+    input->Replace("REGISTERED_SYMBOL", "&reg");
+    input->Replace("COPYRIGHT_SYMBOL", "&copy;");
     input->Replace("AACUTE_SYMBOL", "&aacute;");
     input->Replace("AACUTE_SYMBOL_CAPITAL", "&Aacute;");
     input->Replace("ATILDE_SYMBOL", "&atilde;");

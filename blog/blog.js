@@ -48,6 +48,9 @@ function AddURLsToImages()
     for (i = 0; i < imgs.length; i++)
     {
         var elem = imgs[i];
+        if (elem.parentNode.className === "collapse-button" || elem.parentNode.className === "blogiconbody")
+            continue;
+        
         var anchor = document.createElement("a");
         anchor.href = elem.src;
         anchor.target = "_blank";
