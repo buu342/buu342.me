@@ -1854,7 +1854,7 @@ void Main::CompileBlog_List()
         wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
         std::stringstream mdinput(cat->description.ToStdString());
         std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-        config->enabledParsers |= maddy::types::HTML_PARSER; 
+        config->enabledParsers |= maddy::types::HTML_PARSER | maddy::types::HEADLINE_PARSER | maddy::types::CODE_BLOCK_PARSER | maddy::types::UNORDERED_LIST_PARSER; 
         std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
         wxString desc;
 
