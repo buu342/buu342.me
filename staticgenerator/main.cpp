@@ -539,6 +539,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
     this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
     this->LoadProjects();
+    this->LoadBlog();
 }
 
 Main::~Main()
@@ -893,7 +894,7 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event )
         this->m_TextCtrl_Blog_Icon->SetValue(blog_elem->icon);
         this->m_TextCtrl_Blog_ToolTip->SetValue(blog_elem->tooltip);
         this->m_TextCtrl_Blog_Date->SetValue(blog_elem->date);
-        this->m_TextCtrl_Blog->SetValue(string_fromfile(this->m_WorkingDir + wxString("/blog/") + blog_elem->category->foldername + wxString("/markdown/") + blog_elem->filename));
+        this->m_TextCtrl_Blog->SetValue(string_fromfile(this->m_WorkingDir + wxString("/blog/") + blog_elem->category->foldername + wxString("/markdown/") + blog_elem->filename + wxString(".md")));
         
         wip = wxString("");
         for (Tag* tag : blog_elem->tags)
@@ -946,6 +947,7 @@ void Main::m_TextCtrl_Blog_Name_OnText( wxCommandEvent& event )
 {
     Blog* bentry = FindBlog(this->m_SelectedItem);
     bentry->displayname = event.GetString();
+    this->m_TreeCtrl_Blog->SetItemText(bentry->treeid, bentry->displayname);
     this->MarkModified();
 }
 
@@ -1351,7 +1353,7 @@ void Main::LoadBlog()
             bentry->icon = wxString((*itblog)["Icon"]);
             bentry->date = wxString((*itblog)["Date"]);
             bentry->tooltip = wxString((*itblog)["ToolTip"]);
-            bentry->content = string_fromfile(wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
+            bentry->content = string_fromfile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
             bentry->tags.clear();
             // TODO: Handle tags
             bentry->category = cat_elem;
@@ -1375,7 +1377,7 @@ void Main::LoadBlog()
             }
         }
     }
-    this->ShowProjectEditor(false);
+    this->ShowBlogEditor(false);
 }
 
 void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist)
@@ -1606,7 +1608,7 @@ void Main::Save()
         {
             Blog* bentry = (Blog*)child;
             std::string blogstr = bentry->filename.ToStdString();
-            wxTextFile blogmd(wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
+            wxTextFile blogmd(this->m_WorkingDir + wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
             blogjson["Categories"][catstr]["Pages"][blogstr] = {};
             blogjson["Categories"][catstr]["Pages"][blogstr]["Index"] = bentry->index;
             blogjson["Categories"][catstr]["Pages"][blogstr]["DisplayName"] = bentry->displayname;
