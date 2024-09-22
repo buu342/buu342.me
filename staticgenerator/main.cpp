@@ -55,7 +55,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_SelectedItem = NULL;
     this->MarkModified(false);
 
-this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     wxBoxSizer* m_Sizer_Main;
     m_Sizer_Main = new wxBoxSizer( wxVERTICAL );
@@ -303,8 +303,6 @@ this->SetSizeHints( wxDefaultSize, wxDefaultSize );
     m_Panel_Blog_Tree->Layout();
     m_Sizer_Blog_Tree->Fit( m_Panel_Blog_Tree );
     m_Panel_Blog_Editor = new wxPanel( m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-    m_Panel_Blog_Editor->Enable( false );
-    m_Panel_Blog_Editor->Hide();
 
     wxFlexGridSizer* m_Sizer_Blog_Editor;
     m_Sizer_Blog_Editor = new wxFlexGridSizer( 0, 1, 0, 0 );
@@ -991,13 +989,13 @@ void Main::m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event )
     if (treeitem_iscategory(this->m_TreeCtrl_Blog, this->m_SelectedItem))
     {
         Category* cat = FindCategory_Blog(this->m_SelectedItem);
-        CompileBlogs_List();
+        CompileBlog_List();
         url = this->m_WorkingDir + wxString("/blogs.html") + wxString("#") + cat->foldername;
     }
     else
     {
         Blog* bentry = this->FindBlog(this->m_SelectedItem);
-        CompileBlogs_Blog(bentry);
+        CompileBlog_Entry(bentry);
         url = this->m_WorkingDir + wxString("/blog/") + bentry->category->foldername + wxString("/") + bentry->filename + wxString(".html");
     }
     wxLaunchDefaultBrowser(wxString("file:") + url);
@@ -1108,14 +1106,12 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
 
 void Main::OnPopupClick_Blog(wxCommandEvent& event)
 {
-    // TODO:
-    /*
     int index = 0;
     wxTreeItemId cat = this->m_SelectedItem;
-    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
-        cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
-    Category* cat_elem = this->FindCategory_Projects(cat);
-    Project* proj;
+    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, cat))
+        cat = this->m_TreeCtrl_Blog->GetItemParent(cat);
+    Category* cat_elem = this->FindCategory_Blog(cat);
+    Blog* bentry;
 
     if (cat_elem == NULL)
         return;
@@ -1123,39 +1119,36 @@ void Main::OnPopupClick_Blog(wxCommandEvent& event)
     switch (event.GetId())
     {
         case wxID_NEW:
-            proj = new Project();
-            proj->index = cat_elem->pages.size();
-            proj->filename = "new";
-            proj->displayname = "New Project";
-            proj->icon = "";
-            proj->date = "";
-            proj->tooltip = "";
-            proj->description = "";
-            proj->images.clear();
-            proj->urls.clear();
-            proj->tags.clear();
-            proj->category = cat_elem;
-            proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
-            cat_elem->pages.push_back(proj);
-            this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
-            this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
-            this->m_SelectedItem = proj->treeid;
+            bentry = new Blog();
+            bentry->index = cat_elem->pages.size();
+            bentry->filename = "new";
+            bentry->displayname = "New Blog Entry";
+            bentry->icon = "";
+            bentry->date = "";
+            bentry->tooltip = "";
+            bentry->content = "";
+            bentry->tags.clear();
+            bentry->category = cat_elem;
+            bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat, bentry->displayname);
+            cat_elem->pages.push_back(bentry);
+            this->m_TreeCtrl_Blog->Expand(cat_elem->treeid);
+            this->m_TreeCtrl_Blog->SelectItem(bentry->treeid);
+            this->m_SelectedItem = bentry->treeid;
             break;
         case wxID_DELETE:
-            proj = this->FindProject(this->m_SelectedItem);
-            cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
-            this->m_TreeCtrl_Projects->Delete(proj->treeid);
-            if (wxFileExists(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
-                wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
-            delete proj;
-            for (void* projptr : cat_elem->pages)
+            bentry = this->FindBlog(this->m_SelectedItem);
+            cat_elem->pages.erase(cat_elem->pages.begin() + bentry->index);
+            this->m_TreeCtrl_Blog->Delete(bentry->treeid);
+            if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html")))
+                wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html"));
+            delete bentry;
+            for (void* blogptr : cat_elem->pages)
             {
-                proj = (Project*)projptr;
-                proj->index = index++;
+                bentry = (Blog*)blogptr;
+                bentry->index = index++;
             }
             break;
     }
-    */
 }
 
 void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist)
@@ -1198,7 +1191,7 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
     // First, add all the folders which are already included in the JSON
     for (nlohmann::json::iterator it = pagejson["Categories"].begin(); it != pagejson["Categories"].end(); ++it)
     {
-        // TODO: Check project folder still exists before doing this
+        // TODO: Check folder still exists before doing this
         Category* cat = new Category();
         cat->foldername = wxString(it.key());
         cat->index = (*it)["Index"];
@@ -1563,8 +1556,10 @@ void Main::EndDrag_Blog(wxTreeEvent& event)
 
 void Main::Save()
 {
-    wxTextFile out(this->m_WorkingDir + wxString("/projects/projects.json"));
+    wxTextFile out_proj(this->m_WorkingDir + wxString("/projects/projects.json"));
+    wxTextFile out_blog(this->m_WorkingDir + wxString("/blog/blog.json"));
     nlohmann::json projectjson = {};
+    nlohmann::json blogjson = {};
     projectjson["Categories"] = {};
     for (Category* cat : this->m_Category_Projects)
     {
@@ -1597,18 +1592,56 @@ void Main::Save()
         }
     }
 
-    // TODO: Handle blog
+    // Handle blog
+    blogjson["Categories"] = {};
+    for (Category* cat : this->m_Category_Blog)
+    {
+        std::string catstr = cat->foldername.ToStdString();
+        blogjson["Categories"][catstr] = {};
+        blogjson["Categories"][catstr]["Index"] = cat->index;
+        blogjson["Categories"][catstr]["DisplayName"] = cat->displayname;
+        blogjson["Categories"][catstr]["Description"] = cat->description;
+        blogjson["Categories"][catstr]["Pages"] = {};
+        for (void* child : cat->pages)
+        {
+            Blog* bentry = (Blog*)child;
+            std::string blogstr = bentry->filename.ToStdString();
+            wxTextFile blogmd(wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
+            blogjson["Categories"][catstr]["Pages"][blogstr] = {};
+            blogjson["Categories"][catstr]["Pages"][blogstr]["Index"] = bentry->index;
+            blogjson["Categories"][catstr]["Pages"][blogstr]["DisplayName"] = bentry->displayname;
+            blogjson["Categories"][catstr]["Pages"][blogstr]["Icon"] = bentry->icon;
+            blogjson["Categories"][catstr]["Pages"][blogstr]["Date"] = bentry->date;
+            blogjson["Categories"][catstr]["Pages"][blogstr]["ToolTip"] = bentry->tooltip;
+            blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"] = {};
+            for (Tag* tag : bentry->tags)
+                blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(tag->name);
+            if (!blogmd.Exists())
+                blogmd.Create();
+            blogmd.Clear();
+            blogmd.AddLine(bentry->content);
+            blogmd.Write();
+            blogmd.Close();
+        }
+    }
 
     // Compile the website
     this->CompileProjects();
+    this->CompileBlog();
 
-    // Dump the JSON to a text file
-    if (!out.Exists())
-        out.Create();
-    out.Clear();
-    out.AddLine(wxString(projectjson.dump()));
-    out.Write();
-    out.Close();
+    // Dump the JSONs to text files
+    if (!out_proj.Exists())
+        out_proj.Create();
+    out_proj.Clear();
+    out_proj.AddLine(wxString(projectjson.dump()));
+    out_proj.Write();
+    out_proj.Close();
+    if (!out_blog.Exists())
+        out_blog.Create();
+    out_blog.Clear();
+    out_blog.AddLine(wxString(blogjson.dump()));
+    out_blog.Write();
+    out_blog.Close();
 
     // Mark the program as no longer modified
     this->MarkModified(false);
@@ -1622,6 +1655,16 @@ void Main::CompileProjects()
     for (Category* cat : this->m_Category_Projects)
         for (void* page : cat->pages)
             CompileProjects_Project((Project*)page);
+}
+
+void Main::CompileBlog()
+{
+    CompileBlog_List();
+
+    // Now create the page for each blog entry
+    for (Category* cat : this->m_Category_Blog)
+        for (void* page : cat->pages)
+            CompileBlog_Entry((Blog*)page);
 }
 
 void Main::CompileProjects_List()
@@ -1792,14 +1835,88 @@ void Main::CompileProjects_Project(Project* proj)
     projout.Close();
 }
 
-void Main::CompileBlogs_List()
+void Main::CompileBlog_List()
 {
-    // TODO:
+    wxTextFile out(this->m_WorkingDir + wxString("/blog.html"));
+    wxDateTime today = wxDateTime::Today();
+    wxString html_final = wxString("");
+    wxString html_categories = wxString("");
+
+    // Read the blog page template
+    html_final = string_fromfile(this->m_WorkingDir + "/templates/blog.html");
+
+    // Generate the page from the section + blog templates
+    for (Category* cat : this->m_Category_Blog)
+    {
+        wxString html_blogentries = wxString("");
+        wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
+        std::stringstream mdinput(cat->description.ToStdString());
+        std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+        config->enabledParsers |= maddy::types::HTML_PARSER; 
+        std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+        wxString desc;
+
+        // Generate the blog blocks
+        for (void* page : cat->pages)
+        {
+            Blog* bentry = (Blog*)page;
+            html_blogentries += string_fromfile(this->m_WorkingDir + "/templates/blog_section_entry.html");
+            html_blogentries.Replace("_TEMPLATE_BLOG_URL_", relativepath + bentry->filename + wxString(".html"));
+            html_blogentries.Replace("_TEMPLATE_BLOG_TITLE_", bentry->displayname);
+            html_blogentries.Replace("_TEMPLATE_BLOG_IMAGE_", relativepath + bentry->icon);
+            html_blogentries.Replace("_TEMPLATE_BLOG_TOOLTIP_", bentry->tooltip);
+        }
+
+        // Generate the section blocks
+        html_categories += string_fromfile(this->m_WorkingDir + "/templates/blog_section.html");
+        html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
+        html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
+        desc = wxString(parser->Parse(mdinput));
+        desc.Replace("<p>", "<p align=\"left\">");
+        html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", desc);
+        html_categories.Replace("_TEMPLATE_BLOG_LIST_", html_blogentries);
+    }
+
+    // Finalize the blog page
+    html_final.Replace("_TEMPLATE_BLOG_LIST_", html_categories);
+    html_final.Replace("_TEMPLATE_BLOG_DATE_", today.Format("%b %d %Y"));
+
+    // Dump the html for the blog page
+    if (!out.Exists())
+        out.Create();
+    out.Open();
+    out.Clear();
+    out.AddLine(html_final);
+    out.Write();
+    out.Close();
 }
 
-void Main::CompileBlogs_Blog(Blog* bentry)
+void Main::CompileBlog_Entry(Blog* bentry)
 {
-    // TODO:
+    wxString html_final = wxString("");
+    Category* cat = bentry->category;
+    wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
+    wxString bentryoutpath = this->m_WorkingDir + wxString("/") + relativepath + bentry->filename + wxString(".html");
+    wxTextFile bentryout(bentryoutpath);
+    std::stringstream mdinput(bentry->content.ToStdString());
+    std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+    std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+
+    // Replace most of the basic page info
+    html_final = string_fromfile(this->m_WorkingDir + "/templates/blog_entry.html");
+    html_final.Replace("_TEMPLATE_BLOG_TITLE_", bentry->displayname);
+    html_final.Replace("_TEMPLATE_BLOG_DATE_", bentry->date);
+    html_final.Replace("_TEMPLATE_BLOG_CONTENT_", wxString(parser->Parse(mdinput)));
+    html_final.Replace("_TEMPLATE_BLOG_CATEGORY_", bentry->category->foldername);
+    
+    // Generate the page itself
+    if (!bentryout.Exists())
+        bentryout.Create();
+    bentryout.Open();
+    bentryout.Clear();
+    bentryout.AddLine(html_final);
+    bentryout.Write();
+    bentryout.Close();
 }
 
 void Main::MarkModified(bool modified)

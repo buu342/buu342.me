@@ -195,8 +195,9 @@ class Main : public wxFrame
         void CompileProjects();
         void CompileProjects_List();
         void CompileProjects_Project(Project* proj);
-        void CompileBlogs_List();
-        void CompileBlogs_Blog(Blog* bentry);
+        void CompileBlog();
+        void CompileBlog_List();
+        void CompileBlog_Entry(Blog* bentry);
         void MarkModified(bool modified=true);
         void ShowProjectEditor(bool show=true);
         void ShowProjectCategoryEditor(bool show=true);
