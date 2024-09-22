@@ -39,9 +39,25 @@ public:
   void
   Parse(std::string& line) override
   {
-    static std::regex re(R"((?!.*`.*|.*<code>.*)\*(?!.*`.*|.*<\/code>.*)([^\*]*)\*(?!.*`.*|.*<\/code>.*))");
-    static std::string replacement = "<i>$1</i>";
-    line = std::regex_replace(line, re, replacement);
+    std::string pattern = "*";
+    std::string newPattern = "i";
+
+    for (;;) {
+      int patlen = pattern.size();
+
+      auto pos1 = line.find(pattern);
+      if (pos1 == std::string::npos) {
+          break;
+      }
+
+      auto pos2 = line.find(pattern, pos1 + patlen);
+      if (pos2 == std::string::npos) {
+          break;
+      }
+
+      std::string word = line.substr(pos1 + patlen, pos2 - pos1 - patlen);
+      line = line.replace(pos1, (patlen + pos2) - pos1, "<" + newPattern + ">" + word + "</" + newPattern + ">");
+    }
   }
 }; // class ItalicParser
 

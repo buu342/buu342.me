@@ -41,15 +41,43 @@ public:
   void
   Parse(std::string& line) override
   {
-    static std::vector<std::regex> res
-    {
-      std::regex{R"((?!.*`.*|.*<code>.*)\*\*(?!.*`.*|.*<\/code>.*)([^\*\*]*)\*\*(?!.*`.*|.*<\/code>.*))"},
-      std::regex{R"((?!.*`.*|.*<code>.*)__(?!.*`.*|.*<\/code>.*)([^__]*)__(?!.*`.*|.*<\/code>.*))"}
-    };
-    static std::string replacement = "<strong>$1</strong>";
-    for (const auto& re : res)
-    {
-      line = std::regex_replace(line, re, replacement);
+    std::string pattern = "**";
+    std::string newPattern = "strong";
+
+    for (;;) {
+      int patlen = pattern.size();
+
+      auto pos1 = line.find(pattern);
+      if (pos1 == std::string::npos) {
+          break;
+      }
+
+      auto pos2 = line.find(pattern, pos1 + patlen);
+      if (pos2 == std::string::npos) {
+          break;
+      }
+
+      std::string word = line.substr(pos1 + patlen, pos2 - pos1 - patlen);
+      line = line.replace(pos1, (patlen + pos2) - pos1, "<" + newPattern + ">" + word + "</" + newPattern + ">");
+    }
+
+    pattern = "__";
+
+    for (;;) {
+      int patlen = pattern.size();
+
+      auto pos1 = line.find(pattern);
+      if (pos1 == std::string::npos) {
+          break;
+      }
+
+      auto pos2 = line.find(pattern, pos1 + patlen);
+      if (pos2 == std::string::npos) {
+          break;
+      }
+
+      std::string word = line.substr(pos1 + patlen, pos2 - pos1 - patlen);
+      line = line.replace(pos1, (patlen + pos2) - pos1, "<" + newPattern + ">" + word + "</" + newPattern + ">");
     }
   }
 }; // class StrongParser
