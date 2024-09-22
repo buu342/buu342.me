@@ -26,74 +26,14 @@
     <ClInclude Include="tags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\maddy\blockparser.h">
-      <Filter>Header Files\include\maddy</Filter>
+    <ClInclude Include="include\md4c\entity.h">
+      <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
-    <ClInclude Include="include\maddy\breaklineparser.h">
-      <Filter>Header Files\include\maddy</Filter>
+    <ClInclude Include="include\md4c\md4c-html.h">
+      <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
-    <ClInclude Include="include\maddy\checklistparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\codeblockparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\emphasizedparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\headlineparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\horizontallineparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\htmlparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\imageparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\inlinecodeparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\italicparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\latexblockparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\lineparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\linkparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\orderedlistparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\paragraphparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\parser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\parserconfig.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\quoteparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\strikethroughparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\strongparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\tableparser.h">
-      <Filter>Header Files\include\maddy</Filter>
-    </ClInclude>
-    <ClInclude Include="include\maddy\unorderedlistparser.h">
-      <Filter>Header Files\include\maddy</Filter>
+    <ClInclude Include="include\md4c\md4c.h">
+      <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
     <ClInclude Include="include\json.hpp">
       <Filter>Header Files</Filter>
@@ -108,6 +48,15 @@
     </ClCompile>
     <ClCompile Include="tags.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\md4c\entity.c">
+      <Filter>Source Files\include\md4c</Filter>
+    </ClCompile>
+    <ClCompile Include="include\md4c\md4c-html.c">
+      <Filter>Source Files\include\md4c</Filter>
+    </ClCompile>
+    <ClCompile Include="include\md4c\md4c.c">
+      <Filter>Source Files\include\md4c</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

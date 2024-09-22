@@ -21,29 +21,9 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="include\json.hpp" />
-    <ClInclude Include="include\maddy\blockparser.h" />
-    <ClInclude Include="include\maddy\breaklineparser.h" />
-    <ClInclude Include="include\maddy\checklistparser.h" />
-    <ClInclude Include="include\maddy\codeblockparser.h" />
-    <ClInclude Include="include\maddy\emphasizedparser.h" />
-    <ClInclude Include="include\maddy\headlineparser.h" />
-    <ClInclude Include="include\maddy\horizontallineparser.h" />
-    <ClInclude Include="include\maddy\htmlparser.h" />
-    <ClInclude Include="include\maddy\imageparser.h" />
-    <ClInclude Include="include\maddy\inlinecodeparser.h" />
-    <ClInclude Include="include\maddy\italicparser.h" />
-    <ClInclude Include="include\maddy\latexblockparser.h" />
-    <ClInclude Include="include\maddy\lineparser.h" />
-    <ClInclude Include="include\maddy\linkparser.h" />
-    <ClInclude Include="include\maddy\orderedlistparser.h" />
-    <ClInclude Include="include\maddy\paragraphparser.h" />
-    <ClInclude Include="include\maddy\parser.h" />
-    <ClInclude Include="include\maddy\parserconfig.h" />
-    <ClInclude Include="include\maddy\quoteparser.h" />
-    <ClInclude Include="include\maddy\strikethroughparser.h" />
-    <ClInclude Include="include\maddy\strongparser.h" />
-    <ClInclude Include="include\maddy\tableparser.h" />
-    <ClInclude Include="include\maddy\unorderedlistparser.h" />
+    <ClInclude Include="include\md4c\entity.h" />
+    <ClInclude Include="include\md4c\md4c-html.h" />
+    <ClInclude Include="include\md4c\md4c.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="tags.h" />
   </ItemGroup>
@@ -51,6 +31,9 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tags.cpp" />
+    <ClInclude Include="include\md4c\entity.c" />
+    <ClInclude Include="include\md4c\md4c-html.c" />
+    <ClInclude Include="include\md4c\md4c.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
