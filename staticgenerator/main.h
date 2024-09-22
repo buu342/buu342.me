@@ -24,6 +24,7 @@ typedef struct IUnknown IUnknown;
 #include <wx/menu.h>
 #include <wx/frame.h>
 #include <wx/filefn.h>
+#include <wx/timer.h>
 #include "tags.h"
 
 typedef struct Category_s Category;
@@ -139,6 +140,7 @@ class Main : public wxFrame
         wxButton* m_Button_Blog_Preview;
         wxMenuBar* m_Menubar_Main;
         wxMenu* m_Menu_File;
+        wxTimer* m_Timer;
 
 	public:
 		Main(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800, 600), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
@@ -179,6 +181,7 @@ class Main : public wxFrame
         void m_Button_Blog_Preview_OnButtonClick(wxCommandEvent& event);
         void m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_Save_OnMenuSelection(wxCommandEvent& event);
+        void m_Timer_OnTimer(wxTimerEvent& event);
         Category* FindCategory_Projects(wxTreeItemId item);
         Category* FindCategory_Blog(wxTreeItemId item);
         Project* FindProject(wxTreeItemId item);

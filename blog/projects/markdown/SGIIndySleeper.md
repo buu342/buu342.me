@@ -286,6 +286,3 @@ I have [soldered the Power LED to the wires and resistors](images/SGIIndySleeper
 </p>
 
 If you want my CAD files, then feel free to grab them from [here](downloads/SGIIndyCAD.zip).
-
-
-

@@ -1,6 +1,4 @@
 // TODO:
-// * (SSG)      Sash gravity when resizing
-// * (SSG)      Windows fixes
 // * (SSG)      Fix how a newline gets appended to the end of the markdown file
 // * (SSG)      Throw warning when markdown parsing is problematic
 // * (SSG)      Implement tag system
@@ -65,12 +63,38 @@ wxString string_fromfile(wxString path)
 wxString* md_sanitize(wxString* input)
 {
     input->Replace(wxString::FromUTF8("€"), "EURO_SYMBOL");
+    input->Replace(wxString::FromUTF8("£"), "POUND_SYMBOL");
+    input->Replace(wxString::FromUTF8("¥"), "YEN_SYMBOL");
+    input->Replace(wxString::FromUTF8("§"), "SECTION_SYMBOL");
+    input->Replace(wxString::FromUTF8("™"), "TRADEMARK_SYMBOL");
+    input->Replace(wxString::FromUTF8("®"), "REGISTERED_SYMBOL");
+    input->Replace(wxString::FromUTF8("©"), "COPYRIGHT_SYMBOL");
+    input->Replace(wxString::FromUTF8("á"), "AACUTE_SYMBOL");
+    input->Replace(wxString::FromUTF8("Á"), "AACUTE_SYMBOL_CAPITAL");
+    input->Replace(wxString::FromUTF8("ã"), "ATILDE_SYMBOL");
+    input->Replace(wxString::FromUTF8("Ã"), "ATILDE_SYMBOL_CAPITAL");
+    input->Replace(wxString::FromUTF8("â"), "ACIRCUM_SYMBOL");
+    input->Replace(wxString::FromUTF8("Â"), "ACIRCUM_SYMBOL_CAPITAL");
+    input->Replace(wxString::FromUTF8("à"), "AGRAVE_SYMBOL");
+    input->Replace(wxString::FromUTF8("À"), "AGRAVE_SYMBOL_CAPITAL");
+    input->Replace(wxString::FromUTF8("ç"), "CCEDILHA_SYMBOL");
+    input->Replace(wxString::FromUTF8("Ç"), "CCEDILHA_SYMBOL_CAPITAL");
     return input;
 }
 
 wxString* md_unsanitize(wxString* input)
 {
     input->Replace("EURO_SYMBOL", "&euro;");
+    input->Replace("AACUTE_SYMBOL", "&aacute;");
+    input->Replace("AACUTE_SYMBOL_CAPITAL", "&Aacute;");
+    input->Replace("ATILDE_SYMBOL", "&atilde;");
+    input->Replace("ATILDE_SYMBOL_CAPITAL", "&Atilde;");
+    input->Replace("ACIRCUM_SYMBOL", "&acirc;");
+    input->Replace("ACIRCUM_SYMBOL_CAPITAL", "&Acirc;");
+    input->Replace("AGRAVE_SYMBOL", "&agrave;");
+    input->Replace("AGRAVE_SYMBOL_CAPITAL", "&Agrave;");
+    input->Replace("CCEDILHA_SYMBOL", "&ccedil;");
+    input->Replace("CCEDILHA_SYMBOL_CAPITAL", "&Ccedil;");
     return input;
 }
 
@@ -91,7 +115,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Projects = new wxBoxSizer( wxVERTICAL );
 
     m_Splitter_Projects = new wxSplitterWindow( m_Panel_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
-    m_Splitter_Projects->SetSashGravity( 1 );
+    m_Splitter_Projects->SetSashGravity( 0 );
     m_Splitter_Projects->Connect( wxEVT_IDLE, wxIdleEventHandler( Main::m_Splitter_ProjectsOnIdle ), NULL, this );
 
     m_Panel_Projects_Tree = new wxPanel( m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -296,7 +320,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Projects_Editor->SetSizer( m_Sizer_Projects_Editor );
     m_Panel_Projects_Editor->Layout();
     m_Sizer_Projects_Editor->Fit( m_Panel_Projects_Editor );
-    m_Splitter_Projects->SplitVertically( m_Panel_Projects_Tree, m_Panel_Projects_Editor, 188 );
+    m_Splitter_Projects->SplitVertically( m_Panel_Projects_Tree, m_Panel_Projects_Editor, 200 );
     m_Sizer_Projects->Add( m_Splitter_Projects, 1, wxEXPAND, 5 );
 
 
@@ -309,7 +333,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Blog = new wxBoxSizer( wxVERTICAL );
 
     m_Splitter_Blog = new wxSplitterWindow( m_Panel_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D );
-    m_Splitter_Blog->SetSashGravity( 1 );
+    m_Splitter_Blog->SetSashGravity( 0 );
     m_Splitter_Blog->Connect( wxEVT_IDLE, wxIdleEventHandler( Main::m_Splitter_BlogOnIdle ), NULL, this );
 
     m_Panel_Blog_Tree = new wxPanel( m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
@@ -328,7 +352,6 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Blog_Tree->Layout();
     m_Sizer_Blog_Tree->Fit( m_Panel_Blog_Tree );
     m_Panel_Blog_Editor = new wxPanel( m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-
     wxFlexGridSizer* m_Sizer_Blog_Editor;
     m_Sizer_Blog_Editor = new wxFlexGridSizer( 0, 1, 0, 0 );
     m_Sizer_Blog_Editor->AddGrowableCol( 0 );
@@ -422,7 +445,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_ScrolledWindow_Blog_Editor->SetSizer( m_Sizer_ScrolledWindow_Blog_Editor );
     m_ScrolledWindow_Blog_Editor->Layout();
     m_Sizer_ScrolledWindow_Blog_Editor->Fit( m_ScrolledWindow_Blog_Editor );
-    m_Sizer_Blog_Editor->Add( m_ScrolledWindow_Blog_Editor, 1, wxEXPAND | wxALL, 5 );
+    m_Sizer_Blog_Editor->Add( m_ScrolledWindow_Blog_Editor, 0, wxEXPAND | wxALL, 5 );
 
     m_ScrolledWindow_BlogCategory_Editor = new wxScrolledWindow( m_Panel_Blog_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL );
     m_ScrolledWindow_BlogCategory_Editor->SetScrollRate( 5, 5 );
@@ -483,7 +506,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_ScrolledWindow_BlogCategory_Editor->SetSizer( m_Sizer_ScrolledWindow_BlogCategory_Editor );
     m_ScrolledWindow_BlogCategory_Editor->Layout();
     m_Sizer_ScrolledWindow_BlogCategory_Editor->Fit( m_ScrolledWindow_BlogCategory_Editor );
-    m_Sizer_Blog_Editor->Add( m_ScrolledWindow_BlogCategory_Editor, 1, wxEXPAND | wxALL, 5 );
+    m_Sizer_Blog_Editor->Add( m_ScrolledWindow_BlogCategory_Editor, 0, wxEXPAND | wxALL, 5 );
 
     m_Button_Blog_Preview = new wxButton( m_Panel_Blog_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0 );
     m_Button_Blog_Preview->Hide();
@@ -494,7 +517,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Panel_Blog_Editor->SetSizer( m_Sizer_Blog_Editor );
     m_Panel_Blog_Editor->Layout();
     m_Sizer_Blog_Editor->Fit( m_Panel_Blog_Editor );
-    m_Splitter_Blog->SplitVertically( m_Panel_Blog_Tree, m_Panel_Blog_Editor, 188 );
+    m_Splitter_Blog->SplitVertically( m_Panel_Blog_Tree, m_Panel_Blog_Editor, 200 );
     m_Sizer_Blog->Add( m_Splitter_Blog, 1, wxEXPAND, 5 );
 
 
@@ -521,6 +544,8 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
 
     this->SetMenuBar( m_Menubar_Main );
 
+    this->m_Timer = new wxTimer();
+    this->m_Timer->Start(100, wxTIMER_ONE_SHOT);
 
     this->Centre( wxBOTH );
 
@@ -559,6 +584,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Button_Blog_Preview->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Blog_Preview_OnButtonClick ), NULL, this );
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_OpenDir_OnMenuSelection ), this, m_MenuItem_OpenDir->GetId());
     m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Main::m_MenuItem_Save_OnMenuSelection ), this, m_MenuItem_Save->GetId());
+    this->m_Timer->Bind(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), this, this->m_Timer->GetId());
 
     this->m_ChoiceBook_PageSelection->SetSelection(0);
     this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
@@ -569,38 +595,39 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
 
 Main::~Main()
 {
-    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeBeginDrag ), NULL, this );
-    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndDrag ), NULL, this );
-    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit ), NULL, this );
-    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeItemMenu ), NULL, this );
-    m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeSelChanged ), NULL, this );
-    m_TextCtrl_Projects_File->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_File_OnText ), NULL, this );
-    m_TextCtrl_Projects_Name->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Name_OnText ), NULL, this );
-    m_TextCtrl_Projects_Icon->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Icon_OnText ), NULL, this );
-    m_TextCtrl_Projects_Tags->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Tags_OnText ), NULL, this );
-    m_TextCtrl_Projects_Images->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Images_OnText ), NULL, this );
-    m_TextCtrl_Projects_Date->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Date_OnText ), NULL, this );
-    m_TextCtrl_Projects_URLs->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_URLs_OnText ), NULL, this );
-    m_TextCtrl_Projects_ToolTip->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_ToolTip_OnText ), NULL, this );
-    m_TextCtrl_Projects_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Description_OnText ), NULL, this );
-    m_TextCtrl_ProjectsCategory_DisplayName->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText ), NULL, this );
-    m_TextCtrl_ProjectsCategory_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_Description_OnText ), NULL, this );
-    m_Button_Projects_Preview->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Projects_Preview_OnButtonClick ), NULL, this );
-    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeBeginDrag ), NULL, this );
-    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndDrag ), NULL, this );
-    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
-    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeItemMenu ), NULL, this );
-    m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeSelChanged ), NULL, this );
-    m_TextCtrl_Blog_File->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_File_OnText ), NULL, this );
-    m_TextCtrl_Blog_Name->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Name_OnText ), NULL, this );
-    m_TextCtrl_Blog_Icon->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Icon_OnText ), NULL, this );
-    m_TextCtrl_Blog_ToolTip->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_ToolTip_OnText ), NULL, this );
-    m_TextCtrl_Blog_Date->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Date_OnText ), NULL, this );
-    m_TextCtrl_Blog_Tags->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Tags_OnText ), NULL, this );
-    m_TextCtrl_Blog->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_OnText ), NULL, this );
-    m_TextCtrl_BlogCategory_DisplayName->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_BlogCategory_DisplayName_OnText ), NULL, this );
-    m_TextCtrl_BlogCategory_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_BlogCategory_Description_OnText ), NULL, this );
-    m_Button_Blog_Preview->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Blog_Preview_OnButtonClick ), NULL, this );
+    this->m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeBeginDrag ), NULL, this );
+    this->m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndDrag ), NULL, this );
+    this->m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit ), NULL, this );
+    this->m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeItemMenu ), NULL, this );
+    this->m_TreeCtrl_Projects->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Projects_OnTreeSelChanged ), NULL, this );
+    this->m_TextCtrl_Projects_File->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_File_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_Name->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Name_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_Icon->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Icon_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_Tags->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Tags_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_Images->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Images_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_Date->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Date_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_URLs->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_URLs_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_ToolTip->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_ToolTip_OnText ), NULL, this );
+    this->m_TextCtrl_Projects_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Projects_Description_OnText ), NULL, this );
+    this->m_TextCtrl_ProjectsCategory_DisplayName->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText ), NULL, this );
+    this->m_TextCtrl_ProjectsCategory_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_ProjectsCategory_Description_OnText ), NULL, this );
+    this->m_Button_Projects_Preview->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Projects_Preview_OnButtonClick ), NULL, this );
+    this->m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeBeginDrag ), NULL, this );
+    this->m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndDrag ), NULL, this );
+    this->m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit ), NULL, this );
+    this->m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeItemMenu ), NULL, this );
+    this->m_TreeCtrl_Blog->Disconnect( wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler( Main::m_TreeCtrl_Blog_OnTreeSelChanged ), NULL, this );
+    this->m_TextCtrl_Blog_File->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_File_OnText ), NULL, this );
+    this->m_TextCtrl_Blog_Name->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Name_OnText ), NULL, this );
+    this->m_TextCtrl_Blog_Icon->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Icon_OnText ), NULL, this );
+    this->m_TextCtrl_Blog_ToolTip->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_ToolTip_OnText ), NULL, this );
+    this->m_TextCtrl_Blog_Date->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Date_OnText ), NULL, this );
+    this->m_TextCtrl_Blog_Tags->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_Tags_OnText ), NULL, this );
+    this->m_TextCtrl_Blog->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_Blog_OnText ), NULL, this );
+    this->m_TextCtrl_BlogCategory_DisplayName->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_BlogCategory_DisplayName_OnText ), NULL, this );
+    this->m_TextCtrl_BlogCategory_Description->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( Main::m_TextCtrl_BlogCategory_Description_OnText ), NULL, this );
+    this->m_Button_Blog_Preview->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Main::m_Button_Blog_Preview_OnButtonClick ), NULL, this );
+    this->m_Timer->Disconnect(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), NULL, this);
 }
 
 void Main::m_Splitter_ProjectsOnIdle(wxIdleEvent&)
@@ -1026,6 +1053,12 @@ void Main::m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event )
         url = this->m_WorkingDir + wxString("/blog/") + bentry->category->foldername + wxString("/") + bentry->filename + wxString(".html");
     }
     wxLaunchDefaultBrowser(wxString("file:") + url);
+}
+
+void Main::m_Timer_OnTimer(wxTimerEvent& event)
+{
+    this->m_Splitter_Projects->SetSashPosition(200);
+    this->m_Splitter_Blog->SetSashPosition(200);
 }
     
 Category* Main::FindCategory_Projects(wxTreeItemId item)
