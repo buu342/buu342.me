@@ -1,12 +1,8 @@
 // TODO:
 // * (SSG)      Sash gravity when resizing
-// * (MANUAL)   Make old pages redirect
 // * (SSG)      Windows fixes
 // * (SSG)      Fix how a newline gets appended to the end of the markdown file
 // * (SSG)      Throw warning when markdown parsing is problematic
-// * (JS)       Make project/blog list section's resize properly with window resize
-// * (JS)       Make images properly resize with window resize if going out of margin
-// * (JS)       Click image to open it in new tab
 // * (SSG)      Implement tag system
 // * (SSG)      Implement homepage with latest stuff list
 

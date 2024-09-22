@@ -25,12 +25,36 @@ function main()
             }
         );
     }
+
+    window.addEventListener('resize', 
+        function(event) {
+            for (i = 0; i < colbuts.length; i++)
+                colbuts[i].parentElement.nextElementSibling.style.maxHeight = colbuts[i].parentElement.nextElementSibling.scrollHeight + "px";
+        }, true
+    );
+
+    AddURLsToImages();
 }
 
 function HideElementsInCollapsedCategory(content)
 {
     if (content.style.maxHeight === "0px")
         content.style.visibility = 'hidden';
+}
+
+function AddURLsToImages()
+{
+    var imgs = document.getElementsByTagName("img");
+    for (i = 0; i < imgs.length; i++)
+    {
+        var elem = imgs[i];
+        var anchor = document.createElement("a");
+        anchor.href = elem.src;
+        anchor.target = "_blank";
+        
+        elem.parentNode.replaceChild(anchor, elem); 
+        anchor.appendChild(elem);
+    }
 }
 
 main();

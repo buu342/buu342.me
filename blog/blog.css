@@ -55,10 +55,22 @@ h3
     text-align: left;
 }
 
-img 
-{ 
-    max-width: 640px;
-    max-height: 480px;
+@media screen and (min-width: 870px)
+{
+    img
+    {
+        max-width: 640px;
+        max-height: 480px;
+    }
+}
+
+@media screen and (max-width: 870px)
+{
+    img
+    {
+        max-width: 70vw;
+        max-height: 70vh;
+    }
 }
 
 h1 a, h1 a:link, h1 a:visited, h1 a:hover,

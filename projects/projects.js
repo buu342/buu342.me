@@ -33,6 +33,13 @@ function main()
         );
     }
 
+    window.addEventListener('resize', 
+        function(event) {
+            for (i = 0; i < colbuts.length; i++)
+                colbuts[i].parentElement.nextElementSibling.style.maxHeight = colbuts[i].parentElement.nextElementSibling.scrollHeight + "px";
+        }, true
+    );
+
     var carousellist = document.getElementsByClassName("carousel-list")[0];
     var carouselobject = document.getElementsByClassName("carousel-object")[0];
     if (carouselobject != null)
