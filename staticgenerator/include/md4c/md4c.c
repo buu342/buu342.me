@@ -7047,6 +7047,7 @@ abort:
 static int
 md_output_toc(MD_CTX *ctx)
 {
+    /*
     MD_HEADING_DEF *hd;
     MD_BLOCK_LI_DETAIL li_det = {0};
 
@@ -7105,6 +7106,8 @@ abort:
     md_free_attribute(ctx, &href_build);
     md_free_attribute(ctx, &title_build);
     return ret;
+    */
+    return 0;
 }
 
 static int

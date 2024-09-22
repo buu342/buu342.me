@@ -1016,13 +1016,13 @@ void Main::m_Button_Blog_Preview_OnButtonClick( wxCommandEvent& event )
     if (treeitem_iscategory(this->m_TreeCtrl_Blog, this->m_SelectedItem))
     {
         Category* cat = FindCategory_Blog(this->m_SelectedItem);
-        CompileBlog_List();
+        this->CompileBlog_List();
         url = this->m_WorkingDir + wxString("/blogs.html") + wxString("#") + cat->foldername;
     }
     else
     {
         Blog* bentry = this->FindBlog(this->m_SelectedItem);
-        CompileBlog_Entry(bentry);
+        this->CompileBlog_Entry(bentry);
         url = this->m_WorkingDir + wxString("/blog/") + bentry->category->foldername + wxString("/") + bentry->filename + wxString(".html");
     }
     wxLaunchDefaultBrowser(wxString("file:") + url);
@@ -1279,13 +1279,13 @@ void Main::LoadProjects()
 
     // Open the projects json file
     if (wxFileExists(this->m_WorkingDir + wxString("/projects/projects.json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/projects/projects.json"))));
+        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/projects/projects.json")).ToStdString()));
 
     for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
     {
         int index = 0;
         wxTreeItemId cat_id;
-        Category* cat_elem;
+        Category* cat_elem = NULL;
         std::vector<Project*> projects;
 
         // Find the category tree index
@@ -1348,13 +1348,13 @@ void Main::LoadBlog()
 
     // Open the blog json file
     if (wxFileExists(this->m_WorkingDir + wxString("/blog/blog.json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/blog/blog.json"))));
+        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/blog/blog.json")).ToStdString()));
 
     for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
     {
         int index = 0;
         wxTreeItemId cat_id;
-        Category* cat_elem;
+        Category* cat_elem = NULL;
         std::vector<Blog*> blogs;
 
         // Find the category tree index
@@ -1676,22 +1676,22 @@ void Main::Save()
 
 void Main::CompileProjects()
 {
-    CompileProjects_List();
+    this->CompileProjects_List();
 
     // Now create the page for each project
     for (Category* cat : this->m_Category_Projects)
         for (void* page : cat->pages)
-            CompileProjects_Project((Project*)page);
+            this->CompileProjects_Project((Project*)page);
 }
 
 void Main::CompileBlog()
 {
-    CompileBlog_List();
+    this->CompileBlog_List();
 
     // Now create the page for each blog entry
     for (Category* cat : this->m_Category_Blog)
         for (void* page : cat->pages)
-            CompileBlog_Entry((Blog*)page);
+            this->CompileBlog_Entry((Blog*)page);
 }
 
 void Main::CompileProjects_List()

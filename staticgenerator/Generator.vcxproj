@@ -29,11 +29,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="include\md4c\entity.c" />
+    <ClCompile Include="include\md4c\md4c-html.c" />
+    <ClCompile Include="include\md4c\md4c.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tags.cpp" />
-    <ClInclude Include="include\md4c\entity.c" />
-    <ClInclude Include="include\md4c\md4c-html.c" />
-    <ClInclude Include="include\md4c\md4c.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

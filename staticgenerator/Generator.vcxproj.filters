@@ -12,8 +12,14 @@
     <Filter Include="Header Files\include">
       <UniqueIdentifier>{08497979-77e2-4388-9c62-228d7ca59b50}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\include\maddy">
+    <Filter Include="Header Files\include\md4c">
       <UniqueIdentifier>{24e2685f-9c0d-4d77-80d1-1b741839bcb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\include">
+      <UniqueIdentifier>{631db03a-e31d-4a1f-86d0-f38d35f18a34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\include\md4c">
+      <UniqueIdentifier>{d188a2ef-274d-4a79-bfd9-5d034bc9f94a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -26,17 +32,17 @@
     <ClInclude Include="tags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\md4c\entity.h">
-      <Filter>Header Files\include\md4c</Filter>
+    <ClInclude Include="include\json.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\md4c\md4c-html.h">
+    <ClInclude Include="include\md4c\entity.h">
       <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
     <ClInclude Include="include\md4c\md4c.h">
       <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
-    <ClInclude Include="include\json.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="include\md4c\md4c-html.h">
+      <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -49,10 +55,10 @@
     <ClCompile Include="tags.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\md4c\entity.c">
+    <ClCompile Include="include\md4c\md4c-html.c">
       <Filter>Source Files\include\md4c</Filter>
     </ClCompile>
-    <ClCompile Include="include\md4c\md4c-html.c">
+    <ClCompile Include="include\md4c\entity.c">
       <Filter>Source Files\include\md4c</Filter>
     </ClCompile>
     <ClCompile Include="include\md4c\md4c.c">
