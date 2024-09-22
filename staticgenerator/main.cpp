@@ -44,7 +44,7 @@ wxString string_fromfile(wxString path)
 
     // Read the file into the string, and return it
     str += file.GetFirstLine();
-    while(!file.Eof())
+    while (!file.Eof())
         str += wxString("\r\n") + file.GetNextLine();
     return str;
 }
@@ -1734,6 +1734,7 @@ void Main::CompileProjects_Project(Project* proj)
     wxTextFile projout(projoutpath);
     std::stringstream mdinput(proj->description.ToStdString());
     std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+    config->enabledParsers |= maddy::types::HTML_PARSER | maddy::types::HEADLINE_PARSER | maddy::types::CODE_BLOCK_PARSER | maddy::types::UNORDERED_LIST_PARSER;
     std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
     std::vector<wxString> images;
     std::vector<wxString> youtubes;
@@ -1854,7 +1855,7 @@ void Main::CompileBlog_List()
         wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
         std::stringstream mdinput(cat->description.ToStdString());
         std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
-        config->enabledParsers |= maddy::types::HTML_PARSER | maddy::types::HEADLINE_PARSER | maddy::types::CODE_BLOCK_PARSER | maddy::types::UNORDERED_LIST_PARSER; 
+        config->enabledParsers |= maddy::types::HTML_PARSER;
         std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
         wxString desc;
 
@@ -1902,6 +1903,7 @@ void Main::CompileBlog_Entry(Blog* bentry)
     wxTextFile bentryout(bentryoutpath);
     std::stringstream mdinput(bentry->content.ToStdString());
     std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+    config->enabledParsers |= maddy::types::HTML_PARSER | maddy::types::HEADLINE_PARSER | maddy::types::CODE_BLOCK_PARSER | maddy::types::UNORDERED_LIST_PARSER;
     std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
 
     // Replace most of the basic page info
