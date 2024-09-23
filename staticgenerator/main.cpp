@@ -31,6 +31,34 @@ bool blog_sorter(Blog* lhs, Blog* rhs)
     return lhs->index < rhs->index;
 }
 
+bool date_fromstring(wxString input, wxDateTime* output)
+{
+    wxString::const_iterator end;
+    if (!output->ParseDate(input, &end))
+        return false;
+    return true;
+}
+
+bool project_sorter_date(Project* lhs, Project* rhs)
+{
+    wxDateTime date_lhs, date_rhs;
+    if (!date_fromstring(lhs->date, &date_lhs))
+        return false;
+    if (!date_fromstring(rhs->date, &date_rhs))
+        return true;
+    return date_lhs.IsLaterThan(date_rhs);
+}
+
+bool blog_sorter_date(Blog* lhs, Blog* rhs)
+{
+    wxDateTime date_lhs, date_rhs;
+    if (!date_fromstring(lhs->date, &date_lhs))
+        return false;
+    if (!date_fromstring(rhs->date, &date_rhs))
+        return true;
+    return date_lhs.IsLaterThan(date_rhs);
+}
+
 bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
 {
     return tree->GetRootItem() == tree->GetItemParent(item);
@@ -1764,6 +1792,7 @@ void Main::Save()
     // Compile the website
     this->CompileProjects();
     this->CompileBlog();
+    this->CompileHomePage();
 
     // Dump the JSONs to text files
     if (!out_proj.Exists())
@@ -2083,6 +2112,97 @@ void Main::CompileBlog_Entry(Blog* bentry)
     bentryout.AddLine(html_final);
     bentryout.Write();
     bentryout.Close();
+}
+
+void Main::CompileHomePage()
+{
+    int count;
+    wxString homepath = this->m_WorkingDir + wxString("/index.html");
+    wxTextFile fileout(homepath);
+    wxString html_entry;
+    wxString html_final = string_fromfile(this->m_WorkingDir + "/templates/index.html");
+    std::vector<Project*> latestprojects;
+    std::vector<Blog*> latestblogentries;
+
+    // Get the list of projects with dates
+    for (Category* cat : this->m_Category_Projects)
+    {
+        for (void* page : cat->pages)
+        {
+            Project* proj = (Project*)page;
+            if (proj->date != "")
+                latestprojects.push_back(proj);
+        }
+    }
+
+    // Get the list of blog entries with dates
+    for (Category* cat : this->m_Category_Blog)
+    {
+        for (void* page : cat->pages)
+        {
+            Blog* bentry = (Blog*)page;
+            if (bentry->date != "")
+                latestblogentries.push_back(bentry);
+        }
+    }
+    
+
+    // Paste the 5 most recent projects
+    count = 0;
+    html_entry = wxString("");
+    std::sort(latestprojects.begin(), latestprojects.end(), &project_sorter_date);
+    for (Project* proj : latestprojects)
+    {
+        wxDateTime date;
+        wxString tableelem;
+        if (count == 5)
+            break;
+        tableelem = string_fromfile(this->m_WorkingDir + "/templates/index_latest.html");
+        if (date_fromstring(proj->date, &date))
+            tableelem.Replace("_TEMPLATE_LATEST_ENTRY_DATE_", date.Format("%d/%m/%Y"));
+        else
+            tableelem.Replace("_TEMPLATE_LATEST_ENTRY_DATE_", "??/??/????");
+        tableelem.Replace("_TEMPLATE_LATEST_ENTRY_CATEGORY_", proj->category->displayname);
+        tableelem.Replace("_TEMPLATE_LATEST_ENTRY_NAME_", proj->displayname);
+        tableelem.Replace("_TEMPLATE_ENTRY_CATEGORY_", wxString("projects.html#") + proj->category->foldername);
+        tableelem.Replace("_TEMPLATE_ENTRY_PAGE_", wxString("projects/") + proj->category->foldername + wxString("/") + proj->filename + wxString(".html"));
+        html_entry += tableelem + wxString("\r\n");
+        count++;
+    }
+    html_final.Replace("_TEMPLATE_LATEST_PROJECTS_", html_entry);
+
+    // Paste the 5 most recent blog entries
+    count = 0;
+    html_entry = wxString("");
+    std::sort(latestblogentries.begin(), latestblogentries.end(), &blog_sorter_date);
+    for (Blog* bentry : latestblogentries)
+    {
+        wxDateTime date;
+        wxString tableelem;
+        if (count == 5)
+            break;
+        tableelem = string_fromfile(this->m_WorkingDir + "/templates/index_latest.html");
+        if (date_fromstring(bentry->date, &date))
+            tableelem.Replace("_TEMPLATE_LATEST_ENTRY_DATE_", date.Format("%d/%m/%Y"));
+        else
+            tableelem.Replace("_TEMPLATE_LATEST_ENTRY_DATE_", "??/??/????");
+        tableelem.Replace("_TEMPLATE_LATEST_ENTRY_CATEGORY_", bentry->category->displayname);
+        tableelem.Replace("_TEMPLATE_LATEST_ENTRY_NAME_", bentry->displayname);
+        tableelem.Replace("_TEMPLATE_ENTRY_CATEGORY_", wxString("blog.html#") + bentry->category->foldername);
+        tableelem.Replace("_TEMPLATE_ENTRY_PAGE_", wxString("blog/") + bentry->category->foldername + wxString("/") + bentry->filename + wxString(".html"));
+        html_entry += tableelem + wxString("\r\n");;
+        count++;
+    }
+    html_final.Replace("_TEMPLATE_LATEST_BLOGPOSTS_", html_entry);
+
+    // Generate the page itself
+    if (!fileout.Exists())
+        fileout.Create();
+    fileout.Open();
+    fileout.Clear();
+    fileout.AddLine(html_final);
+    fileout.Write();
+    fileout.Close();
 }
 
 void Main::MarkModified(bool modified)

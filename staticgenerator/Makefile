@@ -19,7 +19,7 @@ ifeq ($(OS_NAME),Darwin)
 endif
 
 # Standard preprocessor flags (common for CC and CXX) 
-CPPFLAGS ?= -Iinclude/ -Iinclude/md4c/
+CPPFLAGS ?= -Iinclude/ -Iinclude/md4c/ -Wno-trigraphs
 
 # Standard linker flags 
 ifeq ($(OS_NAME),Darwin)
