@@ -206,10 +206,22 @@ pre
     padding-top: 7px;
 }
 
-.carousel-object
+@media screen and (min-width: 736px)
 {
-    width: 540px;
-    height: 310px;
+    .carousel-object
+    {
+        width: 540px;
+        height: 310px;
+    }
+}
+
+@media screen and (max-width: 736px)
+{
+    .carousel-object
+    {
+        max-width: 75vw;
+        height: 42vw;
+    }
 }
 
 .carousel-object img
@@ -231,8 +243,23 @@ pre
     overflow: auto;
     white-space: nowrap;
     padding: 5px;
-    width: 530px;
     display: inline-block;
+}
+
+@media screen and (min-width: 736px)
+{
+    .carousel-list
+    {
+        width: 530px;
+    }
+}
+
+@media screen and (max-width: 736px)
+{
+    .carousel-list
+    {
+        max-width: 75vw;
+    }
 }
 
 .carousel-list img
