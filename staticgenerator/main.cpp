@@ -1840,7 +1840,8 @@ void Main::CompileProjects_List()
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/projects_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
         html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
-        if (md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS()) != 0)
+        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+        if (desc.Length() == 0 && cat->description.Length() > 0)
         {
             wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + cat->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
             dialog.ShowModal();
@@ -1881,7 +1882,8 @@ void Main::CompileProjects_Project(Project* proj)
     html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
     html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
     html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
-    if (md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS()) != 0)
+    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+    if (html_md.Length() == 0 && proj->description.Length() > 0)
     {
         wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + proj->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
         dialog.ShowModal();
@@ -2021,7 +2023,8 @@ void Main::CompileBlog_List()
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/blog_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
         html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
-        if (md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS()) != 0)
+        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+        if (desc.Length() == 0 && cat->description.Length() > 0)
         {
             wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + cat->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
             dialog.ShowModal();
@@ -2060,7 +2063,8 @@ void Main::CompileBlog_Entry(Blog* bentry)
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog_entry.html");
     html_final.Replace("_TEMPLATE_BLOG_TITLE_", bentry->displayname);
     html_final.Replace("_TEMPLATE_BLOG_DATE_", bentry->date);
-    if (md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS()) != 0)
+    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+    if (html_md.Length() == 0 && bentry->content.Length() > 0)
     {
         wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + bentry->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
         dialog.ShowModal();
