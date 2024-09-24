@@ -1,5 +1,4 @@
 // TODO:
-// Implement tag system
 // About me page
 // Documentation of code and git
 
@@ -1740,7 +1739,7 @@ void Main::CompileProjects_Project(Project* proj)
     wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
     wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
     wxTextFile projout(projoutpath);
-    wxString html_md = wxString("");
+    wxString html_md = wxString(""), pagetags = wxString("");
     const char* mdstr = proj->description.mb_str();
     std::vector<wxString> images;
     std::vector<wxString> youtubes;
@@ -1818,6 +1817,18 @@ void Main::CompileProjects_Project(Project* proj)
     }
     else
         html_final.Replace("_TEMPLATE_PROJECTS_IMAGES_", wxString(""));
+
+    // Handle page tags
+    for (wxString tag : proj->tags)
+    {
+        wxString str = string_fromfile(this->m_WorkingDir + "/templates/project_tag.html");
+        str.Replace("_TEMPLATE_TAG_URL_", wxString("../../tags/") + sanitize_tagname(tag) + wxString(".html"));
+        str.Replace("_TEMPLATE_TAG_NAME_", tag);
+        pagetags += str;
+        if (tag != proj->tags.back())
+            pagetags += wxString(", ");
+    }
+    html_final.Replace("_TEMPLATE_PROJECTS_TAGS_", pagetags);
 
     // Handle page URLS
     if (proj->urls.size() > 0)
@@ -1923,8 +1934,9 @@ void Main::CompileBlog_Entry(Blog* bentry)
     wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
     wxString bentryoutpath = this->m_WorkingDir + wxString("/") + relativepath + bentry->filename + wxString(".html");
     wxTextFile bentryout(bentryoutpath);
-    wxString html_md = wxString("");
+    wxString html_md = wxString(""), pagetags = wxString("");
     const char* mdstr = md_sanitize(&bentry->content)->mb_str();
+
 
     // Replace most of the basic page info
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog_entry.html");
@@ -1941,6 +1953,18 @@ void Main::CompileBlog_Entry(Blog* bentry)
     html_final.Replace("_TEMPLATE_BLOG_URL_", relativepath + bentry->filename + wxString(".html"));
     html_final.Replace("_TEMPLATE_BLOG_IMAGE_", relativepath + bentry->icon);
     html_final.Replace("_TEMPLATE_BLOG_TOOLTIP_", bentry->tooltip);
+
+    // Handle page tags
+    for (wxString tag : bentry->tags)
+    {
+        wxString str = string_fromfile(this->m_WorkingDir + "/templates/project_tag.html");
+        str.Replace("_TEMPLATE_TAG_URL_", wxString("../../tags/") + sanitize_tagname(tag) + wxString(".html"));
+        str.Replace("_TEMPLATE_TAG_NAME_", tag);
+        pagetags += str;
+        if (tag != bentry->tags.back())
+            pagetags += wxString(", ");
+    }
+    html_final.Replace("_TEMPLATE_BLOG_TAGS_", pagetags);
     
     // Generate the page itself
     if (!bentryout.Exists())
@@ -1954,6 +1978,10 @@ void Main::CompileBlog_Entry(Blog* bentry)
 
 void Main::CompileTags()
 {
+    bool cont;
+    wxString filename;
+    wxString tagspath = this->m_WorkingDir + wxString("/tags");
+    wxDir tagsdir(tagspath);
     std::map<wxString, std::vector<TaggedPage>> tagmap;
 
     // Go through all projects and add each one to the tag map
@@ -1986,32 +2014,55 @@ void Main::CompileTags()
         }
     }
 
+    // Purge the tags folder
+    cont = tagsdir.GetFirst(&filename, "*.html");
+    while (cont)
+    {
+        wxRemoveFile(tagspath + wxString("/") + filename);
+        cont = tagsdir.GetNext(&filename);
+    }
+
     // Now, alphabetically sort all the pages in the tags, and make their respective pages
     for (std::pair<wxString, std::vector<TaggedPage>> it : tagmap)
     {
         wxString tagname_page;
+        wxString pagelist;
+        wxString html_final = string_fromfile(this->m_WorkingDir + "/templates/tag.html");
         std::sort(it.second.begin(), it.second.end(), taggedpage_sorter);
 
-        // For a valid tag, its name needs to have special symbols replaced
-        // There's likely a better way around this, but I'll add to this list as needed
-        tagname_page = it.first;
-        tagname_page.Replace("+", "p");
-        tagname_page.Replace("-", "");
-        tagname_page.Replace("/", "");
-        tagname_page.Replace(" ", "");
+        // For a valid tag, its name needs to be sanitized
+        tagname_page = sanitize_tagname(it.first);
 
-        // Create the tag page
+        // Fill the tag page
+        html_final.Replace("_TEMPLATE_TAG_NAME_", it.first);
         for (TaggedPage tp : it.second)
         {
-            // TODO:
-            /*
-            wxString pname;
+            wxString item = string_fromfile(this->m_WorkingDir + "/templates/tag_item.html");
             if (tp.type == PAGETYPE_PROJECT)
-                pname = ((Project*)tp.page)->displayname;
+            {
+                Project* proj = (Project*)tp.page;
+                item.Replace("_TEMPLATE_TAG_PAGENAME_", proj->displayname);
+                item.Replace("_TEMPLATE_TAG_PAGEURL_", wxString("../projects/") + proj->category->foldername + wxString("/") + proj->filename + wxString(".html"));
+            }
             else if (tp.type == PAGETYPE_BLOG)
-                pname = ((Blog*)tp.page)->displayname;
-            */
+            {
+                Blog* bentry = (Blog*)tp.page;
+                item.Replace("_TEMPLATE_TAG_PAGENAME_", bentry->displayname);
+                item.Replace("_TEMPLATE_TAG_PAGEURL_", wxString("../blog/") + bentry->category->foldername + wxString("/") + bentry->filename + wxString(".html"));
+            }
+            pagelist += item + wxString("\r\n");
         }
+        html_final.Replace("_TEMPLATE_TAG_PAGELIST_", pagelist);
+
+        // Generate the page itself
+        wxTextFile out(tagspath + wxString("/") + tagname_page + wxString(".html"));
+        if (!out.Exists())
+            out.Create();
+        out.Open();
+        out.Clear();
+        out.AddLine(html_final);
+        out.Write();
+        out.Close();
     }
 }
 

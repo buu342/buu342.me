@@ -63,11 +63,6 @@ bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
     return tree->GetRootItem() == tree->GetItemParent(item);
 }
 
-void md4c_funcptr_handlestr(const MD_CHAR* input, MD_SIZE inputsize, void* output)
-{
-    ((wxString*)output)->Append(input, inputsize);
-}
-
 wxString string_fromfile(wxString path)
 {
     wxTextFile file;
@@ -89,6 +84,21 @@ wxString string_fromfile(wxString path)
         str += file.GetNextLine();
     }
     return str;
+}
+
+wxString sanitize_tagname(wxString tagname)
+{
+    tagname.Replace("+", "p");
+    tagname.Replace("-", "");
+    tagname.Replace("/", "");
+    tagname.Replace(".", "");
+    tagname.Replace(" ", "");
+    return tagname;
+}
+
+void md4c_funcptr_handlestr(const MD_CHAR* input, MD_SIZE inputsize, void* output)
+{
+    ((wxString*)output)->Append(input, inputsize);
 }
 
 wxString* md_sanitize(wxString* input)
