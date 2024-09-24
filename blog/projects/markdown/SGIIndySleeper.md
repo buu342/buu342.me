@@ -276,13 +276,64 @@ The end!
 ![The End](images/SGIIndySleeper/End.jpg)
 </p>
 
+</br>
 **Update 16/09/2022**
+
 I have [soldered the Power LED to the wires and resistors](images/SGIIndySleeper/LEDProtoboard), and it works now. I had to connect it to the HDD LED cable though, because apparently the POWER LED cable is to tell you that the motherboard is connected to the socket, not that the PC is on. Whoops!
 
 <p align="center">
-<video width="50%" controls>
-  <source src="images/SGIIndySleeper/FrontLED.mp4" type="video/mp4"></br>
-</video>
+    <video width="50%" controls>
+        <source src="images/SGIIndySleeper/FrontLED.mp4" type="video/mp4"></br>
+    </video>
 </p>
 
 If you want my CAD files, then feel free to grab them from [here](downloads/SGIIndyCAD.zip).
+
+</br>
+**Update 24/09/2024**
+
+It's been two years already? Wow. 
+
+I intend on writing another article about how the PC has been holding up after all these years, but in the meantime I would like to talk about a change I made to the PC. I actually did this in May, but I only now got around to updating this blog page about it.
+
+As I outlined earlier in the article, the two buttons on the front of the machine aren't doing anything. The two arrow buttons on the front of an actual Indy are volume buttons, and there's actually a small recessed button that works as a reset button. I never really planned on doing anything with the reset button (I don't think I've ever seen a computer with such a button in this day and age), but I definitely did want to do something with the arrows.
+
+So I got my hands on a [beetle board](https://www.dfrobot.com/product-1075.html), it's so cute:
+
+<p align="center">
+![A cute little Beetle board](images/SGIIndySleeper/Beetle.jpg)
+</p>
+
+This is basically an Arduino compatible board, which means I can program it to do whatever I want. And since an Arduino is connected via USB, it can emulate a keyboard.
+
+So it's relatively easy. All I have to do is treat one of the GPIO's as an input and to send a keyboard volume key when it detects 5 volts. Now, you still need to go about debouncing the detection, and I went as far as adding the delay you get when you hold down a key. But it was all working quite well:
+
+<p align="center">
+    <video width="50%" controls>
+        <source src="images/SGIIndySleeper/ArduinoTest.mp4" type="video/mp4">
+    </video>
+</p>
+
+The motherboard of your PC should have some USB headers on it, as these headers are what give your PC case the ability to have Front I/O for USB. So all I have to do is to solder the buttons to the beetle, plug the beetle into the motherboard's USB header:
+
+<p align="center">
+![The Beetle board, connected to the motherboard](images/SGIIndySleeper/FrontIOBeetle.jpg)
+</p>
+
+And voila:
+
+<p align="center">
+    <video width="50%" controls>
+        <source src="images/SGIIndySleeper/FrontIO.mp4" type="video/mp4">
+    </video>
+</p>
+
+The code for this is on [GitHub](TODO_GITLINK) as usual.
+
+Now, this wasn't completely painless. I actually had a bit of trouble with the front I/O due to a mistake I made in this article!
+
+I mentioned that the green LED wasn't working when I connected it to the POWER LED cable, and that I had to hook it to the HDD LED. I wasn't very proud of the solder job I did on the front light and power button, so since I went through the trouble of disassembling the PC to access the front I/O board, I went ahead and resoldered the pieces. However, when I tried hooking them back to the PC, the LED stopped working...
+
+I wasted hours trying to diagnose this and resoldering the I/O. The LED was fine and plugged in the correct orientation, the motherboard was sometimes reading the correct voltage and other times not. Did I fry the motherboard somehow?
+
+No, so actually as it turns out, I had enabled "stealth" mode in the BIOS many years ago (I remember doing this specifically for power consumption reasons), which would disable all LEDs. I had to re-enable to get the LED working again. Why the HDD LED was working all this time is still a mystery to me, but at least now the LED is *properly* connected to the POWER LED cable, and will turn off when the computer is powered off/sleeping. Just as John Computer intended.
