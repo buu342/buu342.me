@@ -3,6 +3,8 @@
 typedef struct IUnknown IUnknown; 
 
 #include "main.h"
+#include "include/json.hpp"
+#include "include/md4c/md4c-html.h"
 
 bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item);
 wxString string_fromfile(wxString path);
@@ -12,6 +14,7 @@ bool project_sorter(Project* lhs, Project* rhs);
 bool blog_sorter(Blog* lhs, Blog* rhs);
 bool project_sorter_date(Project* lhs, Project* rhs);
 bool blog_sorter_date(Blog* lhs, Blog* rhs);
+bool taggedpage_sorter(TaggedPage lhs, TaggedPage rhs);
 
 bool date_fromstring(wxString input, wxDateTime* output);
 

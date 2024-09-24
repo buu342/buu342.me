@@ -3,8 +3,6 @@
 // About me page
 // Documentation of code and git
 
-#include <map>
-#include <vector>
 #include <algorithm>
 #include <fstream>
 #include "main.h"
@@ -569,7 +567,6 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event)
     {
         this->m_WorkingDir = dir.GetPath();
         this->MarkModified(false);
-
         this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
         this->LoadProjects();
         this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
@@ -651,8 +648,8 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged( wxTreeEvent& event )
         this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
         
         wip = wxString("");
-        for (Tag* tag : proj_elem->tags)
-            wip += tag->name + wxString(", ");
+        for (wxString str : proj_elem->tags)
+            wip += str + wxString(", ");
         this->m_TextCtrl_Projects_Tags->SetValue(wip);
         
         wip = wxString("");
@@ -710,7 +707,17 @@ void Main::m_TextCtrl_Projects_Icon_OnText( wxCommandEvent& event )
 
 void Main::m_TextCtrl_Projects_Tags_OnText( wxCommandEvent& event )
 {
-    // TODO: Handle tags
+    Project* proj = FindProject(this->m_SelectedItem);
+    wxArrayString strarray = wxSplit(event.GetString(), ',');
+    proj->tags.clear();
+    for (wxString str : strarray)
+    {
+        str.Trim(true);
+        str.Trim(false);
+        if (str != "")
+            proj->tags.push_back(str);
+    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Images_OnText( wxCommandEvent& event )
@@ -869,8 +876,8 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged( wxTreeEvent& event )
         this->m_TextCtrl_Blog->SetValue(string_fromfile(this->m_WorkingDir + wxString("/blog/") + blog_elem->category->foldername + wxString("/markdown/") + blog_elem->filename + wxString(".md")));
         
         wip = wxString("");
-        for (Tag* tag : blog_elem->tags)
-            wip += tag->name + wxString(", ");
+        for (wxString str : blog_elem->tags)
+            wip += str + wxString(", ");
         this->m_TextCtrl_Blog_Tags->SetValue(wip);
 
         this->ShowBlogEditor();
@@ -939,7 +946,17 @@ void Main::m_TextCtrl_Blog_Date_OnText(wxCommandEvent& event)
 
 void Main::m_TextCtrl_Blog_Tags_OnText( wxCommandEvent& event )
 {
-    // TODO: Handle tags
+    Blog* bentry = FindBlog(this->m_SelectedItem);
+    wxArrayString strarray = wxSplit(event.GetString(), ',');
+    bentry->tags.clear();
+    for (wxString str : strarray)
+    {
+        str.Trim(true);
+        str.Trim(false);
+        if (str != "")
+            bentry->tags.push_back(str);
+    }
+    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_ToolTip_OnText( wxCommandEvent& event )
@@ -1255,6 +1272,7 @@ void Main::LoadProjects()
         // Read the project data from the JSON
         for (nlohmann::json::iterator itproj = (*itcat)["Pages"].begin(); itproj != (*itcat)["Pages"].end(); ++itproj)
         {
+            wxString taglist = wxString("");
             Project* proj = new Project();
             proj->index = (*itproj)["Index"];
             proj->filename = wxString(itproj.key());
@@ -1270,7 +1288,8 @@ void Main::LoadProjects()
             for (nlohmann::json::iterator it = (*itproj)["URLs"].begin(); it != (*itproj)["URLs"].end(); ++it)
                 proj->urls.push_back(wxString(*it));
             proj->tags.clear();
-            // TODO: Handle tags
+            for (nlohmann::json::iterator it = (*itproj)["Tags"].begin(); it != (*itproj)["Tags"].end(); ++it)
+                proj->tags.push_back(wxString(*it));
             proj->category = cat_elem;
             proj->treeid = NULL;
             projects.push_back(proj);
@@ -1324,6 +1343,7 @@ void Main::LoadBlog()
         // Read the blog data from the JSON
         for (nlohmann::json::iterator itblog = (*itcat)["Pages"].begin(); itblog != (*itcat)["Pages"].end(); ++itblog)
         {
+            wxString taglist = wxString("");
             Blog* bentry = new Blog();
             bentry->index = (*itblog)["Index"];
             bentry->filename = wxString(itblog.key());
@@ -1333,7 +1353,8 @@ void Main::LoadBlog()
             bentry->tooltip = wxString((*itblog)["ToolTip"]);
             bentry->content = string_fromfile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
             bentry->tags.clear();
-            // TODO: Handle tags
+            for (nlohmann::json::iterator it = (*itblog)["Tags"].begin(); it != (*itblog)["Tags"].end(); ++it)
+                bentry->tags.push_back(wxString(*it));
             bentry->category = cat_elem;
             bentry->treeid = NULL;
             blogs.push_back(bentry);
@@ -1567,8 +1588,8 @@ void Main::Save()
             for (wxString str :  proj->urls)
                 projectjson["Categories"][catstr]["Pages"][projstr]["URLs"].push_back(str);
             projectjson["Categories"][catstr]["Pages"][projstr]["Tags"] = {};
-            for (Tag* tag :  proj->tags)
-                projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(tag->name);
+            for (wxString str :  proj->tags)
+                projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(str);
         }
     }
 
@@ -1594,8 +1615,8 @@ void Main::Save()
             blogjson["Categories"][catstr]["Pages"][blogstr]["Date"] = bentry->date;
             blogjson["Categories"][catstr]["Pages"][blogstr]["ToolTip"] = bentry->tooltip;
             blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"] = {};
-            for (Tag* tag : bentry->tags)
-                blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(tag->name);
+            for (wxString str : bentry->tags)
+                blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(str);
             if (!blogmd.Exists())
                 blogmd.Create();
             blogmd.Clear();
@@ -1608,6 +1629,7 @@ void Main::Save()
     // Compile the website
     this->CompileProjects();
     this->CompileBlog();
+    this->CompileTags();
     this->CompileHomePage();
 
     // Dump the JSONs to text files
@@ -1928,6 +1950,69 @@ void Main::CompileBlog_Entry(Blog* bentry)
     bentryout.AddLine(html_final);
     bentryout.Write();
     bentryout.Close();
+}
+
+void Main::CompileTags()
+{
+    std::map<wxString, std::vector<TaggedPage>> tagmap;
+
+    // Go through all projects and add each one to the tag map
+    for (Category* cat : this->m_Category_Projects)
+    {
+        for (void* page : cat->pages)
+        {
+            for (wxString tag : ((Project*)page)->tags)
+            {
+                std::map<wxString, std::vector<TaggedPage>>::iterator foundtag = tagmap.find(tag);
+                if (foundtag == tagmap.end())
+                    foundtag = tagmap.insert(std::pair<wxString, std::vector<TaggedPage>>(tag, std::vector<TaggedPage>())).first;
+                foundtag->second.push_back({PAGETYPE_PROJECT, page});
+            }
+        }
+    }
+
+    // Now the blogs
+    for (Category* cat : this->m_Category_Blog)
+    {
+        for (void* page : cat->pages)
+        {
+            for (wxString tag : ((Blog*)page)->tags)
+            {
+                std::map<wxString, std::vector<TaggedPage>>::iterator foundtag = tagmap.find(tag);
+                if (foundtag == tagmap.end())
+                    foundtag = tagmap.insert(std::pair<wxString, std::vector<TaggedPage>>(tag, std::vector<TaggedPage>())).first;
+                foundtag->second.push_back({PAGETYPE_BLOG, page});
+            }
+        }
+    }
+
+    // Now, alphabetically sort all the pages in the tags, and make their respective pages
+    for (std::pair<wxString, std::vector<TaggedPage>> it : tagmap)
+    {
+        wxString tagname_page;
+        std::sort(it.second.begin(), it.second.end(), taggedpage_sorter);
+
+        // For a valid tag, its name needs to have special symbols replaced
+        // There's likely a better way around this, but I'll add to this list as needed
+        tagname_page = it.first;
+        tagname_page.Replace("+", "p");
+        tagname_page.Replace("-", "");
+        tagname_page.Replace("/", "");
+        tagname_page.Replace(" ", "");
+
+        // Create the tag page
+        for (TaggedPage tp : it.second)
+        {
+            // TODO:
+            /*
+            wxString pname;
+            if (tp.type == PAGETYPE_PROJECT)
+                pname = ((Project*)tp.page)->displayname;
+            else if (tp.type == PAGETYPE_BLOG)
+                pname = ((Blog*)tp.page)->displayname;
+            */
+        }
+    }
 }
 
 void Main::CompileHomePage()

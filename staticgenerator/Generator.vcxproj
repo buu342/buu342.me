@@ -26,7 +26,6 @@
     <ClInclude Include="include\md4c\md4c-html.h" />
     <ClInclude Include="include\md4c\md4c.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="tags.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
@@ -35,7 +34,6 @@
     <ClCompile Include="include\md4c\md4c-html.c" />
     <ClCompile Include="include\md4c\md4c.c" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="tags.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

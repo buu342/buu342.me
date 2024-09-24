@@ -25,11 +25,22 @@ typedef struct IUnknown IUnknown;
 #include <wx/frame.h>
 #include <wx/filefn.h>
 #include <wx/timer.h>
-#include "tags.h"
 
 typedef struct Category_s Category;
 typedef struct Project_s Project;
 typedef struct Blog_s Blog;
+
+typedef enum
+{
+    PAGETYPE_PROJECT,
+    PAGETYPE_BLOG,
+} PageType;
+
+typedef struct TaggedPage_s
+{
+    PageType type;
+    void* page;
+} TaggedPage;
 
 typedef struct Category_s {
 	int index;
@@ -50,7 +61,7 @@ typedef struct Project_s {
     wxString description;
     std::vector<wxString> images;
 	std::vector<wxString> urls;
-    std::vector<Tag*> tags;
+    std::vector<wxString> tags;
 	Category* category;
     wxTreeItemId treeid;
 } Project;
@@ -63,7 +74,7 @@ typedef struct Blog_s {
     wxString date;
     wxString tooltip;
     wxString content;
-    std::vector<Tag*> tags;
+    std::vector<wxString> tags;
     Category* category;
     wxTreeItemId treeid;
 } Blog;
@@ -201,6 +212,7 @@ class Main : public wxFrame
         void CompileBlog();
         void CompileBlog_List();
         void CompileBlog_Entry(Blog* bentry);
+        void CompileTags();
         void CompileHomePage();
         void MarkModified(bool modified=true);
         void ShowProjectEditor(bool show=true);

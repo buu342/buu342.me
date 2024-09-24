@@ -1,4 +1,5 @@
-#include "helper.h" 
+#include <wx/textfile.h>
+#include "helper.h"
 
 bool category_sorter(Category* lhs, Category* rhs)
 {
@@ -41,6 +42,20 @@ bool blog_sorter_date(Blog* lhs, Blog* rhs)
     if (!date_fromstring(rhs->date, &date_rhs))
         return true;
     return date_lhs.IsLaterThan(date_rhs);
+}
+
+bool taggedpage_sorter(TaggedPage lhs, TaggedPage rhs)
+{
+    wxString lhs_name, rhs_name;
+    if (lhs.type == PAGETYPE_PROJECT)
+        lhs_name = ((Project*)lhs.page)->displayname;
+    else if (lhs.type == PAGETYPE_BLOG)
+        lhs_name = ((Blog*)lhs.page)->displayname;
+    if (rhs.type == PAGETYPE_PROJECT)
+        rhs_name = ((Project*)rhs.page)->displayname;
+    else if (rhs.type == PAGETYPE_BLOG)
+        rhs_name = ((Blog*)rhs.page)->displayname;
+    return lhs_name < rhs_name;
 }
 
 bool treeitem_iscategory(wxTreeCtrl* tree, wxTreeItemId item)
