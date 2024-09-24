@@ -1845,6 +1845,12 @@ void Main::CompileProjects_Project(Project* proj)
                 obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadst.png");
             else if (str.Contains("steamcommunity.com"))
                 obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadsw.png");
+            else if (str.Contains("youtube.com") || str.Contains("youtu.be"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadyt.png");
+            else if (str.Contains("knockout.chat"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadko.png");
+            else if (str.Contains("buu342.me/blog") && !str.Contains("/downloads/"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadbp.png");
             else
                 obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadzp.png");
             obj.Replace("_TEMPLATE_PROJECTS_URL_", str);
