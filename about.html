@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>About Me</title>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <link href="home.css" rel="stylesheet" type="text/css">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://buu342.me/about.html">
+        <meta property="og:title" content="About Me">
+        <meta property="og:image" content="https://buu342.me/memyselfi.png">
+        <meta property="og:description" content="Find out all my biggest secrets here!" />
+    </head>
+    <body>
+        <h1></h1>
+        <center>
+            <div class="me-myself-and-i">
+                <img src="memyselfi.png" style="height:50vh;"/>
+            </div>
+        </center>
+        <h1></h1>
+        <center>
+            <p>My name is Lourenço Soares, and my drive is making stuff. I have a significant interest in video games, to the point that I've been making them since I first picked up Game Maker 5 at the age on 9.</p>
+            <p>Now, I have a Master's Degree in Computer Science, and am looking to work in the game's industry.</p>
+            <p>Outside of the digital, I have an interest in movies, music, and comics. My mom also says that I'm really cool.</p>
+            <p>If you wish to get in touch, you can do so via my personal email:</p>
+            <button type="button" onclick="ShowEAddr()">Get Email</button>
+            <p id="eaddr-slot">_</p>
+            <br>
+            <td><a href="..">Return to home</a></td>
+        </center>
+        <script type="text/javascript">
+            function ShowEAddr()
+            {
+                var eaddr1 = window.atob('YnV1MzQy');
+                var eaddr2 = window.atob('QGhvdG1haWwuY29t');
+                document.getElementById('eaddr-slot').innerHTML = eaddr1 + eaddr2;
+            }
+        </script>
+    </body>
+</html>

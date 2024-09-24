@@ -2035,6 +2035,7 @@ void Main::CompileTags()
 
         // Fill the tag page
         html_final.Replace("_TEMPLATE_TAG_NAME_", it.first);
+        html_final.Replace("_TEMPLATE_TAG_CLEANNAME_", tagspath + wxString("/") + tagname_page + wxString(".html"));
         for (TaggedPage tp : it.second)
         {
             wxString item = string_fromfile(this->m_WorkingDir + "/templates/tag_item.html");
