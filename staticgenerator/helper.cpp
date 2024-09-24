@@ -88,6 +88,7 @@ wxString string_fromfile(wxString path)
 
 wxString sanitize_tagname(wxString tagname)
 {
+    tagname.Replace("#", "s");
     tagname.Replace("+", "p");
     tagname.Replace("-", "");
     tagname.Replace("/", "");

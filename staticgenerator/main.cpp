@@ -1,5 +1,4 @@
 // TODO:
-// About me page
 // Documentation of code and git
 
 #include <algorithm>
@@ -1840,6 +1839,8 @@ void Main::CompileProjects_Project(Project* proj)
             str.Replace("\"", wxString(""));
             if (str.Contains("github.com"))
                 obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadgh.png");
+            else if (str.Contains("gitlab.com"))
+                obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadgl.png");
             else if (str.Contains("store.steampowered.com"))
                 obj.Replace("_TEMPLATE_PROJECTS_URL_BADGE_", "../downloadst.png");
             else if (str.Contains("steamcommunity.com"))
