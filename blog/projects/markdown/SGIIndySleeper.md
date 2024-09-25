@@ -328,7 +328,7 @@ And voila:
     </video>
 </p>
 
-The code for this is on [GitHub](TODO_GITLINK) as usual.
+The code for this is on [GitHub](https://github.com/buu342/Arduino-FrontIOVolume) as usual.
 
 Now, this wasn't completely painless. I actually had a bit of trouble with the front I/O due to a mistake I made in this article!
 
