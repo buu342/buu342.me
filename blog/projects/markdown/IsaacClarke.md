@@ -391,7 +391,7 @@ Regarding the helmet's visor, I used that foggy plastic that's used to bind the 
 
 ### Let There be Light
 
-Isaac's suit has a lot of lights on it, which requires soldering. Unfortunately, at the time I didn't own a soldering station, so I had a friend of mine called João Santos design the circuitry and put it all together.
+Isaac's suit has a lot of lights on it, which requires soldering. Unfortunately, at the time I didn't own a soldering station, so I had a friend of mine called JoATILDE_SYMBOLo Santos design the circuitry and put it all together.
 
 <p align="center">
 ![Helmet circuitry](images/IsaacClarke/HelmetCircuitry.JPG)

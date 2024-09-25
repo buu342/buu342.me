@@ -361,8 +361,8 @@ render_open_img_span(MD_HTML* r, const MD_SPAN_IMG_DETAIL* det)
     RENDER_VERBATIM(r, "<img src=\"");
     render_attribute(r, &det->src, render_url_escaped);
 
+    RENDER_VERBATIM(r, "\" loading=\"lazy");
     RENDER_VERBATIM(r, "\" alt=\"");
-    RENDER_VERBATIM(r, "\" title=\"");
 
     r->image_nesting_level++;
 }
@@ -370,9 +370,8 @@ render_open_img_span(MD_HTML* r, const MD_SPAN_IMG_DETAIL* det)
 static void
 render_close_img_span(MD_HTML* r, const MD_SPAN_IMG_DETAIL* det)
 {
-    if(det->title.text != NULL) {
-        RENDER_VERBATIM(r, "\" title=\"");
-        render_attribute(r, &det->title, render_html_escaped);
+    if (det->title.text != NULL) {
+        RENDER_VERBATIM(r, "Oh wow the image title text is working now????? Line 374 of md4c-html.c...");
     }
 
     RENDER_VERBATIM(r, (r->flags & MD_HTML_FLAG_XHTML) ? "\" />" : "\">");
@@ -534,7 +533,16 @@ text_callback(MD_TEXTTYPE type, const MD_CHAR* text, MD_SIZE size, void* userdat
         case MD_TEXT_SOFTBR:    RENDER_VERBATIM(r, (r->image_nesting_level == 0 ? "\n" : " ")); break;
         case MD_TEXT_HTML:      render_verbatim(r, text, size); break;
         case MD_TEXT_ENTITY:    render_entity(r, text, size, render_html_escaped); break;
-        default:                render_html_escaped(r, text, size); break;
+        default:                
+            if (r->image_nesting_level == 0)
+                render_html_escaped(r, text, size); 
+            else if (size > 0)
+            {
+                render_html_escaped(r, text, size);
+                RENDER_VERBATIM(r, "\" title=\"");
+                render_html_escaped(r, text, size);
+            }
+            break;
     }
 
     return 0;
