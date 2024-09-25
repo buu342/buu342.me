@@ -638,8 +638,10 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
     {
         wxString wip;
         Project* proj_elem = FindProject(item);
+
         if (proj_elem == NULL)
             return;
+
         this->m_TextCtrl_Projects_File->SetValue(proj_elem->filename);
         this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
         this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
@@ -668,7 +670,7 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item))
     {
-        Category* cat_elem = FindCategory_Projects(item);
+        Category* cat_elem = this->FindCategory_Projects(item);
         if (cat_elem == NULL)
             return;
         this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat_elem->foldername);
@@ -684,14 +686,18 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
 
 void Main::m_TextCtrl_Projects_File_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
     proj->filename = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Name_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
     proj->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(proj->treeid, proj->displayname);
     this->MarkModified();
@@ -699,80 +705,99 @@ void Main::m_TextCtrl_Projects_Name_OnText(wxCommandEvent& event)
 
 void Main::m_TextCtrl_Projects_Icon_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
     proj->icon = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Tags_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
-    wxArrayString strarray = wxSplit(event.GetString(), ',');
-    proj->tags.clear();
-    for (wxString str : strarray)
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj != NULL)
     {
-        str.Trim(true);
-        str.Trim(false);
-        if (str != "")
-            proj->tags.push_back(str);
+        wxArrayString strarray = wxSplit(event.GetString(), ',');
+        proj->tags.clear();
+        for (wxString str : strarray)
+        {
+            str.Trim(true);
+            str.Trim(false);
+            if (str != "")
+                proj->tags.push_back(str);
+        }
+        this->MarkModified();
     }
-    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Images_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
-    wxArrayString strarray = wxSplit(event.GetString(), ',');
-    proj->images.clear();
-    for (wxString str : strarray)
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj != NULL)
     {
-        str.Trim(true);
-        str.Trim(false);
-        if (str != "")
-            proj->images.push_back(str);
+        wxArrayString strarray = wxSplit(event.GetString(), ',');
+        proj->images.clear();
+        for (wxString str : strarray)
+        {
+            str.Trim(true);
+            str.Trim(false);
+            if (str != "")
+                proj->images.push_back(str);
+        }
+        this->MarkModified();
     }
-    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Date_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
     proj->date = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_URLs_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
-    wxArrayString strarray = wxSplit(event.GetString(), ',');
-    proj->urls.clear();
-    for (wxString str : strarray)
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj != NULL)
     {
-        str.Trim(true);
-        str.Trim(false);
-        if (str != "")
-            proj->urls.push_back(str);
+        wxArrayString strarray = wxSplit(event.GetString(), ',');
+        proj->urls.clear();
+        for (wxString str : strarray)
+        {
+            str.Trim(true);
+            str.Trim(false);
+            if (str != "")
+                proj->urls.push_back(str);
+        }
+        this->MarkModified();
     }
-    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_Description_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
     proj->description = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Projects_ToolTip_OnText(wxCommandEvent& event)
 {
-    Project* proj = FindProject(this->m_SelectedItem);
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
     proj->tooltip = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText(wxCommandEvent& event)
 {
-    Category* cat = FindCategory_Projects(this->m_SelectedItem);
+    Category* cat = this->FindCategory_Projects(this->m_SelectedItem);
+    if (cat == NULL)
+        return;
     cat->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(cat->treeid, cat->displayname);
     this->MarkModified();
@@ -780,7 +805,9 @@ void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText(wxCommandEvent& event)
 
 void Main::m_TextCtrl_ProjectsCategory_Description_OnText(wxCommandEvent& event)
 {
-    Category* cat = FindCategory_Projects(this->m_SelectedItem);
+    Category* cat = this->FindCategory_Projects(this->m_SelectedItem);
+    if (cat == NULL)
+        return;
     cat->description = event.GetString();
     this->MarkModified();
 }
@@ -791,9 +818,12 @@ void Main::m_Button_Projects_Preview_OnButtonClick(wxCommandEvent&)
     wxString url = wxString("");
     if (treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem))
     {
-        Category* cat = FindCategory_Projects(this->m_SelectedItem);
-        CompileProjects_List();
-        url = this->m_WorkingDir + wxString("/projects.html") + wxString("#") + cat->foldername;
+        Category* cat = this->FindCategory_Projects(this->m_SelectedItem);
+        if (cat != NULL)
+        {
+            CompileProjects_List();
+            url = this->m_WorkingDir + wxString("/projects.html") + wxString("#") + cat->foldername;
+        }
     }
     else
     {
@@ -868,7 +898,7 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
     if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))
     {
         wxString wip;
-        Blog* blog_elem = FindBlog(item);
+        Blog* blog_elem = this->FindBlog(item);
         if (blog_elem == NULL)
             return;
         this->m_TextCtrl_Blog_File->SetValue(blog_elem->filename);
@@ -889,7 +919,7 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Blog, item))
     {
-        Category* cat_elem = FindCategory_Blog(item);
+        Category* cat_elem = this->FindCategory_Blog(item);
         if (cat_elem == NULL)
             return;
         this->m_TextCtrl_BlogCategory_Folder->SetValue(cat_elem->foldername);
@@ -905,7 +935,9 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
 
 void Main::m_TextCtrl_BlogCategory_DisplayName_OnText(wxCommandEvent& event)
 {
-    Category* cat = FindCategory_Blog(this->m_SelectedItem);
+    Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
+    if (cat == NULL)
+        return;
     cat->displayname = event.GetString();
     this->m_TreeCtrl_Blog->SetItemText(cat->treeid, cat->displayname);
     this->MarkModified();
@@ -913,21 +945,27 @@ void Main::m_TextCtrl_BlogCategory_DisplayName_OnText(wxCommandEvent& event)
 
 void Main::m_TextCtrl_BlogCategory_Description_OnText(wxCommandEvent& event)
 {
-    Category* cat = FindCategory_Blog(this->m_SelectedItem);
+    Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
+    if (cat == NULL)
+        return;
     cat->description = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_File_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry == NULL)
+        return;
     bentry->filename = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_Name_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry == NULL)
+        return;
     bentry->displayname = event.GetString();
     this->m_TreeCtrl_Blog->SetItemText(bentry->treeid, bentry->displayname);
     this->MarkModified();
@@ -935,43 +973,54 @@ void Main::m_TextCtrl_Blog_Name_OnText(wxCommandEvent& event)
 
 void Main::m_TextCtrl_Blog_Icon_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry == NULL)
+        return;
     bentry->icon = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_Date_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry == NULL)
+        return;
     bentry->date = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_Tags_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
-    wxArrayString strarray = wxSplit(event.GetString(), ',');
-    bentry->tags.clear();
-    for (wxString str : strarray)
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry != NULL)
     {
-        str.Trim(true);
-        str.Trim(false);
-        if (str != "")
-            bentry->tags.push_back(str);
+        wxArrayString strarray = wxSplit(event.GetString(), ',');
+        bentry->tags.clear();
+        for (wxString str : strarray)
+        {
+            str.Trim(true);
+            str.Trim(false);
+            if (str != "")
+                bentry->tags.push_back(str);
+        }
+        this->MarkModified();
     }
-    this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_ToolTip_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry == NULL)
+        return;
     bentry->tooltip = event.GetString();
     this->MarkModified();
 }
 
 void Main::m_TextCtrl_Blog_OnText(wxCommandEvent& event)
 {
-    Blog* bentry = FindBlog(this->m_SelectedItem);
+    Blog* bentry = this->FindBlog(this->m_SelectedItem);
+    if (bentry == NULL)
+        return;
     bentry->content = event.GetString();
     this->MarkModified();
 }
@@ -982,9 +1031,12 @@ void Main::m_Button_Blog_Preview_OnButtonClick(wxCommandEvent&)
     wxString url = wxString("");
     if (treeitem_iscategory(this->m_TreeCtrl_Blog, this->m_SelectedItem))
     {
-        Category* cat = FindCategory_Blog(this->m_SelectedItem);
-        this->CompileBlog_List();
-        url = this->m_WorkingDir + wxString("/blogs.html") + wxString("#") + cat->foldername;
+        Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
+        if (cat != NULL)
+        {
+            this->CompileBlog_List();
+            url = this->m_WorkingDir + wxString("/blogs.html") + wxString("#") + cat->foldername;
+        }
     }
     else
     {
@@ -1029,7 +1081,7 @@ Project* Main::FindProject(wxTreeItemId item)
         return NULL;
 
     cat_id = this->m_TreeCtrl_Projects->GetItemParent(item);
-    cat_elem = FindCategory_Projects(cat_id);
+    cat_elem = this->FindCategory_Projects(cat_id);
     if (cat_elem == NULL)
         return NULL;
 
@@ -1048,7 +1100,7 @@ Blog* Main::FindBlog(wxTreeItemId item)
         return NULL;
 
     cat_id = this->m_TreeCtrl_Blog->GetItemParent(item);
-    cat_elem = FindCategory_Blog(cat_id);
+    cat_elem = this->FindCategory_Blog(cat_id);
     if (cat_elem == NULL)
         return NULL;
 
@@ -1479,17 +1531,19 @@ void Main::EndDrag_Project(wxTreeEvent& event)
 
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, dest))
     {
+        Category* cat;
+        std::vector<void*>* pages;
         int index = 0;
         Project* proj_src = this->FindProject(src);
         Project* proj_dest = this->FindProject(dest);
-        Category* cat = proj_src->category;
-        std::vector<void*>* pages = &cat->pages;
 
         // Ensure a valid source and destination
         if (proj_src == NULL || proj_dest == NULL)
             return;
 
         // Ensure both projects are in the same category
+        cat = proj_src->category;
+        pages = &cat->pages;
         if (cat != proj_dest->category)
             return;
 
@@ -1535,17 +1589,19 @@ void Main::EndDrag_Blog(wxTreeEvent& event)
 
     if (!treeitem_iscategory(this->m_TreeCtrl_Blog, dest))
     {
+        Category* cat;
+        std::vector<void*>* pages;
         int index = 0;
         Blog* blog_src = this->FindBlog(src);
         Blog* blog_dest = this->FindBlog(dest);
-        Category* cat = blog_src->category;
-        std::vector<void*>* pages = &cat->pages;
 
         // Ensure a valid source and destination
         if (blog_src == NULL || blog_dest == NULL)
             return;
 
         // Ensure both blog entries are in the same category
+        cat = blog_src->category;
+        pages = &cat->pages;
         if (cat != blog_dest->category)
             return;
 
