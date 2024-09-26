@@ -1330,7 +1330,7 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
             this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
             this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
             this->m_SelectedItem = proj->treeid;
-            this->MarkModified(true);
+            this->MarkModified();
             break;
         case wxID_DELETE: // Delete an existing project
             proj = this->FindProject(this->m_SelectedItem);
@@ -1393,7 +1393,7 @@ void Main::OnPopupClick_Blog(wxCommandEvent& event)
             this->m_TreeCtrl_Blog->Expand(cat_elem->treeid);
             this->m_TreeCtrl_Blog->SelectItem(bentry->treeid);
             this->m_SelectedItem = bentry->treeid;
-            this->MarkModified(true);
+            this->MarkModified();
             break;
         case wxID_DELETE: // Delete an existing blog entry
             bentry = this->FindBlog(this->m_SelectedItem);
@@ -1475,7 +1475,7 @@ Project* Main::FindProject(wxTreeItemId item)
 
 
 /*==============================
-    FindProject
+    FindBlog
     Finds a blog entry object using a tree item id
     @param  The tree item ID to find the blog entry of
     @return The blog entry that was found, or NULL
@@ -1829,7 +1829,7 @@ void Main::EndDrag_Blog(wxTreeEvent& event)
 void Main::Save()
 {
     // Save the json files
-    json_save(this->m_WorkingDir, &this->m_Category_Projects, &this->m_Category_Projects);
+    json_save(this->m_WorkingDir, &this->m_Category_Projects, &this->m_Category_Blog);
 
     // Compile the website
     this->CompileProjects();
