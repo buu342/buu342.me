@@ -71,6 +71,7 @@ void json_loadprojects(wxString workingdir, std::vector<Category*>* categorylist
     if (wxFileExists(workingdir + wxString("/projects/projects.json")))
         pagejson = nlohmann::json::parse(std::ifstream(wxString(workingdir + wxString("/projects/projects.json")).ToStdString()));
 
+    // Add the projects from the JSON file
     for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
     {
         int index = 0;
@@ -151,6 +152,7 @@ void json_loadblogentries(wxString workingdir, std::vector<Category*>* categoryl
     if (wxFileExists(workingdir + wxString("/blog/blog.json")))
         pagejson = nlohmann::json::parse(std::ifstream(wxString(workingdir + wxString("/blog/blog.json")).ToStdString()));
 
+    // Add the blog entries from the JSON file
     for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
     {
         int index = 0;

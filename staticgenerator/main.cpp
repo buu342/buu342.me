@@ -1601,7 +1601,7 @@ void Main::LoadProjects()
 
 void Main::LoadBlog()
 {
-    json_loadprojects(this->m_WorkingDir, &this->m_Category_Blog, this->m_TreeCtrl_Blog);
+    json_loadblogentries(this->m_WorkingDir, &this->m_Category_Blog, this->m_TreeCtrl_Blog);
     this->ShowBlogEditor(false);
 }
 
