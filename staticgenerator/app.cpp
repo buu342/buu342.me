@@ -35,7 +35,7 @@ App::~App()
 /*==============================
     App::OnInit
     Called when the application is initialized
-    @returns Whether the application initialized correctly
+    @return Whether the application initialized correctly
 ==============================*/
 
 bool App::OnInit()

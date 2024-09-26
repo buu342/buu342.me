@@ -1,11 +1,12 @@
-// TODO:
-// Documentation of code and git
+/***************************************************************
+                            main.cpp
 
-#include <algorithm>
-#include <fstream>
+The main code of the static site generator
+***************************************************************/
+
 #include "main.h"
 #include "helper.h"
-#include "include/json.hpp"
+#include "json.h"
 #include "include/md4c/md4c-html.h"
 #include <wx/event.h>
 #include <wx/msgdlg.h>
@@ -14,42 +15,49 @@
 #include <wx/textfile.h>
 #include <wx/dirdlg.h>
 
+
+/*==============================
+    Main (Constructor)
+    Initializes the class
+==============================*/
+
 Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style) : wxFrame(parent, id, title, pos, size, style)
 {
+    // Initialize the program state
     this->m_WorkingDir = wxGetCwd();
     this->m_SelectedItem = NULL;
     this->MarkModified(false);
 
+    // Create the main frame elements
     this->SetSizeHints(wxDefaultSize, wxDefaultSize);
-
     wxBoxSizer* m_Sizer_Main;
     m_Sizer_Main = new wxBoxSizer(wxVERTICAL);
+    this->m_ChoiceBook_PageSelection = new wxChoicebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCHB_DEFAULT);
 
-    m_ChoiceBook_PageSelection = new wxChoicebook(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxCHB_DEFAULT);
-    m_Panel_Projects = new wxPanel(m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // Create the main project panels
+    this->m_Panel_Projects = new wxPanel(this->m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxBoxSizer* m_Sizer_Projects;
     m_Sizer_Projects = new wxBoxSizer(wxVERTICAL);
+    this->m_Splitter_Projects = new wxSplitterWindow(this->m_Panel_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
+    this->m_Splitter_Projects->SetSashGravity(0);
+    this->m_Splitter_Projects->Connect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_ProjectsOnIdle), NULL, this);
 
-    m_Splitter_Projects = new wxSplitterWindow(m_Panel_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
-    m_Splitter_Projects->SetSashGravity(0);
-    m_Splitter_Projects->Connect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_ProjectsOnIdle), NULL, this);
-
-    m_Panel_Projects_Tree = new wxPanel(m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // Create the project tree
+    this->m_Panel_Projects_Tree = new wxPanel(this->m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxFlexGridSizer* m_Sizer_Projects_Tree;
     m_Sizer_Projects_Tree = new wxFlexGridSizer(0, 0, 0, 0);
     m_Sizer_Projects_Tree->AddGrowableCol(0);
     m_Sizer_Projects_Tree->AddGrowableRow(0);
     m_Sizer_Projects_Tree->SetFlexibleDirection(wxBOTH);
     m_Sizer_Projects_Tree->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    this->m_TreeCtrl_Projects = new wxTreeCtrl(this->m_Panel_Projects_Tree, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT);
+    m_Sizer_Projects_Tree->Add(this->m_TreeCtrl_Projects, 0, wxALL|wxEXPAND, 5);
+    this->m_Panel_Projects_Tree->SetSizer(m_Sizer_Projects_Tree);
+    this->m_Panel_Projects_Tree->Layout();
+    m_Sizer_Projects_Tree->Fit(this->m_Panel_Projects_Tree);
 
-    m_TreeCtrl_Projects = new wxTreeCtrl(m_Panel_Projects_Tree, wxID_ANY, wxDefaultPosition, wxSize(-1,-1), wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT);
-    m_Sizer_Projects_Tree->Add(m_TreeCtrl_Projects, 0, wxALL|wxEXPAND, 5);
-
-
-    m_Panel_Projects_Tree->SetSizer(m_Sizer_Projects_Tree);
-    m_Panel_Projects_Tree->Layout();
-    m_Sizer_Projects_Tree->Fit(m_Panel_Projects_Tree);
-    m_Panel_Projects_Editor = new wxPanel(m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // Create the primary project editor
+    this->m_Panel_Projects_Editor = new wxPanel(this->m_Splitter_Projects, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxFlexGridSizer* m_Sizer_Projects_Editor;
     m_Sizer_Projects_Editor = new wxFlexGridSizer(3, 1, 0, 0);
     m_Sizer_Projects_Editor->AddGrowableCol(0);
@@ -57,217 +65,171 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Projects_Editor->AddGrowableRow(1);
     m_Sizer_Projects_Editor->SetFlexibleDirection(wxBOTH);
     m_Sizer_Projects_Editor->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_ALL);
-
-    m_ScrolledWindow_Project_Editor = new wxScrolledWindow(m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
-    m_ScrolledWindow_Project_Editor->SetScrollRate(5, 5);
-    m_ScrolledWindow_Project_Editor->Hide();
-    m_ScrolledWindow_Project_Editor->SetMinSize(wxSize(0,0));
-
+    this->m_ScrolledWindow_Project_Editor = new wxScrolledWindow(this->m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
+    this->m_ScrolledWindow_Project_Editor->SetScrollRate(5, 5);
+    this->m_ScrolledWindow_Project_Editor->Hide();
+    this->m_ScrolledWindow_Project_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_Editor;
     m_Sizer_ScrolledWindow_Editor = new wxFlexGridSizer(0, 1, 0, 0);
     m_Sizer_ScrolledWindow_Editor->AddGrowableCol(0);
     m_Sizer_ScrolledWindow_Editor->AddGrowableRow(1);
     m_Sizer_ScrolledWindow_Editor->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_Editor->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_Editor_Main;
     m_Sizer_ScrolledWindow_Editor_Main = new wxFlexGridSizer(0, 2, 0, 0);
     m_Sizer_ScrolledWindow_Editor_Main->AddGrowableCol(1);
     m_Sizer_ScrolledWindow_Editor_Main->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_Editor_Main->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_Editor_Main->SetMinSize(wxSize(0,0));
-    m_Label_Projects_File = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_File->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_File, 0, wxALL, 5);
 
-    m_TextCtrl_Projects_File = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_File->SetToolTip(wxT("The filename of the project"));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_File, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_Name = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_Name->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_Name, 0, wxALL, 5);
-
-    m_TextCtrl_Projects_Name = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_Name->SetToolTip(wxT("The display name of the project"));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_Name, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_Icon = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_Icon->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_Icon, 0, wxALL, 5);
-
-    m_TextCtrl_Projects_Icon = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_Icon->SetToolTip(wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png."));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_Icon, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_Tags = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_Tags->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_Tags, 0, wxALL, 5);
-
-    m_TextCtrl_Projects_Tags = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_Tags->SetToolTip(wxT("Project tags, comma separated."));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_Tags, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_Images = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Images:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_Images->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_Images, 0, wxALL, 5);
-
-    m_TextCtrl_Projects_Images = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_Images->SetToolTip(wxT("Images for this project, comma separated. Paths should be relative to the working directory."));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_Images, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_Date = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Date:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_Date->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_Date, 0, wxALL|wxEXPAND, 5);
-
-    m_TextCtrl_Projects_Date = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_Date->SetToolTip(wxT("The date of this project's release."));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_Date, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_URLs = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("URLs:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_URLs->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_URLs, 0, wxALL, 5);
-
-    m_TextCtrl_Projects_URLs = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_URLs->SetToolTip(wxT("URLs for this project, comma separated."));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_URLs, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Projects_ToolTip = new wxStaticText(m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Projects_ToolTip->Wrap(-1);
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_Label_Projects_ToolTip, 0, wxALL, 5);
-
-    m_TextCtrl_Projects_ToolTip = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Projects_ToolTip->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
-
-    m_Sizer_ScrolledWindow_Editor_Main->Add(m_TextCtrl_Projects_ToolTip, 0, wxALL|wxEXPAND, 5);
-
-
+    // Create the project page editor controls 
+    this->m_Label_Projects_File = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_File->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_File, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_File = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_File->SetToolTip(wxT("The filename of the project"));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_File, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_Name = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_Name->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_Name, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_Name = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_Name->SetToolTip(wxT("The display name of the project"));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_Name, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_Icon = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_Icon->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_Icon, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_Icon = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_Icon->SetToolTip(wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png."));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_Icon, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_Tags = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_Tags->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_Tags, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_Tags = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_Tags->SetToolTip(wxT("Project tags, comma separated."));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_Tags, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_Images = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Images:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_Images->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_Images, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_Images = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_Images->SetToolTip(wxT("Images for this project, comma separated. Paths should be relative to the working directory."));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_Images, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_Date = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Date:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_Date->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_Date, 0, wxALL|wxEXPAND, 5);
+    this->m_TextCtrl_Projects_Date = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_Date->SetToolTip(wxT("The date of this project's release."));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_Date, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_URLs = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("URLs:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_URLs->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_URLs, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_URLs = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_URLs->SetToolTip(wxT("URLs for this project, comma separated."));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_URLs, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Projects_ToolTip = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Projects_ToolTip->Wrap(-1);
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_ToolTip, 0, wxALL, 5);
+    this->m_TextCtrl_Projects_ToolTip = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_ToolTip->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
+    m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_ToolTip, 0, wxALL|wxEXPAND, 5);
     m_Sizer_ScrolledWindow_Editor->Add(m_Sizer_ScrolledWindow_Editor_Main, 1, wxEXPAND, 5);
+    this->m_TextCtrl_Projects_Description = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE);
+    this->m_TextCtrl_Projects_Description->SetToolTip(wxT("The project description. Supports markdown."));
+    this->m_TextCtrl_Projects_Description->SetMinSize(wxSize(-1,200));
+    m_Sizer_ScrolledWindow_Editor->Add(this->m_TextCtrl_Projects_Description, 0, wxALL|wxEXPAND, 5);
+    this->m_ScrolledWindow_Project_Editor->SetSizer(m_Sizer_ScrolledWindow_Editor);
+    this->m_ScrolledWindow_Project_Editor->Layout();
+    m_Sizer_ScrolledWindow_Editor->Fit(this->m_ScrolledWindow_Project_Editor);
+    m_Sizer_Projects_Editor->Add(this->m_ScrolledWindow_Project_Editor, 0, wxALL|wxEXPAND, 5);
 
-    m_TextCtrl_Projects_Description = new wxTextCtrl(m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE);
-    m_TextCtrl_Projects_Description->SetToolTip(wxT("The project description. Supports markdown."));
-    m_TextCtrl_Projects_Description->SetMinSize(wxSize(-1,200));
-
-    m_Sizer_ScrolledWindow_Editor->Add(m_TextCtrl_Projects_Description, 0, wxALL|wxEXPAND, 5);
-
-
-    m_ScrolledWindow_Project_Editor->SetSizer(m_Sizer_ScrolledWindow_Editor);
-    m_ScrolledWindow_Project_Editor->Layout();
-    m_Sizer_ScrolledWindow_Editor->Fit(m_ScrolledWindow_Project_Editor);
-    m_Sizer_Projects_Editor->Add(m_ScrolledWindow_Project_Editor, 0, wxALL|wxEXPAND, 5);
-
-    m_ScrolledWindow_ProjectCategory_Editor = new wxScrolledWindow(m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
-    m_ScrolledWindow_ProjectCategory_Editor->SetScrollRate(5, 5);
-    m_ScrolledWindow_ProjectCategory_Editor->Hide();
-    m_ScrolledWindow_ProjectCategory_Editor->SetMinSize(wxSize(0,0));
-
+    // Create the project category editor 
+    this->m_ScrolledWindow_ProjectCategory_Editor = new wxScrolledWindow(this->m_Panel_Projects_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
+    this->m_ScrolledWindow_ProjectCategory_Editor->SetScrollRate(5, 5);
+    this->m_ScrolledWindow_ProjectCategory_Editor->Hide();
+    this->m_ScrolledWindow_ProjectCategory_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_ProjectCategory_Editor;
     m_Sizer_ScrolledWindow_ProjectCategory_Editor = new wxFlexGridSizer(0, 1, 0, 0);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->AddGrowableCol(0);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->AddGrowableRow(1);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main;
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main = new wxFlexGridSizer(0, 2, 0, 0);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->AddGrowableCol(1);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->SetMinSize(wxSize(0,0));
-    m_Label_ProjectsCategory_Folder = new wxStaticText(m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_ProjectsCategory_Folder->Wrap(-1);
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(m_Label_ProjectsCategory_Folder, 0, wxALL, 5);
 
-    m_TextCtrl_ProjectsCategory_Folder = new wxTextCtrl(m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_ProjectsCategory_Folder->Enable(false);
-    m_TextCtrl_ProjectsCategory_Folder->SetToolTip(wxT("The folder that represents this category"));
-
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(m_TextCtrl_ProjectsCategory_Folder, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_ProjectsCategory_DisplayName = new wxStaticText(m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_ProjectsCategory_DisplayName->Wrap(-1);
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(m_Label_ProjectsCategory_DisplayName, 0, wxALL, 5);
-
-    m_TextCtrl_ProjectsCategory_DisplayName = new wxTextCtrl(m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_ProjectsCategory_DisplayName->SetToolTip(wxT("The display name of this category"));
-
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(m_TextCtrl_ProjectsCategory_DisplayName, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_ProjectsCategory_Description = new wxStaticText(m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Description:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_ProjectsCategory_Description->Wrap(-1);
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(m_Label_ProjectsCategory_Description, 0, wxALL, 5);
-
-
+    // Create the project category editor controls 
+    this->m_Label_ProjectsCategory_Folder = new wxStaticText(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_ProjectsCategory_Folder->Wrap(-1);
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_Label_ProjectsCategory_Folder, 0, wxALL, 5);
+    this->m_TextCtrl_ProjectsCategory_Folder = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_ProjectsCategory_Folder->Enable(false);
+    this->m_TextCtrl_ProjectsCategory_Folder->SetToolTip(wxT("The folder that represents this category"));
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_TextCtrl_ProjectsCategory_Folder, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_ProjectsCategory_DisplayName = new wxStaticText(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_ProjectsCategory_DisplayName->Wrap(-1);
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_Label_ProjectsCategory_DisplayName, 0, wxALL, 5);
+    this->m_TextCtrl_ProjectsCategory_DisplayName = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_ProjectsCategory_DisplayName->SetToolTip(wxT("The display name of this category"));
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_TextCtrl_ProjectsCategory_DisplayName, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_ProjectsCategory_Description = new wxStaticText(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Description:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_ProjectsCategory_Description->Wrap(-1);
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_Label_ProjectsCategory_Description, 0, wxALL, 5);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(0, 0, 1, wxEXPAND, 5);
-
-
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->Add(m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main, 1, wxEXPAND, 5);
+    this->m_TextCtrl_ProjectsCategory_Description = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    this->m_TextCtrl_ProjectsCategory_Description->SetToolTip(wxT("The filename of the project"));
+    this->m_TextCtrl_ProjectsCategory_Description->SetMinSize(wxSize(-1,200));
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Add(this->m_TextCtrl_ProjectsCategory_Description, 0, wxALL|wxEXPAND, 5);
+    this->m_ScrolledWindow_ProjectCategory_Editor->SetSizer(m_Sizer_ScrolledWindow_ProjectCategory_Editor);
+    this->m_ScrolledWindow_ProjectCategory_Editor->Layout();
+    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Fit(this->m_ScrolledWindow_ProjectCategory_Editor);
+    m_Sizer_Projects_Editor->Add(this->m_ScrolledWindow_ProjectCategory_Editor, 0, wxEXPAND | wxALL, 5);
 
-    m_TextCtrl_ProjectsCategory_Description = new wxTextCtrl(m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    m_TextCtrl_ProjectsCategory_Description->SetToolTip(wxT("The filename of the project"));
-    m_TextCtrl_ProjectsCategory_Description->SetMinSize(wxSize(-1,200));
+    // Create the project preview button
+    this->m_Button_Projects_Preview = new wxButton(this->m_Panel_Projects_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Button_Projects_Preview->Hide();
+    this->m_Button_Projects_Preview->SetMinSize(wxSize(-1,24));
+    m_Sizer_Projects_Editor->Add(this->m_Button_Projects_Preview, 0, wxALIGN_RIGHT|wxALL, 5);
 
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Add(m_TextCtrl_ProjectsCategory_Description, 0, wxALL|wxEXPAND, 5);
+    // Add everything to the projects panel
+    this->m_Panel_Projects_Editor->SetSizer(m_Sizer_Projects_Editor);
+    this->m_Panel_Projects_Editor->Layout();
+    m_Sizer_Projects_Editor->Fit(this->m_Panel_Projects_Editor);
+    this->m_Splitter_Projects->SplitVertically(this->m_Panel_Projects_Tree, this->m_Panel_Projects_Editor, 200);
+    m_Sizer_Projects->Add(this->m_Splitter_Projects, 1, wxEXPAND, 5);
+    this->m_Panel_Projects->SetSizer(m_Sizer_Projects);
+    this->m_Panel_Projects->Layout();
+    m_Sizer_Projects->Fit(this->m_Panel_Projects);
+    this->m_ChoiceBook_PageSelection->AddPage(this->m_Panel_Projects, wxT("Projects"), false);
 
-
-    m_ScrolledWindow_ProjectCategory_Editor->SetSizer(m_Sizer_ScrolledWindow_ProjectCategory_Editor);
-    m_ScrolledWindow_ProjectCategory_Editor->Layout();
-    m_Sizer_ScrolledWindow_ProjectCategory_Editor->Fit(m_ScrolledWindow_ProjectCategory_Editor);
-    m_Sizer_Projects_Editor->Add(m_ScrolledWindow_ProjectCategory_Editor, 0, wxEXPAND | wxALL, 5);
-
-    m_Button_Projects_Preview = new wxButton(m_Panel_Projects_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Button_Projects_Preview->Hide();
-    m_Button_Projects_Preview->SetMinSize(wxSize(-1,24));
-
-    m_Sizer_Projects_Editor->Add(m_Button_Projects_Preview, 0, wxALIGN_RIGHT|wxALL, 5);
-
-
-    m_Panel_Projects_Editor->SetSizer(m_Sizer_Projects_Editor);
-    m_Panel_Projects_Editor->Layout();
-    m_Sizer_Projects_Editor->Fit(m_Panel_Projects_Editor);
-    m_Splitter_Projects->SplitVertically(m_Panel_Projects_Tree, m_Panel_Projects_Editor, 200);
-    m_Sizer_Projects->Add(m_Splitter_Projects, 1, wxEXPAND, 5);
-
-
-    m_Panel_Projects->SetSizer(m_Sizer_Projects);
-    m_Panel_Projects->Layout();
-    m_Sizer_Projects->Fit(m_Panel_Projects);
-    m_ChoiceBook_PageSelection->AddPage(m_Panel_Projects, wxT("Projects"), false);
-    m_Panel_Blog = new wxPanel(m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // Create the main blog panels
+    this->m_Panel_Blog = new wxPanel(this->m_ChoiceBook_PageSelection, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxBoxSizer* m_Sizer_Blog;
     m_Sizer_Blog = new wxBoxSizer(wxVERTICAL);
+    this->m_Splitter_Blog = new wxSplitterWindow(this->m_Panel_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
+    this->m_Splitter_Blog->SetSashGravity(0);
+    this->m_Splitter_Blog->Connect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_BlogOnIdle), NULL, this);
 
-    m_Splitter_Blog = new wxSplitterWindow(m_Panel_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxSP_3D);
-    m_Splitter_Blog->SetSashGravity(0);
-    m_Splitter_Blog->Connect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_BlogOnIdle), NULL, this);
-
-    m_Panel_Blog_Tree = new wxPanel(m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // Create the blog tree
+    this->m_Panel_Blog_Tree = new wxPanel(this->m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxFlexGridSizer* m_Sizer_Blog_Tree;
     m_Sizer_Blog_Tree = new wxFlexGridSizer(0, 0, 0, 0);
     m_Sizer_Blog_Tree->AddGrowableCol(0);
     m_Sizer_Blog_Tree->AddGrowableRow(0);
     m_Sizer_Blog_Tree->SetFlexibleDirection(wxBOTH);
     m_Sizer_Blog_Tree->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
+    this->m_TreeCtrl_Blog = new wxTreeCtrl(this->m_Panel_Blog_Tree, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT);
+    m_Sizer_Blog_Tree->Add(this->m_TreeCtrl_Blog, 0, wxALL|wxEXPAND, 5);
+    this->m_Panel_Blog_Tree->SetSizer(m_Sizer_Blog_Tree);
+    this->m_Panel_Blog_Tree->Layout();
+    m_Sizer_Blog_Tree->Fit(this->m_Panel_Blog_Tree);
 
-    m_TreeCtrl_Blog = new wxTreeCtrl(m_Panel_Blog_Tree, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTR_DEFAULT_STYLE|wxTR_EDIT_LABELS|wxTR_HIDE_ROOT);
-    m_Sizer_Blog_Tree->Add(m_TreeCtrl_Blog, 0, wxALL|wxEXPAND, 5);
-
-
-    m_Panel_Blog_Tree->SetSizer(m_Sizer_Blog_Tree);
-    m_Panel_Blog_Tree->Layout();
-    m_Sizer_Blog_Tree->Fit(m_Panel_Blog_Tree);
-    m_Panel_Blog_Editor = new wxPanel(m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+    // Create the primary blog editor
+    this->m_Panel_Blog_Editor = new wxPanel(this->m_Splitter_Blog, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
     wxFlexGridSizer* m_Sizer_Blog_Editor;
     m_Sizer_Blog_Editor = new wxFlexGridSizer(0, 1, 0, 0);
     m_Sizer_Blog_Editor->AddGrowableCol(0);
@@ -275,239 +237,202 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_Blog_Editor->AddGrowableRow(1);
     m_Sizer_Blog_Editor->SetFlexibleDirection(wxBOTH);
     m_Sizer_Blog_Editor->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-    m_ScrolledWindow_Blog_Editor = new wxScrolledWindow(m_Panel_Blog_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
-    m_ScrolledWindow_Blog_Editor->SetScrollRate(5, 5);
-    m_ScrolledWindow_Blog_Editor->Hide();
-    m_ScrolledWindow_Blog_Editor->SetMinSize(wxSize(0,0));
-
+    this->m_ScrolledWindow_Blog_Editor = new wxScrolledWindow(this->m_Panel_Blog_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
+    this->m_ScrolledWindow_Blog_Editor->SetScrollRate(5, 5);
+    this->m_ScrolledWindow_Blog_Editor->Hide();
+    this->m_ScrolledWindow_Blog_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_Blog_Editor;
     m_Sizer_ScrolledWindow_Blog_Editor = new wxFlexGridSizer(0, 1, 0, 0);
     m_Sizer_ScrolledWindow_Blog_Editor->AddGrowableCol(0);
     m_Sizer_ScrolledWindow_Blog_Editor->AddGrowableRow(1);
     m_Sizer_ScrolledWindow_Blog_Editor->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_Blog_Editor->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_Blog_Editor->SetMinSize(wxSize(0,0));
+
+    // Create the blog page editor controls 
     wxFlexGridSizer* m_Sizer_Blog_Editor_Details;
     m_Sizer_Blog_Editor_Details = new wxFlexGridSizer(0, 2, 0, 0);
     m_Sizer_Blog_Editor_Details->AddGrowableCol(1);
     m_Sizer_Blog_Editor_Details->SetFlexibleDirection(wxBOTH);
     m_Sizer_Blog_Editor_Details->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
-    m_Label_Blog_File = new wxStaticText(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Blog_File->Wrap(-1);
-    m_Sizer_Blog_Editor_Details->Add(m_Label_Blog_File, 0, wxALL, 5);
-
-    m_TextCtrl_Blog_File = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Blog_File->SetToolTip(wxT("The filename of the project"));
-
-    m_Sizer_Blog_Editor_Details->Add(m_TextCtrl_Blog_File, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Blog_Name = new wxStaticText(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Blog_Name->Wrap(-1);
-    m_Sizer_Blog_Editor_Details->Add(m_Label_Blog_Name, 0, wxALL, 5);
-
-    m_TextCtrl_Blog_Name = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Blog_Name->SetToolTip(wxT("The display name of the project"));
-
-    m_Sizer_Blog_Editor_Details->Add(m_TextCtrl_Blog_Name, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Blog_Icon = new wxStaticText(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Blog_Icon->Wrap(-1);
-    m_Sizer_Blog_Editor_Details->Add(m_Label_Blog_Icon, 0, wxALL, 5);
-
-    m_TextCtrl_Blog_Icon = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Blog_Icon->SetToolTip(wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png."));
-
-    m_Sizer_Blog_Editor_Details->Add(m_TextCtrl_Blog_Icon, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Blog_ToolTip = new wxStaticText(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Blog_ToolTip->Wrap(-1);
-    m_Sizer_Blog_Editor_Details->Add(m_Label_Blog_ToolTip, 0, wxALL, 5);
-
-    m_TextCtrl_Blog_ToolTip = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Blog_ToolTip->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
-
-    m_Sizer_Blog_Editor_Details->Add(m_TextCtrl_Blog_ToolTip, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Blog_Date = new wxStaticText(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Date:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Blog_Date->Wrap(-1);
-    m_Sizer_Blog_Editor_Details->Add(m_Label_Blog_Date, 0, wxALL, 5);
-
-    m_TextCtrl_Blog_Date = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Blog_Date->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
-
-    m_Sizer_Blog_Editor_Details->Add(m_TextCtrl_Blog_Date, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_Blog_Tags = new wxStaticText(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_Blog_Tags->Wrap(-1);
-    m_Sizer_Blog_Editor_Details->Add(m_Label_Blog_Tags, 0, wxALL, 5);
-
-    m_TextCtrl_Blog_Tags = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_Blog_Tags->SetToolTip(wxT("Project tags, comma separated."));
-
-    m_Sizer_Blog_Editor_Details->Add(m_TextCtrl_Blog_Tags, 0, wxALL|wxEXPAND, 5);
-
-
+    this->m_Label_Blog_File = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("File:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Blog_File->Wrap(-1);
+    m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_File, 0, wxALL, 5);
+    this->m_TextCtrl_Blog_File = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_File->SetToolTip(wxT("The filename of the project"));
+    m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_File, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Blog_Name = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Blog_Name->Wrap(-1);
+    m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_Name, 0, wxALL, 5);
+    this->m_TextCtrl_Blog_Name = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_Name->SetToolTip(wxT("The display name of the project"));
+    m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_Name, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Blog_Icon = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Icon:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Blog_Icon->Wrap(-1);
+    m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_Icon, 0, wxALL, 5);
+    this->m_TextCtrl_Blog_Icon = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_Icon->SetToolTip(wxT("The icon used to display the project in the list of projects. Requires a relative path (to the working directory) to a 240x125 png."));
+    m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_Icon, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Blog_ToolTip = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Blog_ToolTip->Wrap(-1);
+    m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_ToolTip, 0, wxALL, 5);
+    this->m_TextCtrl_Blog_ToolTip = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_ToolTip->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
+    m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_ToolTip, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Blog_Date = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Date:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Blog_Date->Wrap(-1);
+    m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_Date, 0, wxALL, 5);
+    this->m_TextCtrl_Blog_Date = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_Date->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
+    m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_Date, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_Blog_Tags = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Tags:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_Blog_Tags->Wrap(-1);
+    m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_Tags, 0, wxALL, 5);
+    this->m_TextCtrl_Blog_Tags = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_Tags->SetToolTip(wxT("Project tags, comma separated."));
+    m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_Tags, 0, wxALL|wxEXPAND, 5);
     m_Sizer_ScrolledWindow_Blog_Editor->Add(m_Sizer_Blog_Editor_Details, 1, wxEXPAND, 5);
+    this->m_TextCtrl_Blog = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,200), wxTE_MULTILINE);
+    this->m_TextCtrl_Blog->SetToolTip(wxT("The project description. Supports markdown."));
+    m_Sizer_ScrolledWindow_Blog_Editor->Add(this->m_TextCtrl_Blog, 0, wxALL|wxEXPAND, 5);
+    this->m_ScrolledWindow_Blog_Editor->SetSizer(m_Sizer_ScrolledWindow_Blog_Editor);
+    this->m_ScrolledWindow_Blog_Editor->Layout();
+    m_Sizer_ScrolledWindow_Blog_Editor->Fit(this->m_ScrolledWindow_Blog_Editor);
+    m_Sizer_Blog_Editor->Add(this->m_ScrolledWindow_Blog_Editor, 0, wxEXPAND | wxALL, 5);
 
-    m_TextCtrl_Blog = new wxTextCtrl(m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,200), wxTE_MULTILINE);
-    m_TextCtrl_Blog->SetToolTip(wxT("The project description. Supports markdown."));
-
-    m_Sizer_ScrolledWindow_Blog_Editor->Add(m_TextCtrl_Blog, 0, wxALL|wxEXPAND, 5);
-
-
-    m_ScrolledWindow_Blog_Editor->SetSizer(m_Sizer_ScrolledWindow_Blog_Editor);
-    m_ScrolledWindow_Blog_Editor->Layout();
-    m_Sizer_ScrolledWindow_Blog_Editor->Fit(m_ScrolledWindow_Blog_Editor);
-    m_Sizer_Blog_Editor->Add(m_ScrolledWindow_Blog_Editor, 0, wxEXPAND | wxALL, 5);
-
-    m_ScrolledWindow_BlogCategory_Editor = new wxScrolledWindow(m_Panel_Blog_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
-    m_ScrolledWindow_BlogCategory_Editor->SetScrollRate(5, 5);
-    m_ScrolledWindow_BlogCategory_Editor->Hide();
-    m_ScrolledWindow_BlogCategory_Editor->SetMinSize(wxSize(0,0));
-
+    // Create the blog page category editor controls 
+    this->m_ScrolledWindow_BlogCategory_Editor = new wxScrolledWindow(this->m_Panel_Blog_Editor, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHSCROLL|wxVSCROLL);
+    this->m_ScrolledWindow_BlogCategory_Editor->SetScrollRate(5, 5);
+    this->m_ScrolledWindow_BlogCategory_Editor->Hide();
+    this->m_ScrolledWindow_BlogCategory_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_BlogCategory_Editor;
     m_Sizer_ScrolledWindow_BlogCategory_Editor = new wxFlexGridSizer(0, 1, 0, 0);
     m_Sizer_ScrolledWindow_BlogCategory_Editor->AddGrowableCol(0);
     m_Sizer_ScrolledWindow_BlogCategory_Editor->AddGrowableRow(1);
     m_Sizer_ScrolledWindow_BlogCategory_Editor->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_BlogCategory_Editor->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_BlogCategory_Editor->SetMinSize(wxSize(0,0));
     wxFlexGridSizer* m_Sizer_ScrolledWindow_BlogCategory_Editor_Main;
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main = new wxFlexGridSizer(0, 2, 0, 0);
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->AddGrowableCol(1);
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->SetFlexibleDirection(wxBOTH);
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
-
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->SetMinSize(wxSize(0,0));
-    m_Label_BlogCategory_Folder = new wxStaticText(m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_BlogCategory_Folder->Wrap(-1);
-    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(m_Label_BlogCategory_Folder, 0, wxALL, 5);
-
-    m_TextCtrl_BlogCategory_Folder = new wxTextCtrl(m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_BlogCategory_Folder->Enable(false);
-    m_TextCtrl_BlogCategory_Folder->SetToolTip(wxT("The folder that represents this category"));
-
-    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(m_TextCtrl_BlogCategory_Folder, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_BlogCategory_DisplayName = new wxStaticText(m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Label_BlogCategory_DisplayName->Wrap(-1);
-    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(m_Label_BlogCategory_DisplayName, 0, wxALL, 5);
-
-    m_TextCtrl_BlogCategory_DisplayName = new wxTextCtrl(m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_TextCtrl_BlogCategory_DisplayName->SetToolTip(wxT("The display name of this category"));
-
-    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(m_TextCtrl_BlogCategory_DisplayName, 0, wxALL|wxEXPAND, 5);
-
-    m_Label_BlogCategory_Description = new wxStaticText(m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Description:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_BlogCategory_Folder = new wxStaticText(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Folder:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_BlogCategory_Folder->Wrap(-1);
+    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(this->m_Label_BlogCategory_Folder, 0, wxALL, 5);
+    this->m_TextCtrl_BlogCategory_Folder = new wxTextCtrl(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_BlogCategory_Folder->Enable(false);
+    this->m_TextCtrl_BlogCategory_Folder->SetToolTip(wxT("The folder that represents this category"));
+    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(this->m_TextCtrl_BlogCategory_Folder, 0, wxALL|wxEXPAND, 5);
+    this->m_Label_BlogCategory_DisplayName = new wxStaticText(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Label_BlogCategory_DisplayName->Wrap(-1);
+    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(this->m_Label_BlogCategory_DisplayName, 0, wxALL, 5);
+    this->m_TextCtrl_BlogCategory_DisplayName = new wxTextCtrl(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_BlogCategory_DisplayName->SetToolTip(wxT("The display name of this category"));
+    m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(this->m_TextCtrl_BlogCategory_DisplayName, 0, wxALL|wxEXPAND, 5);
+    m_Label_BlogCategory_Description = new wxStaticText(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Description:"), wxDefaultPosition, wxDefaultSize, 0);
     m_Label_BlogCategory_Description->Wrap(-1);
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(m_Label_BlogCategory_Description, 0, wxALL, 5);
-
-
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(0, 0, 1, wxEXPAND, 5);
-
-
     m_Sizer_ScrolledWindow_BlogCategory_Editor->Add(m_Sizer_ScrolledWindow_BlogCategory_Editor_Main, 1, wxEXPAND, 5);
+    this->m_TextCtrl_BlogCategory_Description = new wxTextCtrl(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    this->m_TextCtrl_BlogCategory_Description->SetToolTip(wxT("The filename of the project"));
+    this->m_TextCtrl_BlogCategory_Description->SetMinSize(wxSize(-1,200));
+    m_Sizer_ScrolledWindow_BlogCategory_Editor->Add(this->m_TextCtrl_BlogCategory_Description, 0, wxALL|wxEXPAND, 5);
+    this->m_ScrolledWindow_BlogCategory_Editor->SetSizer(m_Sizer_ScrolledWindow_BlogCategory_Editor);
+    this->m_ScrolledWindow_BlogCategory_Editor->Layout();
+    m_Sizer_ScrolledWindow_BlogCategory_Editor->Fit(this->m_ScrolledWindow_BlogCategory_Editor);
+    m_Sizer_Blog_Editor->Add(this->m_ScrolledWindow_BlogCategory_Editor, 0, wxEXPAND | wxALL, 5);
 
-    m_TextCtrl_BlogCategory_Description = new wxTextCtrl(m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
-    m_TextCtrl_BlogCategory_Description->SetToolTip(wxT("The filename of the project"));
-    m_TextCtrl_BlogCategory_Description->SetMinSize(wxSize(-1,200));
+    // Create the blog preview button
+    this->m_Button_Blog_Preview = new wxButton(this->m_Panel_Blog_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0);
+    this->m_Button_Blog_Preview->Hide();
+    m_Sizer_Blog_Editor->Add(this->m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5);
 
-    m_Sizer_ScrolledWindow_BlogCategory_Editor->Add(m_TextCtrl_BlogCategory_Description, 0, wxALL|wxEXPAND, 5);
-
-
-    m_ScrolledWindow_BlogCategory_Editor->SetSizer(m_Sizer_ScrolledWindow_BlogCategory_Editor);
-    m_ScrolledWindow_BlogCategory_Editor->Layout();
-    m_Sizer_ScrolledWindow_BlogCategory_Editor->Fit(m_ScrolledWindow_BlogCategory_Editor);
-    m_Sizer_Blog_Editor->Add(m_ScrolledWindow_BlogCategory_Editor, 0, wxEXPAND | wxALL, 5);
-
-    m_Button_Blog_Preview = new wxButton(m_Panel_Blog_Editor, wxID_ANY, wxT("Preview"), wxDefaultPosition, wxDefaultSize, 0);
-    m_Button_Blog_Preview->Hide();
-
-    m_Sizer_Blog_Editor->Add(m_Button_Blog_Preview, 0, wxALIGN_RIGHT|wxALL, 5);
-
-
-    m_Panel_Blog_Editor->SetSizer(m_Sizer_Blog_Editor);
-    m_Panel_Blog_Editor->Layout();
-    m_Sizer_Blog_Editor->Fit(m_Panel_Blog_Editor);
-    m_Splitter_Blog->SplitVertically(m_Panel_Blog_Tree, m_Panel_Blog_Editor, 200);
-    m_Sizer_Blog->Add(m_Splitter_Blog, 1, wxEXPAND, 5);
-
-
-    m_Panel_Blog->SetSizer(m_Sizer_Blog);
-    m_Panel_Blog->Layout();
-    m_Sizer_Blog->Fit(m_Panel_Blog);
-    m_ChoiceBook_PageSelection->AddPage(m_Panel_Blog, wxT("Blog"), true);
-    m_Sizer_Main->Add(m_ChoiceBook_PageSelection, 1, wxEXPAND | wxALL, 5);
-
-
+    // Layout the window
+    this->m_Panel_Blog_Editor->SetSizer(m_Sizer_Blog_Editor);
+    this->m_Panel_Blog_Editor->Layout();
+    m_Sizer_Blog_Editor->Fit(this->m_Panel_Blog_Editor);
+    this->m_Splitter_Blog->SplitVertically(this->m_Panel_Blog_Tree, this->m_Panel_Blog_Editor, 200);
+    m_Sizer_Blog->Add(this->m_Splitter_Blog, 1, wxEXPAND, 5);
+    this->m_Panel_Blog->SetSizer(m_Sizer_Blog);
+    this->m_Panel_Blog->Layout();
+    m_Sizer_Blog->Fit(this->m_Panel_Blog);
+    this->m_ChoiceBook_PageSelection->AddPage(this->m_Panel_Blog, wxT("Blog"), true);
+    m_Sizer_Main->Add(this->m_ChoiceBook_PageSelection, 1, wxEXPAND | wxALL, 5);
     this->SetSizer(m_Sizer_Main);
     this->Layout();
-    m_Menubar_Main = new wxMenuBar(0);
-    m_Menu_File = new wxMenu();
+
+    // Add the menubar
+    this->m_Menubar_Main = new wxMenuBar(0);
+    this->m_Menu_File = new wxMenu();
     wxMenuItem* m_MenuItem_OpenDir;
-    m_MenuItem_OpenDir = new wxMenuItem(m_Menu_File, wxID_ANY, wxString(wxT("Open Working Directory")) + wxT('\t') + wxT("CTRL+O"), wxEmptyString, wxITEM_NORMAL);
-    m_Menu_File->Append(m_MenuItem_OpenDir);
-
+    m_MenuItem_OpenDir = new wxMenuItem(this->m_Menu_File, wxID_ANY, wxString(wxT("Open Working Directory")) + wxT('\t') + wxT("CTRL+O"), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_File->Append(m_MenuItem_OpenDir);
     wxMenuItem* m_MenuItem_Save;
-    m_MenuItem_Save = new wxMenuItem(m_Menu_File, wxID_ANY, wxString(wxT("Save Changes")) + wxT('\t') + wxT("CTRL+S"), wxEmptyString, wxITEM_NORMAL);
-    m_Menu_File->Append(m_MenuItem_Save);
-
-    m_Menubar_Main->Append(m_Menu_File, wxT("File"));
-
+    m_MenuItem_Save = new wxMenuItem(this->m_Menu_File, wxID_ANY, wxString(wxT("Save Changes")) + wxT('\t') + wxT("CTRL+S"), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_File->Append(m_MenuItem_Save);
+    this->m_Menubar_Main->Append(this->m_Menu_File, wxT("File"));
     this->SetMenuBar(m_Menubar_Main);
 
+    // Start a timer to fix the splitter location
     this->m_Timer = new wxTimer();
     this->m_Timer->Start(100, wxTIMER_ONE_SHOT);
 
+    // Center the final window
     this->Centre(wxBOTH);
 
     // Connect Events
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeBeginDrag), NULL, this);
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndDrag), NULL, this);
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit), NULL, this);
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeItemMenu), NULL, this);
-    m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeSelChanged), NULL, this);
-    m_TextCtrl_Projects_File->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_File_OnText), NULL, this);
-    m_TextCtrl_Projects_Name->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Name_OnText), NULL, this);
-    m_TextCtrl_Projects_Icon->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Icon_OnText), NULL, this);
-    m_TextCtrl_Projects_Tags->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Tags_OnText), NULL, this);
-    m_TextCtrl_Projects_Images->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Images_OnText), NULL, this);
-    m_TextCtrl_Projects_Date->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Date_OnText), NULL, this);
-    m_TextCtrl_Projects_URLs->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_URLs_OnText), NULL, this);
-    m_TextCtrl_Projects_ToolTip->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_ToolTip_OnText), NULL, this);
-    m_TextCtrl_Projects_Description->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Description_OnText), NULL, this);
-    m_TextCtrl_ProjectsCategory_DisplayName->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText), NULL, this);
-    m_TextCtrl_ProjectsCategory_Description->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_ProjectsCategory_Description_OnText), NULL, this);
-    m_Button_Projects_Preview->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(Main::m_Button_Projects_Preview_OnButtonClick), NULL, this);
-    m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeBeginDrag), NULL, this);
-    m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndDrag), NULL, this);
-    m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit), NULL, this);
-    m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeItemMenu), NULL, this);
-    m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeSelChanged), NULL, this);
-    m_TextCtrl_Blog_File->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_File_OnText), NULL, this);
-    m_TextCtrl_Blog_Name->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Name_OnText), NULL, this);
-    m_TextCtrl_Blog_Icon->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Icon_OnText), NULL, this);
-    m_TextCtrl_Blog_ToolTip->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_ToolTip_OnText), NULL, this);
-    m_TextCtrl_Blog_Date->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Date_OnText), NULL, this);
-    m_TextCtrl_Blog_Tags->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Tags_OnText), NULL, this);
-    m_TextCtrl_Blog->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_OnText), NULL, this);
-    m_TextCtrl_BlogCategory_DisplayName->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_BlogCategory_DisplayName_OnText), NULL, this);
-    m_TextCtrl_BlogCategory_Description->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_BlogCategory_Description_OnText), NULL, this);
-    m_Button_Blog_Preview->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(Main::m_Button_Blog_Preview_OnButtonClick), NULL, this);
-    m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_OpenDir_OnMenuSelection), this, m_MenuItem_OpenDir->GetId());
-    m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Save_OnMenuSelection), this, m_MenuItem_Save->GetId());
+    this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeBeginDrag), NULL, this);
+    this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndDrag), NULL, this);
+    this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit), NULL, this);
+    this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeItemMenu), NULL, this);
+    this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeSelChanged), NULL, this);
+    this->m_TextCtrl_Projects_File->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_File_OnText), NULL, this);
+    this->m_TextCtrl_Projects_Name->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Name_OnText), NULL, this);
+    this->m_TextCtrl_Projects_Icon->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Icon_OnText), NULL, this);
+    this->m_TextCtrl_Projects_Tags->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Tags_OnText), NULL, this);
+    this->m_TextCtrl_Projects_Images->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Images_OnText), NULL, this);
+    this->m_TextCtrl_Projects_Date->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Date_OnText), NULL, this);
+    this->m_TextCtrl_Projects_URLs->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_URLs_OnText), NULL, this);
+    this->m_TextCtrl_Projects_ToolTip->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_ToolTip_OnText), NULL, this);
+    this->m_TextCtrl_Projects_Description->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Projects_Description_OnText), NULL, this);
+    this->m_TextCtrl_ProjectsCategory_DisplayName->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText), NULL, this);
+    this->m_TextCtrl_ProjectsCategory_Description->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_ProjectsCategory_Description_OnText), NULL, this);
+    this->m_Button_Projects_Preview->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(Main::m_Button_Projects_Preview_OnButtonClick), NULL, this);
+    this->m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeBeginDrag), NULL, this);
+    this->m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndDrag), NULL, this);
+    this->m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit), NULL, this);
+    this->m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_ITEM_MENU, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeItemMenu), NULL, this);
+    this->m_TreeCtrl_Blog->Connect(wxEVT_COMMAND_TREE_SEL_CHANGED, wxTreeEventHandler(Main::m_TreeCtrl_Blog_OnTreeSelChanged), NULL, this);
+    this->m_TextCtrl_Blog_File->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_File_OnText), NULL, this);
+    this->m_TextCtrl_Blog_Name->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Name_OnText), NULL, this);
+    this->m_TextCtrl_Blog_Icon->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Icon_OnText), NULL, this);
+    this->m_TextCtrl_Blog_ToolTip->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_ToolTip_OnText), NULL, this);
+    this->m_TextCtrl_Blog_Date->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Date_OnText), NULL, this);
+    this->m_TextCtrl_Blog_Tags->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_Tags_OnText), NULL, this);
+    this->m_TextCtrl_Blog->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_Blog_OnText), NULL, this);
+    this->m_TextCtrl_BlogCategory_DisplayName->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_BlogCategory_DisplayName_OnText), NULL, this);
+    this->m_TextCtrl_BlogCategory_Description->Connect(wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler(Main::m_TextCtrl_BlogCategory_Description_OnText), NULL, this);
+    this->m_Button_Blog_Preview->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(Main::m_Button_Blog_Preview_OnButtonClick), NULL, this);
+    this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_OpenDir_OnMenuSelection), this, m_MenuItem_OpenDir->GetId());
+    this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Save_OnMenuSelection), this, m_MenuItem_Save->GetId());
     this->m_Timer->Bind(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), this, this->m_Timer->GetId());
 
+    // Load the projects and blog from the current working directory
     this->m_ChoiceBook_PageSelection->SetSelection(0);
     this->UpdateTree(this->m_TreeCtrl_Projects, "projects", &this->m_Category_Projects);
     this->UpdateTree(this->m_TreeCtrl_Blog, "blog", &this->m_Category_Blog);
     this->LoadProjects();
     this->LoadBlog();
 }
+
+
+/*==============================
+    App (Destructor)
+    Cleans up the class before deletion
+==============================*/
 
 Main::~Main()
 {
@@ -546,17 +471,38 @@ Main::~Main()
     this->m_Timer->Disconnect(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), NULL, this);
 }
 
+
+/*==============================
+    m_Splitter_ProjectsOnIdle
+    Handles the project splitter event
+    @param Unused
+==============================*/
+
 void Main::m_Splitter_ProjectsOnIdle(wxIdleEvent&)
 {
     this->m_Splitter_Projects->SetSashPosition(0);
     this->m_Splitter_Projects->Disconnect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_ProjectsOnIdle), NULL, this);
 }
 
+
+/*==============================
+    m_Splitter_BlogOnIdle
+    Handles the blog splitter event
+    @param Unused
+==============================*/
+
 void Main::m_Splitter_BlogOnIdle(wxIdleEvent&)
 {
     this->m_Splitter_Blog->SetSashPosition(0);
     this->m_Splitter_Blog->Disconnect(wxEVT_IDLE, wxIdleEventHandler(Main::m_Splitter_BlogOnIdle), NULL, this);
 }
+
+
+/*==============================
+    m_MenuItem_OpenDir_OnMenuSelection
+    Handles the Open Directory menu event
+    @param Unused
+==============================*/
 
 void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent&)
 {
@@ -572,14 +518,28 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent&)
     }
 }
 
+
+/*==============================
+    m_MenuItem_Save_OnMenuSelection
+    Handles the Save menu event
+    @param Unused
+==============================*/
+
 void Main::m_MenuItem_Save_OnMenuSelection(wxCommandEvent&)
 {
     this->Save();
 }
 
+
+/*==============================
+    m_TreeCtrl_Projects_OnTreeEndLabelEdit
+    Handles the project tree label editing event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
 {
-    if (treeitem_iscategory(this->m_TreeCtrl_Projects, event.GetItem()))
+    if (treeitem_iscategory(this->m_TreeCtrl_Projects, event.GetItem())) // Handle category label editing
     {
         wxTreeItemId id = event.GetItem();
         Category* cat = this->FindCategory_Projects(id);
@@ -587,10 +547,10 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
         {
             cat->displayname = event.GetLabel();
             this->MarkModified();
+            return;
         }
-        return;
     }
-    else
+    else // Handle project label editing
     {
         Project* proj = this->FindProject(event.GetItem());
         if (proj != NULL)
@@ -605,11 +565,26 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
     event.Skip();
 }
 
+
+/*==============================
+    m_TreeCtrl_Projects_OnTreeBeginDrag
+    Handles the project tree drag event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event)
 {
     this->m_DraggedItem = event.GetItem();
     event.Allow();
 }
+
+
+/*==============================
+    m_TreeCtrl_Projects_OnTreeEndDrag
+    Handles the project tree drag ending event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Projects_OnTreeEndDrag(wxTreeEvent& event)
 {
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem))
@@ -617,6 +592,13 @@ void Main::m_TreeCtrl_Projects_OnTreeEndDrag(wxTreeEvent& event)
     else
         this->EndDrag(event, this->m_TreeCtrl_Projects, &this->m_Category_Projects);
 }
+
+
+/*==============================
+    m_TreeCtrl_Projects_OnTreeItemMenu
+    Handles the project tree right click event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TreeCtrl_Projects_OnTreeItemMenu(wxTreeEvent& event)
 {
@@ -629,53 +611,74 @@ void Main::m_TreeCtrl_Projects_OnTreeItemMenu(wxTreeEvent& event)
     PopupMenu(&menu, event.GetPoint());
 }
 
+
+/*==============================
+    m_TreeCtrl_Projects_OnTreeSelChanged
+    Handles the project tree selection event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
 {
     bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
+
+    // Handle the item selection
     this->m_SelectedItem = item;
-    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item))
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item)) // Handle project selection
     {
         wxString wip;
         Project* proj_elem = FindProject(item);
 
+        // Ensure the project exists
         if (proj_elem == NULL)
             return;
 
+        // Fill in the simple text controls
         this->m_TextCtrl_Projects_File->SetValue(proj_elem->filename);
         this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
         this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
         this->m_TextCtrl_Projects_ToolTip->SetValue(proj_elem->tooltip);
         this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
         
+        // Fill in the tags text control
         wip = wxString("");
         for (wxString str : proj_elem->tags)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_Tags->SetValue(wip);
         
+        // Fill in the images text control
         wip = wxString("");
         for (wxString str : proj_elem->images)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_Images->SetValue(wip);
         this->m_TextCtrl_Projects_Date->SetValue(proj_elem->date);
         
+        // Fill in the url text control
         wip = wxString("");
         for (wxString str : proj_elem->urls)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_URLs->SetValue(wip);
 
+        // Show the project editor
         this->ShowProjectEditor();
         if (!modifiedbeforechange)
             this->MarkModified(false);
     }
-    else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item))
+    else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item)) // Handle category selection
     {
         Category* cat_elem = this->FindCategory_Projects(item);
+
+        // Ensure the category exists
         if (cat_elem == NULL)
             return;
+
+        // Fill in the simple text controls
         this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat_elem->foldername);
         this->m_TextCtrl_ProjectsCategory_DisplayName->SetValue(cat_elem->displayname);
         this->m_TextCtrl_ProjectsCategory_Description->SetValue(cat_elem->description);
+
+        // Show the project category editor
         this->ShowProjectCategoryEditor(true);
         if (!modifiedbeforechange)
             this->MarkModified(false);
@@ -683,6 +686,13 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
     else
         this->ShowProjectEditor(false);
 }
+
+
+/*==============================
+    m_TextCtrl_Projects_File_OnText
+    Handles the project filename text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Projects_File_OnText(wxCommandEvent& event)
 {
@@ -692,6 +702,13 @@ void Main::m_TextCtrl_Projects_File_OnText(wxCommandEvent& event)
     proj->filename = event.GetString();
     this->MarkModified();
 }
+
+
+/*==============================
+    m_TextCtrl_Projects_Name_OnText
+    Handles the project name text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Projects_Name_OnText(wxCommandEvent& event)
 {
@@ -703,6 +720,13 @@ void Main::m_TextCtrl_Projects_Name_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_Projects_Icon_OnText
+    Handles the project icon text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Projects_Icon_OnText(wxCommandEvent& event)
 {
     Project* proj = this->FindProject(this->m_SelectedItem);
@@ -712,6 +736,13 @@ void Main::m_TextCtrl_Projects_Icon_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_Projects_Tags_OnText
+    Handles the project tags text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Projects_Tags_OnText(wxCommandEvent& event)
 {
     Project* proj = this->FindProject(this->m_SelectedItem);
@@ -719,6 +750,8 @@ void Main::m_TextCtrl_Projects_Tags_OnText(wxCommandEvent& event)
     {
         wxArrayString strarray = wxSplit(event.GetString(), ',');
         proj->tags.clear();
+
+        // Split the elements by comma
         for (wxString str : strarray)
         {
             str.Trim(true);
@@ -730,6 +763,13 @@ void Main::m_TextCtrl_Projects_Tags_OnText(wxCommandEvent& event)
     }
 }
 
+
+/*==============================
+    m_TextCtrl_Projects_Images_OnText
+    Handles the project images text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Projects_Images_OnText(wxCommandEvent& event)
 {
     Project* proj = this->FindProject(this->m_SelectedItem);
@@ -737,6 +777,8 @@ void Main::m_TextCtrl_Projects_Images_OnText(wxCommandEvent& event)
     {
         wxArrayString strarray = wxSplit(event.GetString(), ',');
         proj->images.clear();
+
+        // Split the elements by comma
         for (wxString str : strarray)
         {
             str.Trim(true);
@@ -748,6 +790,13 @@ void Main::m_TextCtrl_Projects_Images_OnText(wxCommandEvent& event)
     }
 }
 
+
+/*==============================
+    m_TextCtrl_Projects_Date_OnText
+    Handles the project date text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Projects_Date_OnText(wxCommandEvent& event)
 {
     Project* proj = this->FindProject(this->m_SelectedItem);
@@ -757,6 +806,13 @@ void Main::m_TextCtrl_Projects_Date_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_Projects_URLs_OnText
+    Handles the project date text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Projects_URLs_OnText(wxCommandEvent& event)
 {
     Project* proj = this->FindProject(this->m_SelectedItem);
@@ -764,6 +820,8 @@ void Main::m_TextCtrl_Projects_URLs_OnText(wxCommandEvent& event)
     {
         wxArrayString strarray = wxSplit(event.GetString(), ',');
         proj->urls.clear();
+
+        // Split the elements by comma
         for (wxString str : strarray)
         {
             str.Trim(true);
@@ -775,14 +833,12 @@ void Main::m_TextCtrl_Projects_URLs_OnText(wxCommandEvent& event)
     }
 }
 
-void Main::m_TextCtrl_Projects_Description_OnText(wxCommandEvent& event)
-{
-    Project* proj = this->FindProject(this->m_SelectedItem);
-    if (proj == NULL)
-        return;
-    proj->description = event.GetString();
-    this->MarkModified();
-}
+
+/*==============================
+    m_TextCtrl_Projects_ToolTip_OnText
+    Handles the project tooltip text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Projects_ToolTip_OnText(wxCommandEvent& event)
 {
@@ -792,6 +848,29 @@ void Main::m_TextCtrl_Projects_ToolTip_OnText(wxCommandEvent& event)
     proj->tooltip = event.GetString();
     this->MarkModified();
 }
+
+
+/*==============================
+    m_TextCtrl_Projects_Description_OnText
+    Handles the project description text control edit event
+    @param The event that was generated
+==============================*/
+
+void Main::m_TextCtrl_Projects_Description_OnText(wxCommandEvent& event)
+{
+    Project* proj = this->FindProject(this->m_SelectedItem);
+    if (proj == NULL)
+        return;
+    proj->description = event.GetString();
+    this->MarkModified();
+}
+
+
+/*==============================
+    m_TextCtrl_ProjectsCategory_DisplayName_OnText
+    Handles the project category name text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText(wxCommandEvent& event)
 {
@@ -803,6 +882,13 @@ void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_ProjectsCategory_Description_OnText
+    Handles the project category description text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_ProjectsCategory_Description_OnText(wxCommandEvent& event)
 {
     Category* cat = this->FindCategory_Projects(this->m_SelectedItem);
@@ -812,11 +898,20 @@ void Main::m_TextCtrl_ProjectsCategory_Description_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_Button_Projects_Preview_OnButtonClick
+    Handles the project preview button event
+    @param Unused
+==============================*/
+
 void Main::m_Button_Projects_Preview_OnButtonClick(wxCommandEvent&)
 {
     wxString content;
     wxString url = wxString("");
-    if (treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem))
+
+    // Compile the relevant page(s)
+    if (treeitem_iscategory(this->m_TreeCtrl_Projects, this->m_SelectedItem)) // Handle category preview
     {
         Category* cat = this->FindCategory_Projects(this->m_SelectedItem);
         if (cat != NULL)
@@ -825,7 +920,7 @@ void Main::m_Button_Projects_Preview_OnButtonClick(wxCommandEvent&)
             url = this->m_WorkingDir + wxString("/projects.html") + wxString("#") + cat->foldername;
         }
     }
-    else
+    else // Handle project preview
     {
         Project* proj = this->FindProject(this->m_SelectedItem);
         if (proj != NULL)
@@ -834,12 +929,21 @@ void Main::m_Button_Projects_Preview_OnButtonClick(wxCommandEvent&)
             url = this->m_WorkingDir + wxString("/projects/") + proj->category->foldername + wxString("/") + proj->filename + wxString(".html");
         }
     }
+
+    // Launch the generated page in a browser window
     wxLaunchDefaultBrowser(wxString("file:") + url);
 }
 
+
+/*==============================
+    m_TreeCtrl_Blog_OnTreeEndLabelEdit
+    Handles the blog tree label editing event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
 {
-    if (treeitem_iscategory(this->m_TreeCtrl_Blog, event.GetItem()))
+    if (treeitem_iscategory(this->m_TreeCtrl_Blog, event.GetItem())) // Handle category label editing
     {
         wxTreeItemId id = event.GetItem();
         Category* cat = this->FindCategory_Blog(id);
@@ -847,10 +951,10 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
         {
             cat->displayname = event.GetLabel();
             this->MarkModified();
+            return;
         }
-        return;
     }
-    else
+    else // Handle blog entry label editing
     {
         Blog* bentry = this->FindBlog(event.GetItem());
         if (bentry != NULL)
@@ -865,11 +969,25 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
     event.Skip();
 }
 
+
+/*==============================
+    m_TreeCtrl_Blog_OnTreeBeginDrag
+    Handles the blog tree drag event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Blog_OnTreeBeginDrag(wxTreeEvent& event)
 {
     this->m_DraggedItem = event.GetItem();
     event.Allow();
 }
+
+
+/*==============================
+    m_TreeCtrl_Blog_OnTreeEndDrag
+    Handles the blog tree drag ending event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TreeCtrl_Blog_OnTreeEndDrag(wxTreeEvent& event)
 {
@@ -878,6 +996,13 @@ void Main::m_TreeCtrl_Blog_OnTreeEndDrag(wxTreeEvent& event)
     else
         this->EndDrag(event, this->m_TreeCtrl_Blog, &this->m_Category_Blog);
 }
+
+
+/*==============================
+    m_TreeCtrl_Blog_OnTreeItemMenu
+    Handles the blog tree right click event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TreeCtrl_Blog_OnTreeItemMenu(wxTreeEvent& event)
 {
@@ -890,17 +1015,30 @@ void Main::m_TreeCtrl_Blog_OnTreeItemMenu(wxTreeEvent& event)
     PopupMenu(&menu, event.GetPoint());
 }
 
+
+/*==============================
+    m_TreeCtrl_Blog_OnTreeSelChanged
+    Handles the blog tree selection event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
 {
     bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
     this->m_SelectedItem = item;
-    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))
+
+    // Handle the item selection
+    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))  // Handle project selection
     {
         wxString wip;
         Blog* blog_elem = this->FindBlog(item);
+
+        // Ensure the project exists
         if (blog_elem == NULL)
             return;
+
+        // Fill in the simple text controls
         this->m_TextCtrl_Blog_File->SetValue(blog_elem->filename);
         this->m_TextCtrl_Blog_Name->SetValue(blog_elem->displayname);
         this->m_TextCtrl_Blog_Icon->SetValue(blog_elem->icon);
@@ -908,11 +1046,13 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
         this->m_TextCtrl_Blog_Date->SetValue(blog_elem->date);
         this->m_TextCtrl_Blog->SetValue(string_fromfile(this->m_WorkingDir + wxString("/blog/") + blog_elem->category->foldername + wxString("/markdown/") + blog_elem->filename + wxString(".md")));
         
+        // Fill in the tags text control
         wip = wxString("");
         for (wxString str : blog_elem->tags)
             wip += str + wxString(", ");
         this->m_TextCtrl_Blog_Tags->SetValue(wip);
 
+        // Show the blog editor
         this->ShowBlogEditor();
         if (!modifiedbeforechange)
             this->MarkModified(false);
@@ -920,11 +1060,17 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
     else if (treeitem_iscategory(this->m_TreeCtrl_Blog, item))
     {
         Category* cat_elem = this->FindCategory_Blog(item);
+
+        // Ensure the category exists
         if (cat_elem == NULL)
             return;
+
+        // Fill in the simple text controls
         this->m_TextCtrl_BlogCategory_Folder->SetValue(cat_elem->foldername);
         this->m_TextCtrl_BlogCategory_DisplayName->SetValue(cat_elem->displayname);
         this->m_TextCtrl_BlogCategory_Description->SetValue(cat_elem->description);
+
+        // Show the blog category editor
         this->ShowBlogCategoryEditor(true);
         if (!modifiedbeforechange)
             this->MarkModified(false);
@@ -933,24 +1079,12 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
         this->ShowBlogEditor(false);
 }
 
-void Main::m_TextCtrl_BlogCategory_DisplayName_OnText(wxCommandEvent& event)
-{
-    Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
-    if (cat == NULL)
-        return;
-    cat->displayname = event.GetString();
-    this->m_TreeCtrl_Blog->SetItemText(cat->treeid, cat->displayname);
-    this->MarkModified();
-}
 
-void Main::m_TextCtrl_BlogCategory_Description_OnText(wxCommandEvent& event)
-{
-    Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
-    if (cat == NULL)
-        return;
-    cat->description = event.GetString();
-    this->MarkModified();
-}
+/*==============================
+    m_TextCtrl_Blog_File_OnText
+    Handles the blog entry filename text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Blog_File_OnText(wxCommandEvent& event)
 {
@@ -960,6 +1094,13 @@ void Main::m_TextCtrl_Blog_File_OnText(wxCommandEvent& event)
     bentry->filename = event.GetString();
     this->MarkModified();
 }
+
+
+/*==============================
+    m_TextCtrl_Blog_Name_OnText
+    Handles the blog entry name text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Blog_Name_OnText(wxCommandEvent& event)
 {
@@ -971,6 +1112,13 @@ void Main::m_TextCtrl_Blog_Name_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_Blog_Name_OnText
+    Handles the blog entry icon text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Blog_Icon_OnText(wxCommandEvent& event)
 {
     Blog* bentry = this->FindBlog(this->m_SelectedItem);
@@ -979,6 +1127,13 @@ void Main::m_TextCtrl_Blog_Icon_OnText(wxCommandEvent& event)
     bentry->icon = event.GetString();
     this->MarkModified();
 }
+
+
+/*==============================
+    m_TextCtrl_Blog_Date_OnText
+    Handles the blog entry date text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Blog_Date_OnText(wxCommandEvent& event)
 {
@@ -989,6 +1144,13 @@ void Main::m_TextCtrl_Blog_Date_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_Blog_Tags_OnText
+    Handles the blog entry tags text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Blog_Tags_OnText(wxCommandEvent& event)
 {
     Blog* bentry = this->FindBlog(this->m_SelectedItem);
@@ -996,6 +1158,8 @@ void Main::m_TextCtrl_Blog_Tags_OnText(wxCommandEvent& event)
     {
         wxArrayString strarray = wxSplit(event.GetString(), ',');
         bentry->tags.clear();
+
+        // Split the elements by comma
         for (wxString str : strarray)
         {
             str.Trim(true);
@@ -1007,6 +1171,13 @@ void Main::m_TextCtrl_Blog_Tags_OnText(wxCommandEvent& event)
     }
 }
 
+
+/*==============================
+    m_TextCtrl_Blog_ToolTip_OnText
+    Handles the blog entry tooltip text control edit event
+    @param The event that was generated
+==============================*/
+
 void Main::m_TextCtrl_Blog_ToolTip_OnText(wxCommandEvent& event)
 {
     Blog* bentry = this->FindBlog(this->m_SelectedItem);
@@ -1015,6 +1186,13 @@ void Main::m_TextCtrl_Blog_ToolTip_OnText(wxCommandEvent& event)
     bentry->tooltip = event.GetString();
     this->MarkModified();
 }
+
+
+/*==============================
+    m_TextCtrl_Blog_OnText
+    Handles the blog entry description text control edit event
+    @param The event that was generated
+==============================*/
 
 void Main::m_TextCtrl_Blog_OnText(wxCommandEvent& event)
 {
@@ -1025,11 +1203,53 @@ void Main::m_TextCtrl_Blog_OnText(wxCommandEvent& event)
     this->MarkModified();
 }
 
+
+/*==============================
+    m_TextCtrl_BlogCategory_DisplayName_OnText
+    Handles the blog category name text control edit event
+    @param The event that was generated
+==============================*/
+
+void Main::m_TextCtrl_BlogCategory_DisplayName_OnText(wxCommandEvent& event)
+{
+    Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
+    if (cat == NULL)
+        return;
+    cat->displayname = event.GetString();
+    this->m_TreeCtrl_Blog->SetItemText(cat->treeid, cat->displayname);
+    this->MarkModified();
+}
+
+
+/*==============================
+    m_TextCtrl_BlogCategory_Description_OnText
+    Handles the blog category description text control edit event
+    @param The event that was generated
+==============================*/
+
+void Main::m_TextCtrl_BlogCategory_Description_OnText(wxCommandEvent& event)
+{
+    Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
+    if (cat == NULL)
+        return;
+    cat->description = event.GetString();
+    this->MarkModified();
+}
+
+
+/*==============================
+    m_Button_Blog_Preview_OnButtonClick
+    Handles the blog preview button event
+    @param Unused
+==============================*/
+
 void Main::m_Button_Blog_Preview_OnButtonClick(wxCommandEvent&)
 {
     wxString content;
     wxString url = wxString("");
-    if (treeitem_iscategory(this->m_TreeCtrl_Blog, this->m_SelectedItem))
+
+    // Compile the relevant page(s)
+    if (treeitem_iscategory(this->m_TreeCtrl_Blog, this->m_SelectedItem)) // Handle category preview
     {
         Category* cat = this->FindCategory_Blog(this->m_SelectedItem);
         if (cat != NULL)
@@ -1038,7 +1258,7 @@ void Main::m_Button_Blog_Preview_OnButtonClick(wxCommandEvent&)
             url = this->m_WorkingDir + wxString("/blogs.html") + wxString("#") + cat->foldername;
         }
     }
-    else
+    else // Handle blog entry preview
     {
         Blog* bentry = this->FindBlog(this->m_SelectedItem);
         if (bentry != NULL)
@@ -1047,14 +1267,158 @@ void Main::m_Button_Blog_Preview_OnButtonClick(wxCommandEvent&)
             url = this->m_WorkingDir + wxString("/blog/") + bentry->category->foldername + wxString("/") + bentry->filename + wxString(".html");
         }
     }
+
+    // Launch the generated page in a browser window
     wxLaunchDefaultBrowser(wxString("file:") + url);
 }
+
+
+/*==============================
+    m_Timer_OnTimer
+    Handles the timer that starts with the program to fix the
+    initial sash positions
+    @param Unused
+==============================*/
 
 void Main::m_Timer_OnTimer(wxTimerEvent&)
 {
     this->m_Splitter_Projects->SetSashPosition(200);
     this->m_Splitter_Blog->SetSashPosition(200);
 }
+
+
+/*==============================
+    m_Timer_OnTimer
+    Handles the clicking of a project popup
+    @param The event that was generated
+==============================*/
+
+void Main::OnPopupClick_Projects(wxCommandEvent& event)
+{
+    Project* proj;
+    Category* cat_elem;
+    int index = 0;
+    wxTreeItemId cat = this->m_SelectedItem;
+
+    // Find the category of the element
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
+        cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
+    cat_elem = this->FindCategory_Projects(cat);
+
+    // If the category doesn't exist, stop
+    if (cat_elem == NULL)
+        return;
+
+    // Decide what to do based on the event ID
+    switch (event.GetId())
+    {
+        case wxID_NEW: // Create a new project
+            proj = new Project();
+            proj->index = cat_elem->pages.size();
+            proj->filename = "new";
+            proj->displayname = "New Project";
+            proj->icon = "";
+            proj->date = "";
+            proj->tooltip = "";
+            proj->description = "";
+            proj->images.clear();
+            proj->urls.clear();
+            proj->tags.clear();
+            proj->category = cat_elem;
+            proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
+            cat_elem->pages.push_back(proj);
+            this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
+            this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
+            this->m_SelectedItem = proj->treeid;
+            break;
+        case wxID_DELETE: // Delete an existing project
+            proj = this->FindProject(this->m_SelectedItem);
+            if (proj != NULL)
+            {
+                cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
+                this->m_TreeCtrl_Projects->Delete(proj->treeid);
+                if (wxFileExists(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
+                delete proj;
+                for (void* projptr : cat_elem->pages)
+                {
+                    proj = (Project*)projptr;
+                    proj->index = index++;
+                }
+            }
+            break;
+    }
+}
+
+
+/*==============================
+    m_Timer_OnTimer
+    Handles the clicking of a blog entry popup
+    @param The event that was generated
+==============================*/
+
+void Main::OnPopupClick_Blog(wxCommandEvent& event)
+{
+    Blog* bentry;
+    Category* cat_elem;
+    int index = 0;
+    wxTreeItemId cat = this->m_SelectedItem;
+
+    // Find the category of the element
+    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, cat))
+        cat = this->m_TreeCtrl_Blog->GetItemParent(cat);
+    cat_elem = this->FindCategory_Blog(cat);
+
+    // If the category doesn't exist, stop
+    if (cat_elem == NULL)
+        return;
+
+    // Decide what to do based on the event ID
+    switch (event.GetId())
+    {
+        case wxID_NEW: // Create a new blog entry 
+            bentry = new Blog();
+            bentry->index = cat_elem->pages.size();
+            bentry->filename = "new";
+            bentry->displayname = "New Blog Entry";
+            bentry->icon = "";
+            bentry->date = "";
+            bentry->tooltip = "";
+            bentry->content = "";
+            bentry->tags.clear();
+            bentry->category = cat_elem;
+            bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat, bentry->displayname);
+            cat_elem->pages.push_back(bentry);
+            this->m_TreeCtrl_Blog->Expand(cat_elem->treeid);
+            this->m_TreeCtrl_Blog->SelectItem(bentry->treeid);
+            this->m_SelectedItem = bentry->treeid;
+            break;
+        case wxID_DELETE: // Delete an existing blog entry
+            bentry = this->FindBlog(this->m_SelectedItem);
+            if (bentry != NULL)
+            {
+                cat_elem->pages.erase(cat_elem->pages.begin() + bentry->index);
+                this->m_TreeCtrl_Blog->Delete(bentry->treeid);
+                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html"));
+                delete bentry;
+                for (void* blogptr : cat_elem->pages)
+                {
+                    bentry = (Blog*)blogptr;
+                    bentry->index = index++;
+                }
+            }
+            break;
+    }
+}
+
+
+/*==============================
+    FindCategory_Projects
+    Finds a project category object using a tree item id
+    @param  The tree item ID to find the category of
+    @return The category that was found, or NULL
+==============================*/
     
 Category* Main::FindCategory_Projects(wxTreeItemId item)
 {
@@ -1063,6 +1427,14 @@ Category* Main::FindCategory_Projects(wxTreeItemId item)
             return cat;
     return NULL;
 }
+
+
+/*==============================
+    FindCategory_Blog
+    Finds a blog entry category object using a tree item id
+    @param  The tree item ID to find the category of
+    @return The category that was found, or NULL
+==============================*/
     
 Category* Main::FindCategory_Blog(wxTreeItemId item)
 {
@@ -1071,6 +1443,14 @@ Category* Main::FindCategory_Blog(wxTreeItemId item)
             return cat;
     return NULL;
 }
+
+
+/*==============================
+    FindProject
+    Finds a project object using a tree item id
+    @param  The tree item ID to find the project of
+    @return The project that was found, or NULL
+==============================*/
 
 Project* Main::FindProject(wxTreeItemId item)
 {
@@ -1091,6 +1471,14 @@ Project* Main::FindProject(wxTreeItemId item)
     return NULL;
 }
 
+
+/*==============================
+    FindProject
+    Finds a blog entry object using a tree item id
+    @param  The tree item ID to find the blog entry of
+    @return The blog entry that was found, or NULL
+==============================*/
+
 Blog* Main::FindBlog(wxTreeItemId item)
 {
     wxTreeItemId cat_id;
@@ -1110,114 +1498,21 @@ Blog* Main::FindBlog(wxTreeItemId item)
     return NULL;
 }
 
-void Main::OnPopupClick_Projects(wxCommandEvent& event)
-{
-    int index = 0;
-    wxTreeItemId cat = this->m_SelectedItem;
-    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
-        cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
-    Category* cat_elem = this->FindCategory_Projects(cat);
-    Project* proj;
 
-    if (cat_elem == NULL)
-        return;
-
-    switch (event.GetId())
-    {
-        case wxID_NEW:
-            proj = new Project();
-            proj->index = cat_elem->pages.size();
-            proj->filename = "new";
-            proj->displayname = "New Project";
-            proj->icon = "";
-            proj->date = "";
-            proj->tooltip = "";
-            proj->description = "";
-            proj->images.clear();
-            proj->urls.clear();
-            proj->tags.clear();
-            proj->category = cat_elem;
-            proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
-            cat_elem->pages.push_back(proj);
-            this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
-            this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
-            this->m_SelectedItem = proj->treeid;
-            break;
-        case wxID_DELETE:
-            proj = this->FindProject(this->m_SelectedItem);
-            if (proj != NULL)
-            {
-                cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
-                this->m_TreeCtrl_Projects->Delete(proj->treeid);
-                if (wxFileExists(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
-                delete proj;
-                for (void* projptr : cat_elem->pages)
-                {
-                    proj = (Project*)projptr;
-                    proj->index = index++;
-                }
-            }
-            break;
-    }
-}
-
-void Main::OnPopupClick_Blog(wxCommandEvent& event)
-{
-    int index = 0;
-    wxTreeItemId cat = this->m_SelectedItem;
-    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, cat))
-        cat = this->m_TreeCtrl_Blog->GetItemParent(cat);
-    Category* cat_elem = this->FindCategory_Blog(cat);
-    Blog* bentry;
-
-    if (cat_elem == NULL)
-        return;
-
-    switch (event.GetId())
-    {
-        case wxID_NEW:
-            bentry = new Blog();
-            bentry->index = cat_elem->pages.size();
-            bentry->filename = "new";
-            bentry->displayname = "New Blog Entry";
-            bentry->icon = "";
-            bentry->date = "";
-            bentry->tooltip = "";
-            bentry->content = "";
-            bentry->tags.clear();
-            bentry->category = cat_elem;
-            bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat, bentry->displayname);
-            cat_elem->pages.push_back(bentry);
-            this->m_TreeCtrl_Blog->Expand(cat_elem->treeid);
-            this->m_TreeCtrl_Blog->SelectItem(bentry->treeid);
-            this->m_SelectedItem = bentry->treeid;
-            break;
-        case wxID_DELETE:
-            bentry = this->FindBlog(this->m_SelectedItem);
-            if (bentry != NULL)
-            {
-                cat_elem->pages.erase(cat_elem->pages.begin() + bentry->index);
-                this->m_TreeCtrl_Blog->Delete(bentry->treeid);
-                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html"));
-                delete bentry;
-                for (void* blogptr : cat_elem->pages)
-                {
-                    bentry = (Blog*)blogptr;
-                    bentry->index = index++;
-                }
-            }
-            break;
-    }
-}
+/*==============================
+    UpdateTree
+    Updates a given tree list
+    @param  A pointer to the tree to update
+    @param  The folder of the tree we're updating
+    @param  A pointer of the category list to update
+==============================*/
 
 void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist)
 {
+    bool cont;
     int index;
     wxTreeItemId root;
     wxString filename;
-    nlohmann::json pagejson = {};
     wxDir pagepath;
 
     // First, free all memory
@@ -1245,32 +1540,11 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
     if (!pagepath.IsOpened())
         return;
 
-    // Open the projects json file
-    if (wxFileExists(this->m_WorkingDir + wxString("/") + folder + wxString("/") + folder + wxString(".json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/") + folder + wxString("/") + folder + wxString(".json")).ToStdString()));
-
-    // First, add all the folders which are already included in the JSON
-    for (nlohmann::json::iterator it = pagejson["Categories"].begin(); it != pagejson["Categories"].end(); ++it)
-    {
-        // TODO: Check folder still exists before doing this
-        Category* cat = new Category();
-        cat->foldername = wxString(it.key());
-        cat->index = (*it)["Index"];
-        cat->displayname = wxString((*it)["DisplayName"]);
-        cat->description = wxString((*it)["Description"]);
-        cat->treeid = NULL;
-        cat->pages.clear();
-        categorylist->push_back(cat);
-    }
-
-    // Correct the indices of categories, to make sure they're in proper order
-    index = 0;
-    std::sort(categorylist->begin(), categorylist->end(), &category_sorter);
-    for (Category* cat : *categorylist)
-        cat->index = index++;
+    // First, open the projects json file and add folders that are registered in the JSON file
+    index = json_loadcategories(this->m_WorkingDir + wxString("/") + folder + wxString("/") + folder + wxString(".json"), categorylist);
 
     // Now, add all folders which aren't in the JSON
-    bool cont = pagepath.GetFirst(&filename, wxEmptyString, wxDIR_DIRS);
+    cont = pagepath.GetFirst(&filename, wxEmptyString, wxDIR_DIRS);
     while (cont)
     {
         bool hasfile = false;
@@ -1307,141 +1581,38 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
         cat->treeid = tree->AppendItem(root, cat->displayname);
 }
 
+
+/*==============================
+    LoadProjects
+    Load all projects stored in the JSON file
+==============================*/
+
 void Main::LoadProjects()
 {
-    nlohmann::json pagejson = {};
-
-    // Open the projects json file
-    if (wxFileExists(this->m_WorkingDir + wxString("/projects/projects.json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/projects/projects.json")).ToStdString()));
-
-    for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
-    {
-        int index = 0;
-        wxTreeItemId cat_id;
-        Category* cat_elem = NULL;
-        std::vector<Project*> projects;
-
-        // Find the category tree index
-        for (Category* cat : this->m_Category_Projects)
-        {
-            if (wxString(itcat.key()) == cat->foldername)
-            {
-                cat_elem = cat;
-                cat_id = cat->treeid;
-                break;
-            }
-        }
-
-        // Read the project data from the JSON
-        for (nlohmann::json::iterator itproj = (*itcat)["Pages"].begin(); itproj != (*itcat)["Pages"].end(); ++itproj)
-        {
-            wxString taglist = wxString("");
-            Project* proj = new Project();
-            proj->index = (*itproj)["Index"];
-            proj->filename = wxString(itproj.key());
-            proj->displayname = wxString((*itproj)["DisplayName"]);
-            proj->icon = wxString((*itproj)["Icon"]);
-            proj->date = wxString((*itproj)["Date"]);
-            proj->tooltip = wxString((*itproj)["ToolTip"]);
-            proj->description = wxString((*itproj)["Description"]);
-            proj->images.clear();
-            for (nlohmann::json::iterator it = (*itproj)["Images"].begin(); it != (*itproj)["Images"].end(); ++it)
-                proj->images.push_back(wxString(*it));
-            proj->urls.clear();
-            for (nlohmann::json::iterator it = (*itproj)["URLs"].begin(); it != (*itproj)["URLs"].end(); ++it)
-                proj->urls.push_back(wxString(*it));
-            proj->tags.clear();
-            for (nlohmann::json::iterator it = (*itproj)["Tags"].begin(); it != (*itproj)["Tags"].end(); ++it)
-                proj->tags.push_back(wxString(*it));
-            proj->category = cat_elem;
-            proj->treeid = NULL;
-            projects.push_back(proj);
-        }
-
-        // Correct the indices of the projects, to make sure they're in proper order
-        if (projects.size() > 0)
-        {
-            index = 0;
-            std::sort(projects.begin(), projects.end(), &project_sorter);
-            for (Project* proj : projects)
-                proj->index = index++;
-
-            // Now add the project to the tree
-            for (Project* proj : projects)
-            {
-                proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat_id, proj->displayname);
-                cat_elem->pages.push_back(proj);
-            }
-        }
-    }
+    json_loadprojects(this->m_WorkingDir, &this->m_Category_Projects, this->m_TreeCtrl_Projects);
     this->ShowProjectEditor(false);
 }
 
+
+/*==============================
+    LoadBlog
+    Load all blog entries stored in the JSON file
+==============================*/
+
 void Main::LoadBlog()
 {
-    nlohmann::json pagejson = {};
-
-    // Open the blog json file
-    if (wxFileExists(this->m_WorkingDir + wxString("/blog/blog.json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(this->m_WorkingDir + wxString("/blog/blog.json")).ToStdString()));
-
-    for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
-    {
-        int index = 0;
-        wxTreeItemId cat_id;
-        Category* cat_elem = NULL;
-        std::vector<Blog*> blogs;
-
-        // Find the category tree index
-        for (Category* cat : this->m_Category_Blog)
-        {
-            if (wxString(itcat.key()) == cat->foldername)
-            {
-                cat_elem = cat;
-                cat_id = cat->treeid;
-                break;
-            }
-        }
-
-        // Read the blog data from the JSON
-        for (nlohmann::json::iterator itblog = (*itcat)["Pages"].begin(); itblog != (*itcat)["Pages"].end(); ++itblog)
-        {
-            wxString taglist = wxString("");
-            Blog* bentry = new Blog();
-            bentry->index = (*itblog)["Index"];
-            bentry->filename = wxString(itblog.key());
-            bentry->displayname = wxString((*itblog)["DisplayName"]);
-            bentry->icon = wxString((*itblog)["Icon"]);
-            bentry->date = wxString((*itblog)["Date"]);
-            bentry->tooltip = wxString((*itblog)["ToolTip"]);
-            bentry->content = string_fromfile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
-            bentry->tags.clear();
-            for (nlohmann::json::iterator it = (*itblog)["Tags"].begin(); it != (*itblog)["Tags"].end(); ++it)
-                bentry->tags.push_back(wxString(*it));
-            bentry->category = cat_elem;
-            bentry->treeid = NULL;
-            blogs.push_back(bentry);
-        }
-
-        // Correct the blog entry indices, to make sure they're in proper order
-        if (blogs.size() > 0)
-        {
-            index = 0;
-            std::sort(blogs.begin(), blogs.end(), &blog_sorter);
-            for (Blog* bentry : blogs)
-                bentry->index = index++;
-
-            // Now add the blog entry to the tree
-            for (Blog* bentry : blogs)
-            {
-                bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat_id, bentry->displayname);
-                cat_elem->pages.push_back(bentry);
-            }
-        }
-    }
+    json_loadprojects(this->m_WorkingDir, &this->m_Category_Blog, this->m_TreeCtrl_Blog);
     this->ShowBlogEditor(false);
 }
+
+
+/*==============================
+    EndDrag
+    Handle the drag end event properly
+    @param The generated event
+    @param The affected tree
+    @param The affected category list
+==============================*/
 
 void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>* categorylist)
 {
@@ -1515,6 +1686,13 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
     }
 }
 
+
+/*==============================
+    EndDrag_Project
+    Handle the drag end event for projects properly
+    @param The generated event
+==============================*/
+
 void Main::EndDrag_Project(wxTreeEvent& event)
 {
     wxTreeItemId src = this->m_DraggedItem;
@@ -1529,6 +1707,7 @@ void Main::EndDrag_Project(wxTreeEvent& event)
     if (this->m_TreeCtrl_Projects->GetPrevSibling(src) == dest)
         return;
 
+    // Only work on project nodes
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, dest))
     {
         Category* cat;
@@ -1573,6 +1752,13 @@ void Main::EndDrag_Project(wxTreeEvent& event)
     }
 }
 
+
+/*==============================
+    EndDrag_Blog
+    Handle the drag end event for blog entries properly
+    @param The generated event
+==============================*/
+
 void Main::EndDrag_Blog(wxTreeEvent& event)
 {
     wxTreeItemId src = this->m_DraggedItem;
@@ -1587,6 +1773,7 @@ void Main::EndDrag_Blog(wxTreeEvent& event)
     if (this->m_TreeCtrl_Blog->GetPrevSibling(src) == dest)
         return;
 
+    // Only work on blog entry nodes
     if (!treeitem_iscategory(this->m_TreeCtrl_Blog, dest))
     {
         Category* cat;
@@ -1631,76 +1818,16 @@ void Main::EndDrag_Blog(wxTreeEvent& event)
     }
 }
 
+
+/*==============================
+    Save
+    Save the entire website and compile it
+==============================*/
+
 void Main::Save()
 {
-    wxTextFile out_proj(this->m_WorkingDir + wxString("/projects/projects.json"));
-    wxTextFile out_blog(this->m_WorkingDir + wxString("/blog/blog.json"));
-    nlohmann::json projectjson = {};
-    nlohmann::json blogjson = {};
-    projectjson["Categories"] = {};
-    for (Category* cat : this->m_Category_Projects)
-    {
-        std::string catstr = cat->foldername.ToStdString();
-        projectjson["Categories"][catstr] = {};
-        projectjson["Categories"][catstr]["Index"] = cat->index;
-        projectjson["Categories"][catstr]["DisplayName"] = cat->displayname;
-        projectjson["Categories"][catstr]["Description"] = cat->description;
-        projectjson["Categories"][catstr]["Pages"] = {};
-        for (void* child : cat->pages)
-        {
-            Project* proj = (Project*)child;
-            std::string projstr = proj->filename.ToStdString();
-            projectjson["Categories"][catstr]["Pages"][projstr] = {};
-            projectjson["Categories"][catstr]["Pages"][projstr]["Index"] = proj->index;
-            projectjson["Categories"][catstr]["Pages"][projstr]["DisplayName"] = proj->displayname;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Icon"] = proj->icon;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Date"] = proj->date;
-            projectjson["Categories"][catstr]["Pages"][projstr]["ToolTip"] = proj->tooltip;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Description"] = proj->description;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Images"] = {};
-            for (wxString str :  proj->images)
-                projectjson["Categories"][catstr]["Pages"][projstr]["Images"].push_back(str);
-            projectjson["Categories"][catstr]["Pages"][projstr]["URLs"] = {};
-            for (wxString str :  proj->urls)
-                projectjson["Categories"][catstr]["Pages"][projstr]["URLs"].push_back(str);
-            projectjson["Categories"][catstr]["Pages"][projstr]["Tags"] = {};
-            for (wxString str :  proj->tags)
-                projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(str);
-        }
-    }
-
-    // Handle blog
-    blogjson["Categories"] = {};
-    for (Category* cat : this->m_Category_Blog)
-    {
-        std::string catstr = cat->foldername.ToStdString();
-        blogjson["Categories"][catstr] = {};
-        blogjson["Categories"][catstr]["Index"] = cat->index;
-        blogjson["Categories"][catstr]["DisplayName"] = cat->displayname;
-        blogjson["Categories"][catstr]["Description"] = cat->description;
-        blogjson["Categories"][catstr]["Pages"] = {};
-        for (void* child : cat->pages)
-        {
-            Blog* bentry = (Blog*)child;
-            std::string blogstr = bentry->filename.ToStdString();
-            wxTextFile blogmd(this->m_WorkingDir + wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
-            blogjson["Categories"][catstr]["Pages"][blogstr] = {};
-            blogjson["Categories"][catstr]["Pages"][blogstr]["Index"] = bentry->index;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["DisplayName"] = bentry->displayname;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["Icon"] = bentry->icon;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["Date"] = bentry->date;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["ToolTip"] = bentry->tooltip;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"] = {};
-            for (wxString str : bentry->tags)
-                blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(str);
-            if (!blogmd.Exists())
-                blogmd.Create();
-            blogmd.Clear();
-            blogmd.AddLine(bentry->content);
-            blogmd.Write();
-            blogmd.Close();
-        }
-    }
+    // Save the json files
+    json_save(this->m_WorkingDir, &this->m_Category_Projects, &this->m_Category_Projects);
 
     // Compile the website
     this->CompileProjects();
@@ -1708,23 +1835,15 @@ void Main::Save()
     this->CompileTags();
     this->CompileHomePage();
 
-    // Dump the JSONs to text files
-    if (!out_proj.Exists())
-        out_proj.Create();
-    out_proj.Clear();
-    out_proj.AddLine(wxString(projectjson.dump()));
-    out_proj.Write();
-    out_proj.Close();
-    if (!out_blog.Exists())
-        out_blog.Create();
-    out_blog.Clear();
-    out_blog.AddLine(wxString(blogjson.dump()));
-    out_blog.Write();
-    out_blog.Close();
-
     // Mark the program as no longer modified
     this->MarkModified(false);
 }
+
+
+/*==============================
+    CompileProjects
+    Compile all project-related pages
+==============================*/
 
 void Main::CompileProjects()
 {
@@ -1736,6 +1855,12 @@ void Main::CompileProjects()
             this->CompileProjects_Project((Project*)page);
 }
 
+
+/*==============================
+    CompileBlog
+    Compile all blog-related pages
+==============================*/
+
 void Main::CompileBlog()
 {
     this->CompileBlog_List();
@@ -1745,6 +1870,12 @@ void Main::CompileBlog()
         for (void* page : cat->pages)
             this->CompileBlog_Entry((Blog*)page);
 }
+
+
+/*==============================
+    CompileProjects_List
+    Compile the project list page
+==============================*/
 
 void Main::CompileProjects_List()
 {
@@ -1764,6 +1895,7 @@ void Main::CompileProjects_List()
         const char* mdstr = md_sanitize(&cat->description)->mb_str();
         wxString desc;
 
+        // If there's no projects in this category, skip it
         if (cat->pages.size() == 0)
             continue;
 
@@ -1808,6 +1940,13 @@ void Main::CompileProjects_List()
     out.Write();
     out.Close();
 }
+
+
+/*==============================
+    CompileProjects_Project
+    Compile a project page
+    @param The project page to compile
+==============================*/
 
 void Main::CompileProjects_Project(Project* proj)
 {
@@ -1949,6 +2088,12 @@ void Main::CompileProjects_Project(Project* proj)
     projout.Close();
 }
 
+
+/*==============================
+    CompileBlog_List
+    Compile the blog entry list page
+==============================*/
+
 void Main::CompileBlog_List()
 {
     wxTextFile out(this->m_WorkingDir + wxString("/blog.html"));
@@ -1967,6 +2112,7 @@ void Main::CompileBlog_List()
         const char* mdstr = cat->description.mb_str();
         wxString desc = wxString("");
 
+        // If there's no blog entries in this category, skip it
         if (cat->pages.size() == 0)
             continue;
 
@@ -2011,6 +2157,13 @@ void Main::CompileBlog_List()
     out.Write();
     out.Close();
 }
+
+
+/*==============================
+    CompileProjects_Project
+    Compile a blog entry
+    @param The blog entry page to compile
+==============================*/
 
 void Main::CompileBlog_Entry(Blog* bentry)
 {
@@ -2061,6 +2214,12 @@ void Main::CompileBlog_Entry(Blog* bentry)
     bentryout.Close();
 }
 
+
+/*==============================
+    CompileTags
+    Compile the tag pages
+==============================*/
+
 void Main::CompileTags()
 {
     bool cont;
@@ -2099,7 +2258,7 @@ void Main::CompileTags()
         }
     }
 
-    // Purge the tags folder
+    // Purge the tags folder of html files
     cont = tagsdir.GetFirst(&filename, "*.html");
     while (cont)
     {
@@ -2151,6 +2310,12 @@ void Main::CompileTags()
         out.Close();
     }
 }
+
+
+/*==============================
+    CompileTags
+    Compile the homepage
+==============================*/
 
 void Main::CompileHomePage()
 {
@@ -2243,6 +2408,12 @@ void Main::CompileHomePage()
     fileout.Close();
 }
 
+
+/*==============================
+    MarkModified
+    Mark the work as modified
+==============================*/
+
 void Main::MarkModified(bool modified)
 {
     if (modified)
@@ -2259,6 +2430,13 @@ void Main::MarkModified(bool modified)
         this->m_Modified = false;
     }
 }
+
+
+/*==============================
+    ShowProjectEditor
+    Show or hide the project editor panel
+    @param Whether to show the editor panel 
+==============================*/
 
 void Main::ShowProjectEditor(bool show)
 {
@@ -2277,6 +2455,13 @@ void Main::ShowProjectEditor(bool show)
     this->m_Panel_Projects_Editor->Layout();
 }
 
+
+/*==============================
+    ShowProjectCategoryEditor
+    Show or hide the project category editor panel
+    @param Whether to show the editor panel 
+==============================*/
+
 void Main::ShowProjectCategoryEditor(bool show)
 {
     if (show)
@@ -2294,6 +2479,13 @@ void Main::ShowProjectCategoryEditor(bool show)
     this->m_Panel_Projects_Editor->Layout();
 }
 
+
+/*==============================
+    ShowBlogEditor
+    Show or hide the blog entry editor panel
+    @param Whether to show the editor panel 
+==============================*/
+
 void Main::ShowBlogEditor(bool show)
 {
     if (show)
@@ -2310,6 +2502,13 @@ void Main::ShowBlogEditor(bool show)
     }
     this->m_Panel_Blog_Editor->Layout();
 }
+
+
+/*==============================
+    ShowBlogCategoryEditor
+    Show or hide the blog entry category editor panel
+    @param Whether to show the editor panel 
+==============================*/
 
 void Main::ShowBlogCategoryEditor(bool show)
 {

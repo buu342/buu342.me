@@ -534,14 +534,14 @@ text_callback(MD_TEXTTYPE type, const MD_CHAR* text, MD_SIZE size, void* userdat
         case MD_TEXT_HTML:      render_verbatim(r, text, size); break;
         case MD_TEXT_ENTITY:    render_entity(r, text, size, render_html_escaped); break;
         default:                
-            if (r->image_nesting_level == 0)
-                render_html_escaped(r, text, size); 
-            else if (size > 0)
+            if (r->image_nesting_level != 0 && size > 0)
             {
                 render_html_escaped(r, text, size);
                 RENDER_VERBATIM(r, "\" title=\"");
                 render_html_escaped(r, text, size);
             }
+            else
+                render_html_escaped(r, text, size); 
             break;
     }
 

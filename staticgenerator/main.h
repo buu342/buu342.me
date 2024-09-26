@@ -26,22 +26,35 @@ typedef struct IUnknown IUnknown;
 #include <wx/filefn.h>
 #include <wx/timer.h>
 
-typedef struct Category_s Category;
-typedef struct Project_s Project;
-typedef struct Blog_s Blog;
 
+/*********************************
+           Enumerations
+*********************************/
+
+// Helper enum for sorting tagged pages
 typedef enum
 {
     PAGETYPE_PROJECT,
     PAGETYPE_BLOG,
 } PageType;
 
+
+/*********************************
+            Structures
+*********************************/
+
+typedef struct Category_s Category;
+typedef struct Project_s Project;
+typedef struct Blog_s Blog;
+
+// Helper struct for sorting tagged pages
 typedef struct TaggedPage_s
 {
     PageType type;
     void* page;
 } TaggedPage;
 
+// Category structure
 typedef struct Category_s {
 	int index;
 	wxString foldername;
@@ -51,6 +64,7 @@ typedef struct Category_s {
 	std::vector<void*> pages;
 } Category;
 
+// Project page structure
 typedef struct Project_s {
 	int index;
 	wxString filename;
@@ -66,6 +80,7 @@ typedef struct Project_s {
     wxTreeItemId treeid;
 } Project;
 
+// Blog page structure
 typedef struct Blog_s {
     int index;
     wxString filename;
@@ -79,12 +94,17 @@ typedef struct Blog_s {
     wxTreeItemId treeid;
 } Blog;
 
+
+/*********************************
+             Classes
+*********************************/
+
 class Main : public wxFrame
 {
 	private:
         bool m_Modified;
-		std::vector<Category*> m_Category_Blog;
         std::vector<Category*> m_Category_Projects;
+		std::vector<Category*> m_Category_Blog;
 		wxString m_WorkingDir;
 		wxTreeItemId m_DraggedItem;
         wxTreeItemId m_SelectedItem;
@@ -152,10 +172,7 @@ class Main : public wxFrame
         wxMenuBar* m_Menubar_Main;
         wxMenu* m_Menu_File;
         wxTimer* m_Timer;
-
-	public:
-		Main(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800, 600), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
-		~Main();
+        
         void m_Splitter_ProjectsOnIdle(wxIdleEvent& event);
         void m_Splitter_BlogOnIdle(wxIdleEvent& event);
         void m_TreeCtrl_Projects_OnTreeBeginDrag(wxTreeEvent& event);
@@ -193,12 +210,16 @@ class Main : public wxFrame
         void m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_Save_OnMenuSelection(wxCommandEvent& event);
         void m_Timer_OnTimer(wxTimerEvent& event);
+        void OnPopupClick_Projects(wxCommandEvent& event);
+        void OnPopupClick_Blog(wxCommandEvent& event);
+
+	public:
+		Main(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(800, 600), long style = wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL);
+		~Main();
         Category* FindCategory_Projects(wxTreeItemId item);
         Category* FindCategory_Blog(wxTreeItemId item);
         Project* FindProject(wxTreeItemId item);
         Blog* FindBlog(wxTreeItemId item);
-        void OnPopupClick_Projects(wxCommandEvent& event);
-        void OnPopupClick_Blog(wxCommandEvent& event);
 		void UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>* categorylist);
         void LoadProjects();
         void LoadBlog();
