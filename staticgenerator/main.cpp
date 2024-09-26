@@ -1330,6 +1330,7 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
             this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
             this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
             this->m_SelectedItem = proj->treeid;
+            this->MarkModified(true);
             break;
         case wxID_DELETE: // Delete an existing project
             proj = this->FindProject(this->m_SelectedItem);
@@ -1392,6 +1393,7 @@ void Main::OnPopupClick_Blog(wxCommandEvent& event)
             this->m_TreeCtrl_Blog->Expand(cat_elem->treeid);
             this->m_TreeCtrl_Blog->SelectItem(bentry->treeid);
             this->m_SelectedItem = bentry->treeid;
+            this->MarkModified(true);
             break;
         case wxID_DELETE: // Delete an existing blog entry
             bentry = this->FindBlog(this->m_SelectedItem);
