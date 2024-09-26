@@ -163,6 +163,8 @@ wxString string_fromfile(wxString path)
     size_t linecount;
 
     // Ensure we managed to open the file
+    if (!wxFileExists(path))
+        return wxString("");
     file.Open(path);
     if (!file.IsOpened())
         return wxString("");
