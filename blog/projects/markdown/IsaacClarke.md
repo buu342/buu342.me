@@ -256,7 +256,7 @@ The thing to highlight here is that the Kinesis module has some very weird shape
 ![Pieces of the kinesis module](images/IsaacClarke/KinesisPieces.jpg)
 </p>
 
-Notice the blue pieces on the bottom, these were cut out of 2cm thick Styrofoam rather than EVA foam. This was the same material used to make the end of the antenna of the Plasma Cutter.
+Notice the blue pieces on the bottom, these were cut out of 2cm thick Styrofoam rather than EVA foam (don't get the white styrofoam made of lots of different balls, those will break apart very easily. Get the thick blue one shown in the photos). This was the same material used to make the end of the antenna of the Plasma Cutter.
 
 This material is awesome because it's very rigid and easy to shape, and with a very tiny amount of sanding becomes really smooth. However, if you spray paint these they WILL melt. As a result, they must be covered in paper, which limits how much of this material I can use on the project (especially since I had a month left until Comic Con at this point of the project!). The paper was applied using wood glue.
 
@@ -456,5 +456,9 @@ Putting everything together for the big day:
 Simply put, this costume is *badass*. It's very fun to wear, but it has a major downside. It's **hot**. Using a wool jacket was the closest thing I could find to match the sort of texture that Isaac has in his undergarment, but good lord will you sweat out your bodyweight. Please drink *plenty of water*. Pieces on the RIG's spine also do have the tendency to unvelcro themselves, so having a squire follow you around while you wear it is recommended.
 
 But I couldn't be happier with it.
+
+While Dead Space isn't as popular a franchise as League of Legends, I can tell you that the few people who recognized my character were *ecstatic* to see the costume, with full on gushing as soon as they saw the LEDs turn on.
+
+A funny anecdote, but one time I was meeting up with a friend from university in Alg_EACUTE_SYMBOLs, and he mentioned how he recognized the area but wasn't sure when. I offhanded that it might have been at an event in the Passeio Maritimo, such as Comic Con. He said that yeah, it was Comic Con, he remembered the event being kinda crappy, but the major highlight for him was seeing someone in a Dead Space costume. Funny how small the world is, eh?
 
 If you want to use any of the stencils that I made for this project, you can download them [here](downloads/DeadSpaceStencils.zip). Just be wary that they are shaped for my body, so make sure you resize them to fit your needs!
