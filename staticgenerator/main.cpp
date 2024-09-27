@@ -384,6 +384,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->Centre(wxBOTH);
 
     // Connect Events
+    this->Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(Main::OnClose));
     this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_BEGIN_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeBeginDrag), NULL, this);
     this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_DRAG, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndDrag), NULL, this);
     this->m_TreeCtrl_Projects->Connect(wxEVT_COMMAND_TREE_END_LABEL_EDIT, wxTreeEventHandler(Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit), NULL, this);
@@ -1432,12 +1433,32 @@ void Main::OnPopupClick_Blog(wxCommandEvent& event)
 
 
 /*==============================
+    OnClose
+    Handles the frame close event
+    @param  The event that was generated
+==============================*/
+
+void Main::OnClose(wxCloseEvent& event)
+{
+    if (event.CanVeto() && this->m_Modified)
+    {
+        if (wxMessageBox("You have unsaved changes. Continue?", "Unsaved changes", wxICON_QUESTION | wxYES_NO) != wxYES)
+        {
+            event.Veto();
+            return;
+        }
+    }
+    event.Skip();
+}
+
+
+/*==============================
     FindCategory_Projects
     Finds a project category object using a tree item id
     @param  The tree item ID to find the category of
     @return The category that was found, or NULL
 ==============================*/
-    
+
 Category* Main::FindCategory_Projects(wxTreeItemId item)
 {
     for (Category* cat : this->m_Category_Projects)
