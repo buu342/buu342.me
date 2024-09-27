@@ -649,7 +649,7 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
         this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
         this->m_TextCtrl_Projects_ToolTip->SetValue(proj_elem->tooltip);
         this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
-        
+
         // Fill in the tags text control
         wip = wxString("");
         for (wxString str : proj_elem->tags)
@@ -1061,7 +1061,7 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
         this->m_TextCtrl_Blog_Icon->SetValue(blog_elem->icon);
         this->m_TextCtrl_Blog_ToolTip->SetValue(blog_elem->tooltip);
         this->m_TextCtrl_Blog_Date->SetValue(blog_elem->date);
-        this->m_TextCtrl_Blog->SetValue(string_fromfile(this->m_WorkingDir + wxString("/blog/") + blog_elem->category->foldername + wxString("/markdown/") + blog_elem->filename + wxString(".md")));
+        this->m_TextCtrl_Blog->SetValue(blog_elem->content);
         
         // Fill in the tags text control
         wip = wxString("");
@@ -1355,8 +1355,10 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
             {
                 cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
                 this->m_TreeCtrl_Projects->Delete(proj->treeid);
-                if (wxFileExists(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/") + wxString("projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
                 delete proj;
                 for (void* projptr : cat_elem->pages)
                 {
@@ -1420,6 +1422,8 @@ void Main::OnPopupClick_Blog(wxCommandEvent& event)
                 this->m_TreeCtrl_Blog->Delete(bentry->treeid);
                 if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html")))
                     wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
                 delete bentry;
                 for (void* blogptr : cat_elem->pages)
                 {

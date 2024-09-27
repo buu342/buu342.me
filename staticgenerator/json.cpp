@@ -101,7 +101,7 @@ void json_loadprojects(wxString workingdir, std::vector<Category*>* categorylist
             proj->icon = wxString((*itproj)["Icon"]);
             proj->date = wxString((*itproj)["Date"]);
             proj->tooltip = wxString((*itproj)["ToolTip"]);
-            proj->description = wxString((*itproj)["Description"]);
+            proj->description = string_fromfile(workingdir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
             proj->images.clear();
             for (nlohmann::json::iterator it = (*itproj)["Images"].begin(); it != (*itproj)["Images"].end(); ++it)
                 proj->images.push_back(wxString(*it));
@@ -230,13 +230,13 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
         {
             Project* proj = (Project*)child;
             std::string projstr = proj->filename.ToStdString();
+            wxTextFile projmd(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
             projectjson["Categories"][catstr]["Pages"][projstr] = {};
             projectjson["Categories"][catstr]["Pages"][projstr]["Index"] = proj->index;
             projectjson["Categories"][catstr]["Pages"][projstr]["DisplayName"] = proj->displayname;
             projectjson["Categories"][catstr]["Pages"][projstr]["Icon"] = proj->icon;
             projectjson["Categories"][catstr]["Pages"][projstr]["Date"] = proj->date;
             projectjson["Categories"][catstr]["Pages"][projstr]["ToolTip"] = proj->tooltip;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Description"] = proj->description;
             projectjson["Categories"][catstr]["Pages"][projstr]["Images"] = {};
             for (wxString str :  proj->images)
                 projectjson["Categories"][catstr]["Pages"][projstr]["Images"].push_back(str);
@@ -246,6 +246,14 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
             projectjson["Categories"][catstr]["Pages"][projstr]["Tags"] = {};
             for (wxString str :  proj->tags)
                 projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(str);
+            if (!wxDirExists(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/")))
+                wxMkDir(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/"));
+            if (!projmd.Exists())
+                projmd.Create();
+            projmd.Clear();
+            projmd.AddLine(proj->description);
+            projmd.Write();
+            projmd.Close();
         }
     }
 
@@ -273,6 +281,8 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
             blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"] = {};
             for (wxString str : bentry->tags)
                 blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(str);
+            if (!wxDirExists(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/")))
+                wxMkDir(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/"));
             if (!blogmd.Exists())
                 blogmd.Create();
             blogmd.Clear();

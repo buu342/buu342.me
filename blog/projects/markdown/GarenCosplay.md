@@ -118,7 +118,7 @@ That's John Berserk's sword over there!!!
 
 ### Postmortem
 
-Tired and stressed, I stumbled my way into bed for my 5 hours of sleep before the event. It's unfortunate that this took so long to make, because there's plenty of things that needed work in the costume that I could not afford the time to do. To me, the largest problems are the fact that I didn't really get to do a sanding pass over the costume, so the seams in the shoulder pieces are very obvious, and I didn't get to do a blackwash pass over the paint. Despite the scrappy look though, a lot of people were happy to see The Might of Demacia walking around the Passeio Maritimo de Algés. Although Solaire stole most of his spotlight...
+Tired and stressed, I stumbled my way into bed for my 5 hours of sleep before the event. It's unfortunate that this took so long to make, because there's plenty of things that needed work in the costume that I could not afford the time to do. To me, the largest problems are the fact that I didn't really get to do a sanding pass over the costume, so the seams in the shoulder pieces are very obvious, and I didn't get to do a blackwash pass over the paint. Despite the scrappy look though, a lot of people were happy to see The Might of Demacia walking around the Passeio Maritimo de Alg_EACUTE_SYMBOLs. Although Solaire stole most of his spotlight...
 
 <p align="center">
 ![Garen versus The Great Saiyaman](images/GarenCosplay/Final.JPG)</br>
