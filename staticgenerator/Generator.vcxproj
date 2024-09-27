@@ -27,6 +27,8 @@
     <ClInclude Include="include\md4c\md4c.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resources\icon_prog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
@@ -36,6 +38,12 @@
     <ClCompile Include="include\md4c\md4c.c" />
     <ClCompile Include="json.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+      <Image Include="resources\prog.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Generator.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

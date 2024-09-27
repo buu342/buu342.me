@@ -21,6 +21,9 @@
     <Filter Include="Source Files\include\md4c">
       <UniqueIdentifier>{d188a2ef-274d-4a79-bfd9-5d034bc9f94a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\resources">
+      <UniqueIdentifier>{7848a17e-1742-47be-a1da-ef3dc14900d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h">
@@ -47,6 +50,12 @@
     <ClInclude Include="include\md4c\md4c-html.h">
       <Filter>Header Files\include\md4c</Filter>
     </ClInclude>
+    <ClInclude Include="resources\icon_prog.h">
+      <Filter>Header Files\resources</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp">
@@ -70,5 +79,13 @@
     <ClCompile Include="include\md4c\md4c.c">
       <Filter>Source Files\include\md4c</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Generator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\prog.ico">
+      <Filter>Header Files\resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>
