@@ -539,6 +539,14 @@ void Main::m_MenuItem_Save_OnMenuSelection(wxCommandEvent&)
 
 void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
 {
+    // Prevent blank display names
+    if (event.GetLabel() == "")
+    {
+        event.Veto();
+        return;
+    }
+
+    // Handle label editing based on whether it's a category or not
     if (treeitem_iscategory(this->m_TreeCtrl_Projects, event.GetItem())) // Handle category label editing
     {
         wxTreeItemId id = event.GetItem();
@@ -562,7 +570,7 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
             return;
         }
     }
-    event.Skip();
+    event.Veto();
 }
 
 
@@ -943,6 +951,14 @@ void Main::m_Button_Projects_Preview_OnButtonClick(wxCommandEvent&)
 
 void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
 {
+    // Prevent blank display names
+    if (event.GetLabel() == "")
+    {
+        event.Veto();
+        return;
+    }
+
+    // Handle label editing based on whether it's a category or not
     if (treeitem_iscategory(this->m_TreeCtrl_Blog, event.GetItem())) // Handle category label editing
     {
         wxTreeItemId id = event.GetItem();
@@ -966,7 +982,7 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
             return;
         }
     }
-    event.Skip();
+    event.Veto();
 }
 
 
