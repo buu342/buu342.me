@@ -257,7 +257,7 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
             for (wxString str :  proj->tags)
                 projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(str);
             if (!wxDirExists(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/")))
-                wxMkDir(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/"));
+                wxFileName::Mkdir(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/"));
             if (!projmd.Exists())
                 projmd.Create();
             projmd.Clear();
@@ -292,7 +292,7 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
             for (wxString str : bentry->tags)
                 blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(str);
             if (!wxDirExists(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/")))
-                wxMkDir(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/"));
+                wxFileName::Mkdir(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/"));
             if (!blogmd.Exists())
                 blogmd.Create();
             blogmd.Clear();
