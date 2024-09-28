@@ -555,6 +555,8 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
         if (cat != NULL)
         {
             cat->displayname = event.GetLabel();
+            if (this->m_SelectedItem == event.GetItem())
+                this->m_TextCtrl_ProjectsCategory_DisplayName->ChangeValue(cat->displayname);
             cat->wasmodified = true;
             this->MarkModified();
             return;
@@ -980,6 +982,8 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
         if (cat != NULL)
         {
             cat->displayname = event.GetLabel();
+            if (this->m_SelectedItem == event.GetItem())
+                this->m_TextCtrl_BlogCategory_DisplayName->ChangeValue(cat->displayname);
             cat->wasmodified = true;
             this->MarkModified();
             return;
