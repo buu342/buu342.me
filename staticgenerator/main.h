@@ -109,7 +109,6 @@ class Main : public wxFrame
         std::vector<Category*> m_Category_Projects;
 		std::vector<Category*> m_Category_Blog;
 		wxString m_WorkingDir;
-		bool m_ManualModification;
 		wxTreeItemId m_DraggedItem;
         wxTreeItemId m_SelectedItem;
 

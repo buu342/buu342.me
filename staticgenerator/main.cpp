@@ -567,7 +567,7 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
         {
             proj->displayname = event.GetLabel();
             if (this->m_SelectedItem == event.GetItem())
-                this->m_TextCtrl_Projects_Name->SetValue(proj->displayname);
+                this->m_TextCtrl_Projects_Name->ChangeValue(proj->displayname);
             proj->category->wasmodified = true;
             proj->wasmodified = true;
             this->MarkModified();
@@ -632,31 +632,14 @@ void Main::m_TreeCtrl_Projects_OnTreeItemMenu(wxTreeEvent& event)
 
 void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
 {
-    bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
     wxTreeItemId olditem = this->m_SelectedItem;
-    bool modifiedbeforechange_olditem = false;
-
-    // Check if the previously selected item was modified
-    if (treeitem_iscategory(this->m_TreeCtrl_Projects, olditem))
-    {
-        Category* cat = this->FindCategory_Projects(olditem);
-        if (cat != NULL)
-            modifiedbeforechange_olditem = cat->wasmodified;
-    }
-    else
-    {
-        Project* proj = this->FindProject(olditem);
-        if (proj!= NULL)
-            modifiedbeforechange_olditem = proj->wasmodified;
-    }
 
     // Handle the item selection
     this->m_SelectedItem = item;
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item)) // Handle project selection
     {
         wxString wip;
-        bool modifiedbefore_item;
         Project* proj = FindProject(item);
 
         // Ensure the project exists
@@ -664,42 +647,36 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
             return;
 
         // Fill in the simple text controls
-        modifiedbefore_item = proj->wasmodified;
-        this->m_TextCtrl_Projects_File->SetValue(proj->filename);
-        this->m_TextCtrl_Projects_Name->SetValue(proj->displayname);
-        this->m_TextCtrl_Projects_Icon->SetValue(proj->icon);
-        this->m_TextCtrl_Projects_ToolTip->SetValue(proj->tooltip);
-        this->m_TextCtrl_Projects_Description->SetValue(proj->description);
+        this->m_TextCtrl_Projects_File->ChangeValue(proj->filename);
+        this->m_TextCtrl_Projects_Name->ChangeValue(proj->displayname);
+        this->m_TextCtrl_Projects_Icon->ChangeValue(proj->icon);
+        this->m_TextCtrl_Projects_ToolTip->ChangeValue(proj->tooltip);
+        this->m_TextCtrl_Projects_Description->ChangeValue(proj->description);
+        this->m_TextCtrl_Projects_Date->ChangeValue(proj->date);
 
         // Fill in the tags text control
         wip = wxString("");
         for (wxString str : proj->tags)
             wip += str + wxString(", ");
-        this->m_TextCtrl_Projects_Tags->SetValue(wip);
+        this->m_TextCtrl_Projects_Tags->ChangeValue(wip);
         
         // Fill in the images text control
         wip = wxString("");
         for (wxString str : proj->images)
             wip += str + wxString(", ");
-        this->m_TextCtrl_Projects_Images->SetValue(wip);
-        this->m_TextCtrl_Projects_Date->SetValue(proj->date);
+        this->m_TextCtrl_Projects_Images->ChangeValue(wip);
         
         // Fill in the url text control
         wip = wxString("");
         for (wxString str : proj->urls)
             wip += str + wxString(", ");
-        this->m_TextCtrl_Projects_URLs->SetValue(wip);
+        this->m_TextCtrl_Projects_URLs->ChangeValue(wip);
 
         // Show the project editor
         this->ShowProjectEditor();
-        if (!modifiedbeforechange)
-            this->MarkModified(false);
-        if (!modifiedbefore_item)
-            proj->wasmodified = false;
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item)) // Handle category selection
     {
-        bool modifiedbefore_item;
         Category* cat = this->FindCategory_Projects(item);
 
         // Ensure the category exists
@@ -707,37 +684,15 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
             return;
 
         // Fill in the simple text controls
-        modifiedbefore_item = cat->wasmodified;
-        this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat->foldername);
-        this->m_TextCtrl_ProjectsCategory_DisplayName->SetValue(cat->displayname);
-        this->m_TextCtrl_ProjectsCategory_Description->SetValue(cat->description);
+        this->m_TextCtrl_ProjectsCategory_Folder->ChangeValue(cat->foldername);
+        this->m_TextCtrl_ProjectsCategory_DisplayName->ChangeValue(cat->displayname);
+        this->m_TextCtrl_ProjectsCategory_Description->ChangeValue(cat->description);
 
         // Show the project category editor
         this->ShowProjectCategoryEditor(true);
-        if (!modifiedbeforechange)
-            this->MarkModified(false);
-        if (!modifiedbefore_item)
-            cat->wasmodified = false;
     }
     else
         this->ShowProjectEditor(false);
-
-    // Correct the modified state of the old item
-    if (!modifiedbeforechange_olditem)
-    {
-        if (treeitem_iscategory(this->m_TreeCtrl_Projects, olditem))
-        {
-            Category* cat = this->FindCategory_Projects(olditem);
-            if (cat != NULL)
-                cat->wasmodified = false;
-        }
-        else
-        {
-            Project* proj = this->FindProject(olditem);
-            if (proj != NULL)
-                proj->wasmodified = false;
-        }
-    }
 }
 
 
@@ -1037,7 +992,7 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
         {
             bentry->displayname = event.GetLabel();
             if (this->m_SelectedItem == event.GetItem())
-                this->m_TextCtrl_Blog_Name->SetValue(bentry->displayname);
+                this->m_TextCtrl_Blog_Name->ChangeValue(bentry->displayname);
             bentry->wasmodified = true;
             bentry->category->wasmodified = true;
             this->MarkModified();
@@ -1102,30 +1057,13 @@ void Main::m_TreeCtrl_Blog_OnTreeItemMenu(wxTreeEvent& event)
 
 void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
 {
-    bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
     wxTreeItemId olditem = this->m_SelectedItem;
-    bool modifiedbeforechange_olditem = false;
-
-    // Check if the previously selected item was modified
-    if (treeitem_iscategory(this->m_TreeCtrl_Blog, olditem))
-    {
-        Category* cat = this->FindCategory_Blog(olditem);
-        if (cat != NULL)
-            modifiedbeforechange_olditem = cat->wasmodified;
-    }
-    else
-    {
-        Blog* bentry = this->FindBlog(olditem);
-        if (bentry != NULL)
-            modifiedbeforechange_olditem = bentry->wasmodified;
-    }
 
     // Handle the item selection
     if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))  // Handle blog entry selection
     {
         wxString wip;
-        bool modifiedbefore_item;
         Blog* bentry = this->FindBlog(item);
 
         // Ensure the blog entry exists
@@ -1133,30 +1071,24 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
             return;
 
         // Fill in the simple text controls
-        modifiedbefore_item = bentry->wasmodified;
-        this->m_TextCtrl_Blog_File->SetValue(bentry->filename);
-        this->m_TextCtrl_Blog_Name->SetValue(bentry->displayname);
-        this->m_TextCtrl_Blog_Icon->SetValue(bentry->icon);
-        this->m_TextCtrl_Blog_ToolTip->SetValue(bentry->tooltip);
-        this->m_TextCtrl_Blog_Date->SetValue(bentry->date);
-        this->m_TextCtrl_Blog->SetValue(bentry->content);
+        this->m_TextCtrl_Blog_File->ChangeValue(bentry->filename);
+        this->m_TextCtrl_Blog_Name->ChangeValue(bentry->displayname);
+        this->m_TextCtrl_Blog_Icon->ChangeValue(bentry->icon);
+        this->m_TextCtrl_Blog_ToolTip->ChangeValue(bentry->tooltip);
+        this->m_TextCtrl_Blog_Date->ChangeValue(bentry->date);
+        this->m_TextCtrl_Blog->ChangeValue(bentry->content);
         
         // Fill in the tags text control
         wip = wxString("");
         for (wxString str : bentry->tags)
             wip += str + wxString(", ");
-        this->m_TextCtrl_Blog_Tags->SetValue(wip);
+        this->m_TextCtrl_Blog_Tags->ChangeValue(wip);
 
         // Show the blog editor
         this->ShowBlogEditor();
-        if (!modifiedbeforechange)
-            this->MarkModified(false);
-        if (!modifiedbefore_item)
-            bentry->wasmodified = false;
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Blog, item))
     {
-        bool modifiedbefore_item;
         Category* cat = this->FindCategory_Blog(item);
 
         // Ensure the category exists
@@ -1164,37 +1096,15 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
             return;
 
         // Fill in the simple text controls
-        modifiedbefore_item = cat->wasmodified;
-        this->m_TextCtrl_BlogCategory_Folder->SetValue(cat->foldername);
-        this->m_TextCtrl_BlogCategory_DisplayName->SetValue(cat->displayname);
-        this->m_TextCtrl_BlogCategory_Description->SetValue(cat->description);
+        this->m_TextCtrl_BlogCategory_Folder->ChangeValue(cat->foldername);
+        this->m_TextCtrl_BlogCategory_DisplayName->ChangeValue(cat->displayname);
+        this->m_TextCtrl_BlogCategory_Description->ChangeValue(cat->description);
 
         // Show the blog category editor
         this->ShowBlogCategoryEditor(true);
-        if (!modifiedbeforechange)
-            this->MarkModified(false);
-        if (!modifiedbefore_item)
-            cat->wasmodified = false;
     }
     else
         this->ShowBlogEditor(false);
-
-    // Correct the modified state of the old item
-    if (!modifiedbeforechange_olditem)
-    {
-        if (treeitem_iscategory(this->m_TreeCtrl_Blog, olditem))
-        {
-            Category* cat = this->FindCategory_Blog(olditem);
-            if (cat != NULL)
-                cat->wasmodified = false;
-        }
-        else
-        {
-            Blog* bentry = this->FindBlog(olditem);
-            if (bentry != NULL)
-                bentry->wasmodified = false;
-        }
-    }
 }
 
 
