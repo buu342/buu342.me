@@ -459,6 +459,6 @@ But I couldn't be happier with it.
 
 While Dead Space isn't as popular a franchise as League of Legends, I can tell you that the few people who recognized my character were *ecstatic* to see the costume, with full on gushing as soon as they saw the LEDs turn on.
 
-A funny anecdote, but one time I was meeting up with a friend from university in Alg_EACUTE_SYMBOLs, and he mentioned how he recognized the area but wasn't sure when. I offhanded that it might have been at an event in the Passeio Maritimo, such as Comic Con. He said that yeah, it was Comic Con, he remembered the event being kinda crappy, but the major highlight for him was seeing someone in a Dead Space costume. Funny how small the world is, eh?
+A funny anecdote, but one time I was meeting up with a friend from university in Alg_EACUTE_SYMBOLs, and he mentioned how he recognized the area but wasn't sure when he'd been here. I offhanded that it might have been at an event in the Passeio Maritimo, such as Comic Con. He said that yeah, it was Comic Con, he remembered the event being kinda crappy, but the major highlight for him was seeing someone in a Dead Space costume. Funny how small the world is, eh?
 
 If you want to use any of the stencils that I made for this project, you can download them [here](downloads/DeadSpaceStencils.zip). Just be wary that they are shaped for my body, so make sure you resize them to fit your needs!

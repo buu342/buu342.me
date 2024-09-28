@@ -106,6 +106,7 @@ class Main : public wxFrame
 {
 	private:
         bool m_Modified;
+        bool m_FullCompile;
         std::vector<Category*> m_Category_Projects;
 		std::vector<Category*> m_Category_Blog;
 		wxString m_WorkingDir;
@@ -212,6 +213,7 @@ class Main : public wxFrame
         void m_Button_Blog_Preview_OnButtonClick(wxCommandEvent& event);
         void m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_Save_OnMenuSelection(wxCommandEvent& event);
+        void m_MenuItem_FullRecompile_OnMenuSelection(wxCommandEvent& event);
         void m_Timer_OnTimer(wxTimerEvent& event);
         void OnPopupClick_Projects(wxCommandEvent& event);
         void OnPopupClick_Blog(wxCommandEvent& event);

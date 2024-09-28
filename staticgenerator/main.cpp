@@ -373,6 +373,10 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     wxMenuItem* m_MenuItem_Save;
     m_MenuItem_Save = new wxMenuItem(this->m_Menu_File, wxID_ANY, wxString(wxT("Save Changes")) + wxT('\t') + wxT("CTRL+S"), wxEmptyString, wxITEM_NORMAL);
     this->m_Menu_File->Append(m_MenuItem_Save);
+    this->m_Menu_File->AppendSeparator();
+    wxMenuItem* m_MenuItem_FullRecompile;
+    m_MenuItem_FullRecompile = new wxMenuItem(this->m_Menu_File, wxID_ANY, wxString(wxT("Full Website Recompile")), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_File->Append(m_MenuItem_FullRecompile);
     this->m_Menubar_Main->Append(this->m_Menu_File, wxT("File"));
     this->SetMenuBar(m_Menubar_Main);
 
@@ -419,6 +423,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Button_Blog_Preview->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(Main::m_Button_Blog_Preview_OnButtonClick), NULL, this);
     this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_OpenDir_OnMenuSelection), this, m_MenuItem_OpenDir->GetId());
     this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Save_OnMenuSelection), this, m_MenuItem_Save->GetId());
+    this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_FullRecompile_OnMenuSelection), this, m_MenuItem_FullRecompile->GetId());
     this->m_Timer->Bind(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), this, this->m_Timer->GetId());
 
     // Load the projects and blog from the current working directory
@@ -529,6 +534,20 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent&)
 void Main::m_MenuItem_Save_OnMenuSelection(wxCommandEvent&)
 {
     this->Save();
+}
+
+
+/*==============================
+    m_MenuItem_FullRecompile_OnMenuSelection
+    Handles the Full Recompile menu event
+    @param Unused
+==============================*/
+
+void Main::m_MenuItem_FullRecompile_OnMenuSelection(wxCommandEvent&)
+{
+    this->m_FullCompile = true;
+    this->Save();
+    this->m_FullCompile = false;
 }
 
 
@@ -1970,16 +1989,19 @@ void Main::CompileProjects_List()
     wxString html_categories = wxString("");
 
     // Check if a category was modified, if not, then skip page generation
-    for (Category* cat : this->m_Category_Projects)
+    if (!this->m_FullCompile)
     {
-        if (cat->wasmodified)
+        for (Category* cat : this->m_Category_Projects)
         {
-            modified = true;
-            break;
+            if (cat->wasmodified)
+            {
+                modified = true;
+                break;
+            }
         }
+        if (!modified)
+            return;
     }
-    if (!modified)
-        return;
 
     // Read the projects page template
     html_final = string_fromfile(this->m_WorkingDir + "/templates/projects.html");
@@ -2061,7 +2083,7 @@ void Main::CompileProjects_Project(Project* proj)
     std::vector<wxString> youtubes;
 
     // Skip this project if it wasn't modified
-    if (!proj->wasmodified)
+    if (!this->m_FullCompile && !proj->wasmodified)
         return;
 
     // Replace most of the basic page info
@@ -2210,16 +2232,19 @@ void Main::CompileBlog_List()
     wxString html_categories = wxString("");
 
     // Check if a category was modified, if not, then skip page generation
-    for (Category* cat : this->m_Category_Blog)
+    if (!this->m_FullCompile)
     {
-        if (cat->wasmodified)
+        for (Category* cat : this->m_Category_Blog)
         {
-            modified = true;
-            break;
+            if (cat->wasmodified)
+            {
+                modified = true;
+                break;
+            }
         }
+        if (!modified)
+            return;
     }
-    if (!modified)
-        return;
 
     // Read the blog page template
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog.html");
@@ -2299,7 +2324,7 @@ void Main::CompileBlog_Entry(Blog* bentry)
     const char* mdstr = md_sanitize(&bentry->content)->mb_str();
 
     // Skip this blog entry if it wasn't modified
-    if (!bentry->wasmodified)
+    if (!this->m_FullCompile && !bentry->wasmodified)
         return;
 
     // Replace most of the basic page info
