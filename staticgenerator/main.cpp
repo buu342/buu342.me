@@ -635,7 +635,6 @@ void Main::m_TreeCtrl_Projects_OnTreeItemMenu(wxTreeEvent& event)
 void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
 {
     wxTreeItemId item = event.GetItem();
-    wxTreeItemId olditem = this->m_SelectedItem;
 
     // Handle the item selection
     this->m_SelectedItem = item;
@@ -1062,9 +1061,9 @@ void Main::m_TreeCtrl_Blog_OnTreeItemMenu(wxTreeEvent& event)
 void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
 {
     wxTreeItemId item = event.GetItem();
-    wxTreeItemId olditem = this->m_SelectedItem;
 
     // Handle the item selection
+    this->m_SelectedItem = item;
     if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))  // Handle blog entry selection
     {
         wxString wip;
