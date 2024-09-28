@@ -306,13 +306,13 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
     if (!out_proj.Exists())
         out_proj.Create();
     out_proj.Clear();
-    out_proj.AddLine(wxString(projectjson.dump()));
+    out_proj.AddLine(wxString(projectjson.dump(4)));
     out_proj.Write();
     out_proj.Close();
     if (!out_blog.Exists())
         out_blog.Create();
     out_blog.Clear();
-    out_blog.AddLine(wxString(blogjson.dump()));
+    out_blog.AddLine(wxString(blogjson.dump(4)));
     out_blog.Write();
     out_blog.Close();
 }

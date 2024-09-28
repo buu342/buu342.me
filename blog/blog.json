@@ -1,1 +1,109 @@
-{"Categories":{"art":{"Description":"","DisplayName":"Art","Index":2,"Pages":null},"gibberish":{"Description":"","DisplayName":"Gibberish","Index":1,"Pages":null},"meta":{"Description":"Discussions about this very website.","DisplayName":"Meta","Index":3,"Pages":{"HelloWorld":{"Date":"November 10, 2021","DisplayName":"Hello World!","Icon":"icons/HelloWorld.png","Index":0,"Tags":["Bad Life Decisions"],"ToolTip":"I own a website now. What have I done!?"}}},"projects":{"Description":"Discussions about stuff that I have made and/or am making.","DisplayName":"Projects","Index":0,"Pages":{"GarenCosplay":{"Date":"September 26, 2024","DisplayName":"Making a Garen Cosplay from League of Legends","Icon":"icons/GarenCosplay.png","Index":0,"Tags":["Cosplay","Blender","Crafts","League of Legends"],"ToolTip":"I describe the creation process for my Garen cosplay, which I used in Lisbon Comic Con 2018"},"IsaacClarke":{"Date":"September 25, 2024","DisplayName":"Making Isaac Clarke's Level 3 Suit from Dead Space","Icon":"icons/IsaacClarke.png","Index":1,"Tags":["Cosplay","Blender","Crafts","Soldering","Dead Space","Horror"],"ToolTip":"I describe the creation process for my Isaac Clarke cosplay, which I used in Lisbon Comic Con 2019"},"MusicWorldRE":{"Date":"January 22, 2022","DisplayName":"Ripping Assets From An Old Mobile Game - Music World","Icon":"icons/MusicWorldRE.png","Index":3,"Tags":["Reverse Engineering","Python","Hex Editor"],"ToolTip":"An explanation of the reverse engineering process for extracting assets from Music World."},"SGIIndySleeper":{"Date":"September 04, 2022","DisplayName":"Building a Sleeper Computer from an SGI Indy","Icon":"icons/SGIIndySleeper.png","Index":2,"Tags":["PC Building","CAD","Soldering","C","Arduino"],"ToolTip":"An article covering how I took the shell of an old Silicon Graphics Indy and used it for a modern PC."}}}}}
+{
+    "Categories": {
+        "art": {
+            "Description": "",
+            "DisplayName": "Art",
+            "Index": 2,
+            "Pages": null
+        },
+        "gibberish": {
+            "Description": "",
+            "DisplayName": "Gibberish",
+            "Index": 1,
+            "Pages": null
+        },
+        "meta": {
+            "Description": "Discussions about this very website.",
+            "DisplayName": "Meta",
+            "Index": 3,
+            "Pages": {
+                "HelloWorld": {
+                    "Date": "November 10, 2021",
+                    "DisplayName": "Hello World!",
+                    "Icon": "icons/HelloWorld.png",
+                    "Index": 1,
+                    "Tags": [
+                        "Bad Life Decisions"
+                    ],
+                    "ToolTip": "I own a website now. What have I done!?"
+                },
+                "SiteGenerator": {
+                    "Date": "September 28, 2024",
+                    "DisplayName": "Improving My Website With a Static Site Generator",
+                    "Icon": "icons/SiteGenerator.png",
+                    "Index": 0,
+                    "Tags": [
+                        "Bad Life Decisions",
+                        "C++",
+                        "wxWidgets",
+                        "HTML",
+                        "CSS",
+                        "Javascript"
+                    ],
+                    "ToolTip": "I make this website look half-decent by using a static site generator."
+                }
+            }
+        },
+        "projects": {
+            "Description": "Discussions about stuff that I have made and/or am making.",
+            "DisplayName": "Projects",
+            "Index": 0,
+            "Pages": {
+                "GarenCosplay": {
+                    "Date": "September 26, 2024",
+                    "DisplayName": "Making a Garen Cosplay from League of Legends",
+                    "Icon": "icons/GarenCosplay.png",
+                    "Index": 0,
+                    "Tags": [
+                        "Cosplay",
+                        "Blender",
+                        "Crafts",
+                        "League of Legends"
+                    ],
+                    "ToolTip": "I describe the creation process for my Garen cosplay, which I used in Lisbon Comic Con 2018"
+                },
+                "IsaacClarke": {
+                    "Date": "September 25, 2024",
+                    "DisplayName": "Making Isaac Clarke's Level 3 Suit from Dead Space",
+                    "Icon": "icons/IsaacClarke.png",
+                    "Index": 1,
+                    "Tags": [
+                        "Cosplay",
+                        "Blender",
+                        "Crafts",
+                        "Soldering",
+                        "Dead Space",
+                        "Horror"
+                    ],
+                    "ToolTip": "I describe the creation process for my Isaac Clarke cosplay, which I used in Lisbon Comic Con 2019"
+                },
+                "MusicWorldRE": {
+                    "Date": "January 22, 2022",
+                    "DisplayName": "Ripping Assets From An Old Mobile Game - Music World",
+                    "Icon": "icons/MusicWorldRE.png",
+                    "Index": 3,
+                    "Tags": [
+                        "Reverse Engineering",
+                        "Python",
+                        "Hex Editor"
+                    ],
+                    "ToolTip": "An explanation of the reverse engineering process for extracting assets from Music World."
+                },
+                "SGIIndySleeper": {
+                    "Date": "September 04, 2022",
+                    "DisplayName": "Building a Sleeper Computer from an SGI Indy",
+                    "Icon": "icons/SGIIndySleeper.png",
+                    "Index": 2,
+                    "Tags": [
+                        "PC Building",
+                        "CAD",
+                        "Soldering",
+                        "C",
+                        "Arduino"
+                    ],
+                    "ToolTip": "An article covering how I took the shell of an old Silicon Graphics Indy and used it for a modern PC."
+                }
+            }
+        }
+    }
+}
