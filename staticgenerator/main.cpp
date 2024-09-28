@@ -2200,7 +2200,7 @@ void Main::CompileProjects_Project(Project* proj)
 
 void Main::CompileBlog_List()
 {
-    bool modified;
+    bool modified = false;
     wxTextFile out(this->m_WorkingDir + wxString("/blog.html"));
     wxDateTime today = wxDateTime::Today();
     wxString html_final = wxString("");
