@@ -60,6 +60,7 @@ typedef struct Category_s {
 	wxString foldername;
 	wxString displayname;
     wxString description;
+    bool wasmodified;
 	wxTreeItemId treeid;
 	std::vector<void*> pages;
 } Category;
@@ -76,6 +77,7 @@ typedef struct Project_s {
     std::vector<wxString> images;
 	std::vector<wxString> urls;
     std::vector<wxString> tags;
+    bool wasmodified;
 	Category* category;
     wxTreeItemId treeid;
 } Project;
@@ -90,6 +92,7 @@ typedef struct Blog_s {
     wxString tooltip;
     wxString content;
     std::vector<wxString> tags;
+    bool wasmodified;
     Category* category;
     wxTreeItemId treeid;
 } Blog;
@@ -106,6 +109,7 @@ class Main : public wxFrame
         std::vector<Category*> m_Category_Projects;
 		std::vector<Category*> m_Category_Blog;
 		wxString m_WorkingDir;
+		bool m_ManualModification;
 		wxTreeItemId m_DraggedItem;
         wxTreeItemId m_SelectedItem;
 

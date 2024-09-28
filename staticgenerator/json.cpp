@@ -39,6 +39,7 @@ int json_loadcategories(wxString filepath, std::vector<Category*>* categorylist)
         cat->index = (*it)["Index"];
         cat->displayname = wxString((*it)["DisplayName"]);
         cat->description = wxString((*it)["Description"]);
+        cat->wasmodified = false;
         cat->treeid = NULL;
         cat->pages.clear();
         categorylist->push_back(cat);
@@ -101,6 +102,7 @@ void json_loadprojects(wxString workingdir, std::vector<Category*>* categorylist
             proj->icon = wxString((*itproj)["Icon"]);
             proj->date = wxString((*itproj)["Date"]);
             proj->tooltip = wxString((*itproj)["ToolTip"]);
+            proj->wasmodified = false;
             proj->description = string_fromfile(workingdir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
             proj->images.clear();
             for (nlohmann::json::iterator it = (*itproj)["Images"].begin(); it != (*itproj)["Images"].end(); ++it)
@@ -182,6 +184,7 @@ void json_loadblogentries(wxString workingdir, std::vector<Category*>* categoryl
             bentry->icon = wxString((*itblog)["Icon"]);
             bentry->date = wxString((*itblog)["Date"]);
             bentry->tooltip = wxString((*itblog)["ToolTip"]);
+            bentry->wasmodified = false;
             bentry->content = string_fromfile(workingdir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
             bentry->tags.clear();
             for (nlohmann::json::iterator it = (*itblog)["Tags"].begin(); it != (*itblog)["Tags"].end(); ++it)

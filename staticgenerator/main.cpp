@@ -555,6 +555,7 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
         if (cat != NULL)
         {
             cat->displayname = event.GetLabel();
+            cat->wasmodified = true;
             this->MarkModified();
             return;
         }
@@ -567,6 +568,8 @@ void Main::m_TreeCtrl_Projects_OnTreeEndLabelEdit(wxTreeEvent& event)
             proj->displayname = event.GetLabel();
             if (this->m_SelectedItem == event.GetItem())
                 this->m_TextCtrl_Projects_Name->SetValue(proj->displayname);
+            proj->category->wasmodified = true;
+            proj->wasmodified = true;
             this->MarkModified();
             return;
         }
@@ -631,41 +634,59 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
 {
     bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
+    wxTreeItemId olditem = this->m_SelectedItem;
+    bool modifiedbeforechange_olditem = false;
+
+    // Check if the previously selected item was modified
+    if (treeitem_iscategory(this->m_TreeCtrl_Projects, olditem))
+    {
+        Category* cat = this->FindCategory_Projects(olditem);
+        if (cat != NULL)
+            modifiedbeforechange_olditem = cat->wasmodified;
+    }
+    else
+    {
+        Project* proj = this->FindProject(olditem);
+        if (proj!= NULL)
+            modifiedbeforechange_olditem = proj->wasmodified;
+    }
 
     // Handle the item selection
     this->m_SelectedItem = item;
     if (!treeitem_iscategory(this->m_TreeCtrl_Projects, item)) // Handle project selection
     {
         wxString wip;
-        Project* proj_elem = FindProject(item);
+        bool modifiedbefore_item;
+        Project* proj = FindProject(item);
 
         // Ensure the project exists
-        if (proj_elem == NULL)
+        if (proj == NULL)
             return;
 
         // Fill in the simple text controls
-        this->m_TextCtrl_Projects_File->SetValue(proj_elem->filename);
-        this->m_TextCtrl_Projects_Name->SetValue(proj_elem->displayname);
-        this->m_TextCtrl_Projects_Icon->SetValue(proj_elem->icon);
-        this->m_TextCtrl_Projects_ToolTip->SetValue(proj_elem->tooltip);
-        this->m_TextCtrl_Projects_Description->SetValue(proj_elem->description);
+        modifiedbefore_item = proj->wasmodified;
+        this->m_TextCtrl_Projects_File->SetValue(proj->filename);
+        this->m_TextCtrl_Projects_Name->SetValue(proj->displayname);
+        this->m_TextCtrl_Projects_Icon->SetValue(proj->icon);
+        this->m_TextCtrl_Projects_ToolTip->SetValue(proj->tooltip);
+        this->m_TextCtrl_Projects_Description->SetValue(proj->description);
 
         // Fill in the tags text control
         wip = wxString("");
-        for (wxString str : proj_elem->tags)
+        for (wxString str : proj->tags)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_Tags->SetValue(wip);
         
         // Fill in the images text control
         wip = wxString("");
-        for (wxString str : proj_elem->images)
+        for (wxString str : proj->images)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_Images->SetValue(wip);
-        this->m_TextCtrl_Projects_Date->SetValue(proj_elem->date);
+        this->m_TextCtrl_Projects_Date->SetValue(proj->date);
         
         // Fill in the url text control
         wip = wxString("");
-        for (wxString str : proj_elem->urls)
+        for (wxString str : proj->urls)
             wip += str + wxString(", ");
         this->m_TextCtrl_Projects_URLs->SetValue(wip);
 
@@ -673,27 +694,50 @@ void Main::m_TreeCtrl_Projects_OnTreeSelChanged(wxTreeEvent& event)
         this->ShowProjectEditor();
         if (!modifiedbeforechange)
             this->MarkModified(false);
+        if (!modifiedbefore_item)
+            proj->wasmodified = false;
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Projects, item)) // Handle category selection
     {
-        Category* cat_elem = this->FindCategory_Projects(item);
+        bool modifiedbefore_item;
+        Category* cat = this->FindCategory_Projects(item);
 
         // Ensure the category exists
-        if (cat_elem == NULL)
+        if (cat == NULL)
             return;
 
         // Fill in the simple text controls
-        this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat_elem->foldername);
-        this->m_TextCtrl_ProjectsCategory_DisplayName->SetValue(cat_elem->displayname);
-        this->m_TextCtrl_ProjectsCategory_Description->SetValue(cat_elem->description);
+        modifiedbefore_item = cat->wasmodified;
+        this->m_TextCtrl_ProjectsCategory_Folder->SetValue(cat->foldername);
+        this->m_TextCtrl_ProjectsCategory_DisplayName->SetValue(cat->displayname);
+        this->m_TextCtrl_ProjectsCategory_Description->SetValue(cat->description);
 
         // Show the project category editor
         this->ShowProjectCategoryEditor(true);
         if (!modifiedbeforechange)
             this->MarkModified(false);
+        if (!modifiedbefore_item)
+            cat->wasmodified = false;
     }
     else
         this->ShowProjectEditor(false);
+
+    // Correct the modified state of the old item
+    if (!modifiedbeforechange_olditem)
+    {
+        if (treeitem_iscategory(this->m_TreeCtrl_Projects, olditem))
+        {
+            Category* cat = this->FindCategory_Projects(olditem);
+            if (cat != NULL)
+                cat->wasmodified = false;
+        }
+        else
+        {
+            Project* proj = this->FindProject(olditem);
+            if (proj != NULL)
+                proj->wasmodified = false;
+        }
+    }
 }
 
 
@@ -709,6 +753,7 @@ void Main::m_TextCtrl_Projects_File_OnText(wxCommandEvent& event)
     if (proj == NULL)
         return;
     proj->filename = event.GetString();
+    proj->wasmodified = true;
     this->MarkModified();
 }
 
@@ -726,6 +771,8 @@ void Main::m_TextCtrl_Projects_Name_OnText(wxCommandEvent& event)
         return;
     proj->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(proj->treeid, proj->displayname);
+    proj->wasmodified = true;
+    proj->category->wasmodified = true;
     this->MarkModified();
 }
 
@@ -742,6 +789,8 @@ void Main::m_TextCtrl_Projects_Icon_OnText(wxCommandEvent& event)
     if (proj == NULL)
         return;
     proj->icon = event.GetString();
+    proj->wasmodified = true;
+    proj->category->wasmodified = true;
     this->MarkModified();
 }
 
@@ -768,6 +817,7 @@ void Main::m_TextCtrl_Projects_Tags_OnText(wxCommandEvent& event)
             if (str != "")
                 proj->tags.push_back(str);
         }
+        proj->wasmodified = true;
         this->MarkModified();
     }
 }
@@ -795,6 +845,7 @@ void Main::m_TextCtrl_Projects_Images_OnText(wxCommandEvent& event)
             if (str != "")
                 proj->images.push_back(str);
         }
+        proj->wasmodified = true;
         this->MarkModified();
     }
 }
@@ -812,6 +863,7 @@ void Main::m_TextCtrl_Projects_Date_OnText(wxCommandEvent& event)
     if (proj == NULL)
         return;
     proj->date = event.GetString();
+    proj->wasmodified = true;
     this->MarkModified();
 }
 
@@ -838,6 +890,7 @@ void Main::m_TextCtrl_Projects_URLs_OnText(wxCommandEvent& event)
             if (str != "")
                 proj->urls.push_back(str);
         }
+        proj->wasmodified = true;
         this->MarkModified();
     }
 }
@@ -855,6 +908,8 @@ void Main::m_TextCtrl_Projects_ToolTip_OnText(wxCommandEvent& event)
     if (proj == NULL)
         return;
     proj->tooltip = event.GetString();
+    proj->wasmodified = true;
+    proj->category->wasmodified = true;
     this->MarkModified();
 }
 
@@ -871,6 +926,7 @@ void Main::m_TextCtrl_Projects_Description_OnText(wxCommandEvent& event)
     if (proj == NULL)
         return;
     proj->description = event.GetString();
+    proj->wasmodified = true;
     this->MarkModified();
 }
 
@@ -888,6 +944,7 @@ void Main::m_TextCtrl_ProjectsCategory_DisplayName_OnText(wxCommandEvent& event)
         return;
     cat->displayname = event.GetString();
     this->m_TreeCtrl_Projects->SetItemText(cat->treeid, cat->displayname);
+    cat->wasmodified = true;
     this->MarkModified();
 }
 
@@ -904,6 +961,7 @@ void Main::m_TextCtrl_ProjectsCategory_Description_OnText(wxCommandEvent& event)
     if (cat == NULL)
         return;
     cat->description = event.GetString();
+    cat->wasmodified = true;
     this->MarkModified();
 }
 
@@ -967,6 +1025,7 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
         if (cat != NULL)
         {
             cat->displayname = event.GetLabel();
+            cat->wasmodified = true;
             this->MarkModified();
             return;
         }
@@ -979,6 +1038,8 @@ void Main::m_TreeCtrl_Blog_OnTreeEndLabelEdit(wxTreeEvent& event)
             bentry->displayname = event.GetLabel();
             if (this->m_SelectedItem == event.GetItem())
                 this->m_TextCtrl_Blog_Name->SetValue(bentry->displayname);
+            bentry->wasmodified = true;
+            bentry->category->wasmodified = true;
             this->MarkModified();
             return;
         }
@@ -1043,29 +1104,46 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
 {
     bool modifiedbeforechange = this->m_Modified;
     wxTreeItemId item = event.GetItem();
-    this->m_SelectedItem = item;
+    wxTreeItemId olditem = this->m_SelectedItem;
+    bool modifiedbeforechange_olditem = false;
+
+    // Check if the previously selected item was modified
+    if (treeitem_iscategory(this->m_TreeCtrl_Blog, olditem))
+    {
+        Category* cat = this->FindCategory_Blog(olditem);
+        if (cat != NULL)
+            modifiedbeforechange_olditem = cat->wasmodified;
+    }
+    else
+    {
+        Blog* bentry = this->FindBlog(olditem);
+        if (bentry != NULL)
+            modifiedbeforechange_olditem = bentry->wasmodified;
+    }
 
     // Handle the item selection
-    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))  // Handle project selection
+    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, item))  // Handle blog entry selection
     {
         wxString wip;
-        Blog* blog_elem = this->FindBlog(item);
+        bool modifiedbefore_item;
+        Blog* bentry = this->FindBlog(item);
 
-        // Ensure the project exists
-        if (blog_elem == NULL)
+        // Ensure the blog entry exists
+        if (bentry == NULL)
             return;
 
         // Fill in the simple text controls
-        this->m_TextCtrl_Blog_File->SetValue(blog_elem->filename);
-        this->m_TextCtrl_Blog_Name->SetValue(blog_elem->displayname);
-        this->m_TextCtrl_Blog_Icon->SetValue(blog_elem->icon);
-        this->m_TextCtrl_Blog_ToolTip->SetValue(blog_elem->tooltip);
-        this->m_TextCtrl_Blog_Date->SetValue(blog_elem->date);
-        this->m_TextCtrl_Blog->SetValue(blog_elem->content);
+        modifiedbefore_item = bentry->wasmodified;
+        this->m_TextCtrl_Blog_File->SetValue(bentry->filename);
+        this->m_TextCtrl_Blog_Name->SetValue(bentry->displayname);
+        this->m_TextCtrl_Blog_Icon->SetValue(bentry->icon);
+        this->m_TextCtrl_Blog_ToolTip->SetValue(bentry->tooltip);
+        this->m_TextCtrl_Blog_Date->SetValue(bentry->date);
+        this->m_TextCtrl_Blog->SetValue(bentry->content);
         
         // Fill in the tags text control
         wip = wxString("");
-        for (wxString str : blog_elem->tags)
+        for (wxString str : bentry->tags)
             wip += str + wxString(", ");
         this->m_TextCtrl_Blog_Tags->SetValue(wip);
 
@@ -1073,27 +1151,50 @@ void Main::m_TreeCtrl_Blog_OnTreeSelChanged(wxTreeEvent& event)
         this->ShowBlogEditor();
         if (!modifiedbeforechange)
             this->MarkModified(false);
+        if (!modifiedbefore_item)
+            bentry->wasmodified = false;
     }
     else if (treeitem_iscategory(this->m_TreeCtrl_Blog, item))
     {
-        Category* cat_elem = this->FindCategory_Blog(item);
+        bool modifiedbefore_item;
+        Category* cat = this->FindCategory_Blog(item);
 
         // Ensure the category exists
-        if (cat_elem == NULL)
+        if (cat == NULL)
             return;
 
         // Fill in the simple text controls
-        this->m_TextCtrl_BlogCategory_Folder->SetValue(cat_elem->foldername);
-        this->m_TextCtrl_BlogCategory_DisplayName->SetValue(cat_elem->displayname);
-        this->m_TextCtrl_BlogCategory_Description->SetValue(cat_elem->description);
+        modifiedbefore_item = cat->wasmodified;
+        this->m_TextCtrl_BlogCategory_Folder->SetValue(cat->foldername);
+        this->m_TextCtrl_BlogCategory_DisplayName->SetValue(cat->displayname);
+        this->m_TextCtrl_BlogCategory_Description->SetValue(cat->description);
 
         // Show the blog category editor
         this->ShowBlogCategoryEditor(true);
         if (!modifiedbeforechange)
             this->MarkModified(false);
+        if (!modifiedbefore_item)
+            cat->wasmodified = false;
     }
     else
         this->ShowBlogEditor(false);
+
+    // Correct the modified state of the old item
+    if (!modifiedbeforechange_olditem)
+    {
+        if (treeitem_iscategory(this->m_TreeCtrl_Blog, olditem))
+        {
+            Category* cat = this->FindCategory_Blog(olditem);
+            if (cat != NULL)
+                cat->wasmodified = false;
+        }
+        else
+        {
+            Blog* bentry = this->FindBlog(olditem);
+            if (bentry != NULL)
+                bentry->wasmodified = false;
+        }
+    }
 }
 
 
@@ -1109,6 +1210,7 @@ void Main::m_TextCtrl_Blog_File_OnText(wxCommandEvent& event)
     if (bentry == NULL)
         return;
     bentry->filename = event.GetString();
+    bentry->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1126,6 +1228,8 @@ void Main::m_TextCtrl_Blog_Name_OnText(wxCommandEvent& event)
         return;
     bentry->displayname = event.GetString();
     this->m_TreeCtrl_Blog->SetItemText(bentry->treeid, bentry->displayname);
+    bentry->wasmodified = true;
+    bentry->category->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1142,6 +1246,8 @@ void Main::m_TextCtrl_Blog_Icon_OnText(wxCommandEvent& event)
     if (bentry == NULL)
         return;
     bentry->icon = event.GetString();
+    bentry->wasmodified = true;
+    bentry->category->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1158,6 +1264,7 @@ void Main::m_TextCtrl_Blog_Date_OnText(wxCommandEvent& event)
     if (bentry == NULL)
         return;
     bentry->date = event.GetString();
+    bentry->wasmodified= true;
     this->MarkModified();
 }
 
@@ -1184,6 +1291,7 @@ void Main::m_TextCtrl_Blog_Tags_OnText(wxCommandEvent& event)
             if (str != "")
                 bentry->tags.push_back(str);
         }
+        bentry->wasmodified = true;
         this->MarkModified();
     }
 }
@@ -1201,6 +1309,8 @@ void Main::m_TextCtrl_Blog_ToolTip_OnText(wxCommandEvent& event)
     if (bentry == NULL)
         return;
     bentry->tooltip = event.GetString();
+    bentry->wasmodified = true;
+    bentry->category->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1217,6 +1327,7 @@ void Main::m_TextCtrl_Blog_OnText(wxCommandEvent& event)
     if (bentry == NULL)
         return;
     bentry->content = event.GetString();
+    bentry->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1234,6 +1345,7 @@ void Main::m_TextCtrl_BlogCategory_DisplayName_OnText(wxCommandEvent& event)
         return;
     cat->displayname = event.GetString();
     this->m_TreeCtrl_Blog->SetItemText(cat->treeid, cat->displayname);
+    cat->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1250,6 +1362,7 @@ void Main::m_TextCtrl_BlogCategory_Description_OnText(wxCommandEvent& event)
     if (cat == NULL)
         return;
     cat->description = event.GetString();
+    cat->wasmodified = true;
     this->MarkModified();
 }
 
@@ -1313,17 +1426,17 @@ void Main::m_Timer_OnTimer(wxTimerEvent&)
 void Main::OnPopupClick_Projects(wxCommandEvent& event)
 {
     Project* proj;
-    Category* cat_elem;
+    Category* cat;
     int index = 0;
-    wxTreeItemId cat = this->m_SelectedItem;
+    wxTreeItemId cat_id = this->m_SelectedItem;
 
     // Find the category of the element
-    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat))
-        cat = this->m_TreeCtrl_Projects->GetItemParent(cat);
-    cat_elem = this->FindCategory_Projects(cat);
+    if (!treeitem_iscategory(this->m_TreeCtrl_Projects, cat_id))
+        cat_id = this->m_TreeCtrl_Projects->GetItemParent(cat_id);
+    cat = this->FindCategory_Projects(cat_id);
 
     // If the category doesn't exist, stop
-    if (cat_elem == NULL)
+    if (cat == NULL)
         return;
 
     // Decide what to do based on the event ID
@@ -1331,40 +1444,44 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
     {
         case wxID_NEW: // Create a new project
             proj = new Project();
-            proj->index = cat_elem->pages.size();
+            proj->index = cat->pages.size();
             proj->filename = "new";
             proj->displayname = "New Project";
             proj->icon = "";
             proj->date = "";
             proj->tooltip = "";
             proj->description = "";
+            proj->wasmodified = true;
             proj->images.clear();
             proj->urls.clear();
             proj->tags.clear();
-            proj->category = cat_elem;
-            proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat, proj->displayname);
-            cat_elem->pages.push_back(proj);
-            this->m_TreeCtrl_Projects->Expand(cat_elem->treeid);
+            proj->category = cat;
+            proj->treeid = this->m_TreeCtrl_Projects->AppendItem(cat_id, proj->displayname);
+            cat->pages.push_back(proj);
+            this->m_TreeCtrl_Projects->Expand(cat->treeid);
             this->m_TreeCtrl_Projects->SelectItem(proj->treeid);
             this->m_SelectedItem = proj->treeid;
+            cat->wasmodified = true;
             this->MarkModified();
             break;
         case wxID_DELETE: // Delete an existing project
             proj = this->FindProject(this->m_SelectedItem);
             if (proj != NULL)
             {
-                cat_elem->pages.erase(cat_elem->pages.begin() + proj->index);
+                cat->pages.erase(cat->pages.begin() + proj->index);
                 this->m_TreeCtrl_Projects->Delete(proj->treeid);
-                if (wxFileExists(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/") + proj->filename + wxString(".html"));
-                if (wxFileExists(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/projects/") + cat->foldername + wxString("/") + proj->filename + wxString(".html")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/projects/") + cat->foldername + wxString("/") + proj->filename + wxString(".html"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/projects/") + cat->foldername + wxString("/markdown/") + proj->filename + wxString(".md")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/projects/") + cat->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
                 delete proj;
-                for (void* projptr : cat_elem->pages)
+                for (void* projptr : cat->pages)
                 {
                     proj = (Project*)projptr;
                     proj->index = index++;
                 }
+                cat->wasmodified = true;
+                this->MarkModified();
             }
             break;
     }
@@ -1380,17 +1497,17 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
 void Main::OnPopupClick_Blog(wxCommandEvent& event)
 {
     Blog* bentry;
-    Category* cat_elem;
+    Category* cat;
     int index = 0;
-    wxTreeItemId cat = this->m_SelectedItem;
+    wxTreeItemId cat_id = this->m_SelectedItem;
 
     // Find the category of the element
-    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, cat))
-        cat = this->m_TreeCtrl_Blog->GetItemParent(cat);
-    cat_elem = this->FindCategory_Blog(cat);
+    if (!treeitem_iscategory(this->m_TreeCtrl_Blog, cat_id))
+        cat_id = this->m_TreeCtrl_Blog->GetItemParent(cat_id);
+    cat = this->FindCategory_Blog(cat_id);
 
     // If the category doesn't exist, stop
-    if (cat_elem == NULL)
+    if (cat == NULL)
         return;
 
     // Decide what to do based on the event ID
@@ -1398,38 +1515,42 @@ void Main::OnPopupClick_Blog(wxCommandEvent& event)
     {
         case wxID_NEW: // Create a new blog entry 
             bentry = new Blog();
-            bentry->index = cat_elem->pages.size();
+            bentry->index = cat->pages.size();
             bentry->filename = "new";
             bentry->displayname = "New Blog Entry";
             bentry->icon = "";
             bentry->date = "";
             bentry->tooltip = "";
             bentry->content = "";
+            bentry->wasmodified = true;
             bentry->tags.clear();
-            bentry->category = cat_elem;
-            bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat, bentry->displayname);
-            cat_elem->pages.push_back(bentry);
-            this->m_TreeCtrl_Blog->Expand(cat_elem->treeid);
+            bentry->category = cat;
+            bentry->treeid = this->m_TreeCtrl_Blog->AppendItem(cat_id, bentry->displayname);
+            cat->pages.push_back(bentry);
+            this->m_TreeCtrl_Blog->Expand(cat->treeid);
             this->m_TreeCtrl_Blog->SelectItem(bentry->treeid);
             this->m_SelectedItem = bentry->treeid;
+            cat->wasmodified = true;
             this->MarkModified();
             break;
         case wxID_DELETE: // Delete an existing blog entry
             bentry = this->FindBlog(this->m_SelectedItem);
             if (bentry != NULL)
             {
-                cat_elem->pages.erase(cat_elem->pages.begin() + bentry->index);
+                cat->pages.erase(cat->pages.begin() + bentry->index);
                 this->m_TreeCtrl_Blog->Delete(bentry->treeid);
-                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/") + bentry->filename + wxString(".html"));
-                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md")))
-                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat->foldername + wxString("/") + bentry->filename + wxString(".html")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat->foldername + wxString("/") + bentry->filename + wxString(".html"));
+                if (wxFileExists(this->m_WorkingDir + wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md")))
+                    wxRemoveFile(this->m_WorkingDir + wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
                 delete bentry;
-                for (void* blogptr : cat_elem->pages)
+                for (void* blogptr : cat->pages)
                 {
                     bentry = (Blog*)blogptr;
                     bentry->index = index++;
                 }
+                cat->wasmodified = true;
+                this->MarkModified();
             }
             break;
     }
@@ -1583,7 +1704,7 @@ void Main::UpdateTree(wxTreeCtrl* tree, wxString folder, std::vector<Category*>*
     if (!pagepath.IsOpened())
         return;
 
-    // First, open the projects json file and add folders that are registered in the JSON file
+    // First, open the relevant JSON file and add folders that are registered in the JSON file
     index = json_loadcategories(this->m_WorkingDir + wxString("/") + folder + wxString("/") + folder + wxString(".json"), categorylist);
 
     // Now, add all folders which aren't in the JSON
@@ -1712,19 +1833,24 @@ void Main::EndDrag(wxTreeEvent& event, wxTreeCtrl* tree, std::vector<Category*>*
             {
                 Project* proj = (Project*)child;
                 proj->treeid = tree->InsertItem(src_elem->treeid, proj->index, proj->displayname);
+                proj->category->wasmodified = true;
             }
             else
             {
                 Blog* bentry = (Blog*)child;
                 bentry->treeid = tree->InsertItem(src_elem->treeid, bentry->index, bentry->displayname);
+                bentry->category->wasmodified = true;
             }
         }
 
         // Correct the index values
         for (Category* cat : *categorylist)
+        {
             cat->index = index++;
+            cat->wasmodified = true;
+        }
 
-        // Mark the project as modified
+        // Mark the program as modified
         this->MarkModified();
     }
 }
@@ -1790,7 +1916,8 @@ void Main::EndDrag_Project(wxTreeEvent& event)
             proj->index = index++;
         }
 
-        // Mark the project as modified
+        // Mark the project and its category as modified
+        cat->wasmodified = true;
         this->MarkModified();
     }
 }
@@ -1856,7 +1983,8 @@ void Main::EndDrag_Blog(wxTreeEvent& event)
             bentry->index = index++;
         }
 
-        // Mark the blog as modified
+        // Mark the blog entry and its category as modified
+        cat->wasmodified = true;
         this->MarkModified();
     }
 }
@@ -1922,10 +2050,23 @@ void Main::CompileBlog()
 
 void Main::CompileProjects_List()
 {
+    bool modified = false;
     wxTextFile out(this->m_WorkingDir + wxString("/projects.html"));
     wxDateTime today = wxDateTime::Today();
     wxString html_final = wxString("");
     wxString html_categories = wxString("");
+
+    // Check if a category was modified, if not, then skip page generation
+    for (Category* cat : this->m_Category_Projects)
+    {
+        if (cat->wasmodified)
+        {
+            modified = true;
+            break;
+        }
+    }
+    if (!modified)
+        return;
 
     // Read the projects page template
     html_final = string_fromfile(this->m_WorkingDir + "/templates/projects.html");
@@ -1968,6 +2109,9 @@ void Main::CompileProjects_List()
         html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", *md_unsanitize(&desc));
         html_categories.Replace("_TEMPLATE_PROJECT_LIST_", html_projects);
         html_categories.Append("\r\n");
+
+        // Mark the category as unmodified
+        cat->wasmodified = false;
     }
 
     // Finalize the projects page
@@ -2002,6 +2146,10 @@ void Main::CompileProjects_Project(Project* proj)
     const char* mdstr = proj->description.mb_str();
     std::vector<wxString> images;
     std::vector<wxString> youtubes;
+
+    // Skip this project if it wasn't modified
+    if (!proj->wasmodified)
+        return;
 
     // Replace most of the basic page info
     html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
@@ -2129,6 +2277,9 @@ void Main::CompileProjects_Project(Project* proj)
     projout.AddLine(html_final);
     projout.Write();
     projout.Close();
+
+    // Mark the project as no longer modified
+    proj->wasmodified = false;
 }
 
 
@@ -2139,10 +2290,23 @@ void Main::CompileProjects_Project(Project* proj)
 
 void Main::CompileBlog_List()
 {
+    bool modified;
     wxTextFile out(this->m_WorkingDir + wxString("/blog.html"));
     wxDateTime today = wxDateTime::Today();
     wxString html_final = wxString("");
     wxString html_categories = wxString("");
+
+    // Check if a category was modified, if not, then skip page generation
+    for (Category* cat : this->m_Category_Blog)
+    {
+        if (cat->wasmodified)
+        {
+            modified = true;
+            break;
+        }
+    }
+    if (!modified)
+        return;
 
     // Read the blog page template
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog.html");
@@ -2185,6 +2349,9 @@ void Main::CompileBlog_List()
         html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", desc);
         html_categories.Replace("_TEMPLATE_BLOG_LIST_", html_blogentries);
         html_categories.Append("\r\n");
+        
+        // Mark the category as unmodified
+        cat->wasmodified = false;
     }
 
     // Finalize the blog page
@@ -2203,7 +2370,7 @@ void Main::CompileBlog_List()
 
 
 /*==============================
-    CompileProjects_Project
+    CompileBlog_Entry
     Compile a blog entry
     @param The blog entry page to compile
 ==============================*/
@@ -2218,6 +2385,9 @@ void Main::CompileBlog_Entry(Blog* bentry)
     wxString html_md = wxString(""), pagetags = wxString("");
     const char* mdstr = md_sanitize(&bentry->content)->mb_str();
 
+    // Skip this blog entry if it wasn't modified
+    if (!bentry->wasmodified)
+        return;
 
     // Replace most of the basic page info
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog_entry.html");
@@ -2238,7 +2408,7 @@ void Main::CompileBlog_Entry(Blog* bentry)
     // Handle page tags
     for (wxString tag : bentry->tags)
     {
-        wxString str = string_fromfile(this->m_WorkingDir + "/templates/project_tag.html");
+        wxString str = string_fromfile(this->m_WorkingDir + "/templates/blog_entry_tag.html");
         str.Replace("_TEMPLATE_TAG_URL_", wxString("../../tags/") + sanitize_tagname(tag) + wxString(".html"));
         str.Replace("_TEMPLATE_TAG_NAME_", tag);
         pagetags += str;
@@ -2255,6 +2425,9 @@ void Main::CompileBlog_Entry(Blog* bentry)
     bentryout.AddLine(html_final);
     bentryout.Write();
     bentryout.Close();
+
+    // Mark the blog entry as no longer modified
+    bentry->wasmodified = false;
 }
 
 
