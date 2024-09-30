@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Improving My Website With a Static Site Generator</title>
+        <link rel="shortcut icon">
+        <link href="../blog.css" rel="stylesheet" type="text/css">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://buu342.me/blog/meta/SiteGenerator.html">
+        <meta property="og:title" content="Improving My Website With a Static Site Generator">
+        <meta property="og:image" content="https://buu342.me/blog/meta/icons/SiteGenerator.png">
+        <meta property="og:description" content="I make this website look half-decent by using a static site generator." />
+    </head>
+    
+    <body>
+        <div class="box">
+            <h1>Improving My Website With a Static Site Generator</h1>
+            <h5>Published: September 30, 2024</h5>
+            <h5>Tags: <a href="../../tags/BadLifeDecisions.html">Bad Life Decisions</a>, <a href="../../tags/Cpp.html">C++</a>, <a href="../../tags/wxWidgets.html">wxWidgets</a>, <a href="../../tags/HTML.html">HTML</a>, <a href="../../tags/CSS.html">CSS</a>, <a href="../../tags/Javascript.html">Javascript</a></h5>
+            <hr>
+            <p>It's hard to believe that it's been almost 3 years since <a href="HelloWorld.html">I decided to buy this domain on a whim</a>. To be honest, I still can't quite put a finger on why exactly I decided to do this, as I've never been one to keep a diary or write a blog. But now that I have finished my Master's Degree in Computer Science and need to start looking for work, I sure am glad that I made such a weird decision a few years ago.</p>
+<p>Summer came along, and I decided that it was about time I make this website presentable. The initial idea for it was really to just have a place for myself, in some ways as a rebellion of the fact that personal webpages have gone the way of the Dodo due to the enshittification of the internet. But life choices change in that timespan, and it became important to also have a place where I can put forward what I've been doing my entire life. I'm not sure if job recruiters will bother looking at this website, but it's convenient for me to list out stuff I've worked on so that I can best pick and choose for my applications. Even if I don't make this website for anyone in specific, at least I'd do it for me.</p>
+<p>It's... a weird feeling to see a single page summarising your life's work. Even more so when said work might potentially be presented to someone who will decide your future. Never really thought that dicking about in Game Maker 5 at the age 10 to make a <a href="../../projects/gamemaker/spaceinvaders.html">Space Invaders clone</a> could be critical to me getting a job at the age of 25, but here I am...</p>
+</br><h3 id="web-development"> <a href="#web-development">Web Development</a></h3>
+<p>To say I don't understand web development would be an understatement. Despite is being one of the largest employers of developers in the world, I never really cared for or <em>wanted</em> to care about the web. The web is a bloated mess of standards, and the software that lets one use it requires at least half of your system's resources. And the keywords? I don't even know where to get started. Who is MX, and what is his record? What course do I need to take in order to get my SSL certificate?</p>
+<p>The main reason that I've always winced at the idea of doing web development? I've been making games since I was a kid, and to this day my biggest annoyance is working on UI. Because no matter how well it's been made, there's always going to be some weirdo with a funky screen resolution or setup who <em>will</em> find a way to wreck your work. Web development is basically that, but exponential as you need to take into account both desktops, phones, and esoteric devices with resolutions of any size or scale. And that's not to mention differing web standards and browsers who won't always agree on what's supported and how.</p>
+<p>Now, I'm not a <em>complete dunce</em> with this stuff... Despite how much I joke about (and in!) the internet, I do have <strong>some</strong> ideas of what I'm doing. I'm familiar with JavaScript and WebGL, and HTML is basically just a fancy XML dialect. Making a website is infinitely easier than having to deal with everything that actually makes the internet work, and I can be thankful for my sanity that I'm not someone who needs to deal with that. Especially with the proliferation of tools like Wordpress and Jekyll, a layman can cook up a website in mere minutes without ever touching a line of code.</p>
+<p>But that's not really <em><strong>me</strong></em>.</p>
+<p>I'm someone who likes to <em>understand</em> things. I like breaking stuff open and looking at what makes them tick. Despite having done Computer Science, my two favorite subjects were from other degrees in my university: Logical Systems II and Microelectronic I. In the former, we implemented an <a href="https://github.com/buu342/FCT-XilinxIntel8086">8086 processor using nothing but raw logic gates in in Xilinx</a>, and in the latter we <a href="images/SiteGenerator/MOSFETs.jpg">etched our own MOSFETs on silicon wafers</a>. Hell, the reason I took up Nintendo 64 development was because <a href="../../projects.html#n64">I wanted to have an excuse to write game engines from scratch</a>. I liken it to how a blacksmith will make their own tools from scratch. Picking up someone else's tool to make a website for me feels like I'm betraying who I am as a person. It <em>would</em> be the sane thing to do, but therapy is expensive.</p>
+<p>Now, punching in some HTML and CSS for a blog page is easy. You do it once, and then copy paste that file around to make more pages, modifying the contents to fit the new blog entry. That's literally what I did for the first 3 blog pages on this website. But if you want a bit more out of a webpage than that, it quickly scales up. For instance, this blog entry has tags. You can click on a tag and it will take you to another web page that lists all the other pages in my website that have that tag as well. Could this be done manually? Sure. You can make the tag page yourself, add your blog post to said page, and then hotlink your blog post to it. But if at any time you need to change a page, or delete it, you need to remember to remove all references to and from it, lest your website be crippled with missing pages. So, to avoid this problem, developers use something that is called a &quot;Static Site Generator&quot;, or SSG for short (not to be confused with Super Shotgun).</p>
+</br><h3 id="making-a-super-shotgun"> <a href="#making-a-super-shotgun">Making a Super Shotgun</a></h3>
+<p><p align="center">
+<img src="images/SiteGenerator/SuperShotgun.gif" loading="lazy" alt="This was entirely self-defence, your honor." title="This was entirely self-defence, your honor."></br>
+To defeat the pinky demon, shoot at it until it dies. Image sourced from <a href="https://www.insidehook.com/culture/doom-eternal-review">here</a>.
+</p></p>
+<p>Naturally, I wrote my <em>own</em> SSG to generate my <em>own</em> website. Funnily, most of the popular open source SSG's are written in JavaScript of all things, and I completely understand why. JavaScript is a super easy language to pick up, has hundreds of thousands of libraries, and works on any operating system that has a web browser (which, unless you use TempleOS as your daily driver, you have one). It is, an objectively, excellent choice to write a website generator in.</p>
+<p>So I chose to write my SSG in C++.</p>
+<p>Why? No particular reason. I like working with C/C++, and I like the look of native software that <a href="https://www.wxwidgets.org/">wxWidgets</a> generates. Sure, it's harder and a bit less convenient than using JS or Python for my tool, but convenience was never really the point of the exercise. But for you, sane reader, if you ever decide to make your own site generator (which you shouldn't) use a strongly typed language. It will save you work and headache in the future.</p>
+<p>There's two things I wanted out of my website: I wanted a place to list all my projects, and I wanted a place to write blog posts on. And each of these pages would have sections, for instance, listing different game projects by the engine they used. So the layout I had in mind for the program was to have a tree structure on the left side, where you would have a list of sections with pages inside them, and on the right side of the program you would have a bunch of entry boxes. Up top you would have a dropdown to pick between projects listing and blog listing. I whipped this up in a tool called wxFormBuilder, and copy pasted the generated code into a text editor.</p>
+<p><p align="center">
+<img src="images/SiteGenerator/FormBuilder.png" loading="lazy" alt="The result from wxFormBuilder" title="The result from wxFormBuilder"></br>
+</p></p>
+</br><h3 id="have-you-heard-of-jquery"> <a href="#have-you-heard-of-jquery">Have You Heard of JQuery?</a></h3>
+</br><h3 id="whats-next"> <a href="#whats-next">What's Next?</a></h3>
+
+            </br>
+            <hr>
+            <td><a href="../../blog.html#meta">Return to blog</a></td>
+        </div>
+        <script src="../blog.js"></script>
+    </body>
+</html>
