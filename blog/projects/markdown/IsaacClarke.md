@@ -2,7 +2,6 @@ So, for Lisbon Comic Con in 2019, I decided to make a new cosplay instead of reu
 
 I have previously covered my cosplay build in an [Imgur album](https://imgur.com/gallery/isaac-clarke-cosplay-build-NsLUxGI), but now that I have this wonderful website, I decided transition that information here.
 
-
 ### Materials
 
 Here is a list of the materials I used:
@@ -391,7 +390,7 @@ Regarding the helmet's visor, I used that foggy plastic that's used to bind the 
 
 ### Let There be Light
 
-Isaac's suit has a lot of lights on it, which requires soldering. Unfortunately, at the time I didn't own a soldering station, so I had a friend of mine called JoATILDE_SYMBOLo Santos design the circuitry and put it all together.
+Isaac's suit has a lot of lights on it, which requires soldering. Unfortunately, at the time I didn't own a soldering station, so I had a friend of mine called João Santos design the circuitry and put it all together.
 
 <p align="center">
 ![Helmet circuitry](images/IsaacClarke/HelmetCircuitry.JPG)
@@ -459,6 +458,6 @@ But I couldn't be happier with it.
 
 While Dead Space isn't as popular a franchise as League of Legends, I can tell you that the few people who recognized my character were *ecstatic* to see the costume, with full on gushing as soon as they saw the LEDs turn on.
 
-A funny anecdote, but one time I was meeting up with a friend from university in Alg_EACUTE_SYMBOLs, and he mentioned how he recognized the area but wasn't sure when he'd been here. I offhanded that it might have been at an event in the Passeio Maritimo, such as Comic Con. He said that yeah, it was Comic Con, he remembered the event being kinda crappy, but the major highlight for him was seeing someone in a Dead Space costume. Funny how small the world is, eh?
+A funny anecdote, but one time I was meeting up with a friend from university in Algés, and he mentioned how he recognized the area but wasn't sure when he'd been here. I offhanded that it might have been at an event in the Passeio Maritimo, such as Comic Con. He said that yeah, it was Comic Con, he remembered the event being kinda crappy, but the major highlight for him was seeing someone in a Dead Space costume. Funny how small the world is, eh?
 
 If you want to use any of the stencils that I made for this project, you can download them [here](downloads/DeadSpaceStencils.zip). Just be wary that they are shaped for my body, so make sure you resize them to fit your needs!

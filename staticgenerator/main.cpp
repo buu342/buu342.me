@@ -2011,7 +2011,8 @@ void Main::CompileProjects_List()
     {
         wxString html_projects = wxString("");
         wxString relativepath = wxString("projects/") + cat->foldername + wxString("/");
-        const char* mdstr = md_sanitize(&cat->description)->mb_str();
+        wxString desccopy = cat->description;
+        const char* mdstr = md_sanitize(&desccopy)->mb_str();
         wxString desc;
 
         // If there's no projects in this category, skip it
@@ -2321,7 +2322,8 @@ void Main::CompileBlog_Entry(Blog* bentry)
     wxString bentryoutpath = this->m_WorkingDir + wxString("/") + relativepath + bentry->filename + wxString(".html");
     wxTextFile bentryout(bentryoutpath);
     wxString html_md = wxString(""), pagetags = wxString("");
-    const char* mdstr = md_sanitize(&bentry->content)->mb_str();
+    wxString contentcopy = bentry->content;
+    const char* mdstr = md_sanitize(&contentcopy)->mb_str();
 
     // Skip this blog entry if it wasn't modified
     if (!this->m_FullCompile && !bentry->wasmodified)
