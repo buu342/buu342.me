@@ -16,9 +16,9 @@ But that's not really _**me**_.
 
 I'm someone who likes to _understand_ things. I like breaking stuff open and looking at what makes them tick. Despite having done Computer Science, my two favorite subjects were from other degrees in my university: Logical Systems II and Microelectronic I. In the former, we implemented an [8086 processor using nothing but raw logic gates in in Xilinx](https://github.com/buu342/FCT-XilinxIntel8086), and in the latter we [etched our own MOSFETs on silicon wafers](images/SiteGenerator/MOSFETs.jpg). Hell, the reason I took up Nintendo 64 development was because [I wanted to have an excuse to write game engines from scratch](../../projects.html#n64). I liken it to how a blacksmith will not only make things, but also the things to help him make said things too. Picking up someone else's tool to make a website for me feels like I'm betraying who I am as a person. It _would_ be the sane thing to do, but therapy is expensive.
 
-What exactly would I gain from writing a static site generator? I don't know, but I won't know until I do it either!
-
 Now, punching in some HTML and CSS for a blog page is easy. You do it once, and then copy paste that file around to make more pages, modifying the contents to fit the new blog entry. That's literally what I did for the first 3 blog pages on this website. But if you want a bit more out of a webpage than that, it quickly scales up. For instance, this blog entry has tags. You can click on a tag and it will take you to another web page that lists all the other pages in my website that have that tag as well. Could this be done manually? Sure. You can make the tag page yourself, add your blog post to said page, and then hotlink your blog post to it. But if at any time you need to change a page, or delete it, you need to remember to remove all references to and from it, lest your website be crippled with missing pages. So, to avoid this problem, developers use something that is called a "Static Site Generator", or SSG for short (not to be confused with Super Shotgun).
+
+What exactly would I gain from writing a static site generator? I don't know, but I won't know until I do it either!
 
 ### Making a Super Shotgun
 
