@@ -233,8 +233,9 @@ wxString* md_sanitize(wxString* input)
     input->Replace(wxString::FromUTF8("™"), "_TRADEMARK_SYMBOL");
     input->Replace(wxString::FromUTF8("®"), "_REGISTERED_SYMBOL");
     input->Replace(wxString::FromUTF8("©"), "_COPYRIGHT_SYMBOL");
-    input->Replace(wxString::FromUTF8("º"), "_DEGREE_SYMBOL");
+    input->Replace(wxString::FromUTF8("°"), "_DEGREE_SYMBOL");
     input->Replace(wxString::FromUTF8("ª"), "_SUBA_SYMBOL");
+    input->Replace(wxString::FromUTF8("º"), "_SUBO_SYMBOL");
     input->Replace(wxString::FromUTF8("á"), "_AACUTE_SYMBOL");
     input->Replace(wxString::FromUTF8("Á"), "_AACUTEC_SYMBOL");
     input->Replace(wxString::FromUTF8("ã"), "_ATILDE_SYMBOL");
@@ -298,8 +299,9 @@ wxString* md_unsanitize(wxString* input)
     input->Replace("_TRADEMARK_SYMBOL", "&trade;");
     input->Replace("_REGISTERED_SYMBOL", "&reg");
     input->Replace("_COPYRIGHT_SYMBOL", "&copy;");
-    input->Replace("_DEGREE_SYMBOL", "&ordm;");
+    input->Replace("_DEGREE_SYMBOL", "&deg;");
     input->Replace("_SUBA_SYMBOL", "&ordf;");
+    input->Replace("_SUBO_SYMBOL", "&ordm;");
     input->Replace("_AACUTE_SYMBOL", "&aacute;");
     input->Replace("_AACUTEC_SYMBOL", "&Aacute;");
     input->Replace("_ATILDE_SYMBOL", "&atilde;");

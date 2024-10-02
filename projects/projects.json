@@ -381,12 +381,27 @@
             "DisplayName": "Miscellaneous",
             "Index": 9,
             "Pages": {
+                "blokusduoai": {
+                    "Date": "Februrary 15, 2018",
+                    "DisplayName": "Blokus Duo Arduino AI",
+                    "Icon": "icons/blokusduoai.png",
+                    "Images": null,
+                    "Index": 1,
+                    "Tags": [
+                        "C",
+                        "Arduino"
+                    ],
+                    "ToolTip": "",
+                    "URLs": [
+                        "https://github.com/buu342/FCT-BlokusDuoREC2018"
+                    ]
+                },
                 "buu342me": {
                     "Date": "November 10, 2021",
                     "DisplayName": "This Website (buu342.me)",
                     "Icon": "icons/buu342me.png",
                     "Images": null,
-                    "Index": 1,
+                    "Index": 2,
                     "Tags": [
                         "Bad Life Decisions",
                         "Web Development",
@@ -399,7 +414,7 @@
                     ],
                     "ToolTip": "The very website you're gazing your eyes upon!",
                     "URLs": [
-                        "https://buu342.me/blog/meta/HelloWorld.html"
+                        "https://buu342.me/blog/meta/StaticGenerator.html"
                     ]
                 },
                 "sgiindypc": {

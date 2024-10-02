@@ -1,4 +1,4 @@
-I've had my hands on the blue outer shell of a [Silicon Graphics Indy](https://en.wikipedia.org/wiki/SGI_Indy) for a while. It was originally intended for something that ended up falling apart, so I just left it in storage until I could find a use for it. SGI computers, in general, are something I find quite cool due to their history relating to CGI in cinema, but the Indy is a particular standout for me due to its frequent use in making Nintendo 64 games ([I make N64 homebrew](https://www.youtube.com/watch?v=ZgPWE0Wkg7g), in case you weren't aware!).
+I've had my hands on the blue outer shell of a [Silicon Graphics Indy](https://en.wikipedia.org/wiki/SGI_Indy) for a while. It was originally intended for something that ended up not happening, so I just left it in storage until I could find a use for it. SGI computers, in general, are something I find quite cool due to their history relating to CGI in cinema, but the Indy is a particular standout for me due to its frequent use in making Nintendo 64 games ([I make N64 homebrew](https://www.youtube.com/watch?v=ZgPWE0Wkg7g), in case you weren't aware!).
 
 2020 came along and I had quite a bit of money saved up, so I thought it was time I finally build a PC. Unfortunately, that was the start of the COVID pandemic, and the subsequent rise in costs for PC hardware worldwide. Bummer.
 
@@ -320,7 +320,7 @@ The motherboard of your PC should have some USB headers on it, as these headers 
 ![The Beetle board, connected to the motherboard](images/SGIIndySleeper/FrontIOBeetle.jpg)
 </p>
 
-And voila:
+And voilà:
 
 <p align="center">
     <video width="50%" controls>
@@ -337,3 +337,8 @@ I mentioned that the green LED wasn't working when I connected it to the POWER L
 I wasted hours trying to diagnose this and resoldering the I/O. The LED was fine and plugged in the correct orientation, the motherboard was sometimes reading the correct voltage and other times not. Did I fry the motherboard somehow?
 
 No, so actually as it turns out, I had enabled "stealth" mode in the BIOS many years ago (I remember doing this specifically for power consumption reasons), which would disable all LEDs. I had to re-enable to get the LED working again. Why the HDD LED was working all this time is still a mystery to me, but at least now the LED is *properly* connected to the POWER LED cable, and will turn off when the computer is powered off/sleeping. Just as John Computer intended.
+
+</br>
+** Update 02/10/2024**
+
+I have written a [follow-up article](IndyPC2Years.html) that talks about how the computer is holding up, two years later.
