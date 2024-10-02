@@ -391,7 +391,7 @@
                         "C",
                         "Arduino"
                     ],
-                    "ToolTip": "",
+                    "ToolTip": "An AI for competing in Blokus Duo games, designed to be run in an Arduino. Winner of the 'Newbie' category at the 2018 XIV Jornadas Sobre Sistemas Reconfiguraveis competition.",
                     "URLs": [
                         "https://github.com/buu342/FCT-BlokusDuoREC2018"
                     ]
