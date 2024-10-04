@@ -1,8 +1,8 @@
-Shell Time is a run and gun platformer that I made in 2 weeks. And by "I made", I mean I made everything(*) except the music (due to lack of time). 
+Shell Time is a run and gun platformer that I made in 2 weeks. In this game, you play a super heroine who gets a long-awaited break in her boredom when aliens attack her city. Equipped with her dual pistols and laser sword, you shoot your way through the alien infested rooftops, buildings, and onto their ship.
 
-In this game, you play a super heroine who gets a long-awaited break in her boredom when aliens attack her city. Equipped with her dual pistols and laser sword, you shoot your way through the alien infested rooftops, buildings, and onto their ship. 
+The demo features bullet time (which affects sound and music), a seamless music transition system, a scripted camera that can focus on specific parts of the level to guide the player, and a custom directional sound implementation. There's also some other neat tidbits, like how the boss syncronizes to the music.
 
-The demo features bullet time (which affects sound and music), a seamless music transition system, and a custom directional sound implementation.
+Before this project, I had already done some experimentation with Unity throughout the years, but this was my first time putting "something" large together. I was familiar with how Unity's character controller and sound system is *lacking*, so I had to write a custom character controller (so that I could get some movement physics which actually felt good and supported things like [Coyote Time](https://en.wiktionary.org/wiki/coyote_time)) and sound system (so that sound effects and music can be affected by slow motion, as well as so that the music can transition at the right points of the track).
 
 ### Controls
 
