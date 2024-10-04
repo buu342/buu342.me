@@ -270,6 +270,8 @@ Design flaws...
 * Due to the lack of rivets on the left side tab, there's a small gap between the two walls. Again, I should look into welding those. Next time, I should have the tabs riveted to the back face (similar to the front face), but just having a section cut out to fit the PSU + GPU.
 * The side I/O is a [milimeter too much to the bottom](images/SGIIndySleeper/SideIO.jpg), making it useless. I'm not sure where I went wrong in my measurements, but I know I didn't test the side I/O in my cardboard model. Basically I was stupid. I wasn't planning on populating those just yet anyway, but looks like I'll need to do some grinding to fix that... 
 
+If you want my CAD files, then feel free to grab them from [here](downloads/SGIIndyCAD.zip).
+
 The end!
 
 <p align="center">
@@ -286,8 +288,6 @@ I have [soldered the Power LED to the wires and resistors](images/SGIIndySleeper
         <source src="images/SGIIndySleeper/FrontLED.mp4" type="video/mp4"></br>
     </video>
 </p>
-
-If you want my CAD files, then feel free to grab them from [here](downloads/SGIIndyCAD.zip).
 
 </br>
 **Update 24/09/2024**
@@ -339,6 +339,6 @@ I wasted hours trying to diagnose this and resoldering the I/O. The LED was fine
 No, so actually as it turns out, I had enabled "stealth" mode in the BIOS many years ago (I remember doing this specifically for power consumption reasons), which would disable all LEDs. I had to re-enable to get the LED working again. Why the HDD LED was working all this time is still a mystery to me, but at least now the LED is *properly* connected to the POWER LED cable, and will turn off when the computer is powered off/sleeping. Just as John Computer intended.
 
 </br>
-** Update 02/10/2024**
+**Update 02/10/2024**
 
 I have written a [follow-up article](IndyPC2Years.html) that talks about how the computer is holding up, two years later.
