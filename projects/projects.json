@@ -672,7 +672,13 @@
                     "Date": "July 16, 2022",
                     "DisplayName": "Scavenger Hunt",
                     "Icon": "icons/scavengerhunt.png",
-                    "Images": null,
+                    "Images": [
+                        "images/ScavengerHunt1.png",
+                        "images/ScavengerHunt2.png",
+                        "images/ScavengerHunt3.png",
+                        "images/ScavengerHunt4.png",
+                        "images/ScavengerHunt5.png"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "Unity",
