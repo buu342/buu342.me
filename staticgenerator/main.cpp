@@ -2135,9 +2135,15 @@ void Main::CompileProjects_Project(Project* proj)
         {
             wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_youtube.html");
             if (i == 0 && images.size() == 0)
+            {
                 obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "");
+            }
             else
+            {
                 obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "display:none");
+            }
             obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", str);
             carousel_list += obj;
             i++;

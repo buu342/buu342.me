@@ -361,7 +361,9 @@
                     "Date": "April 9, 2021",
                     "DisplayName": "RAGE SWEPs",
                     "Icon": "icons/ragesweps.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=cGQ0qYkw9v4"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "Lua",

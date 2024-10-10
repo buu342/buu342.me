@@ -8,6 +8,8 @@ var global_carouseltarget = null;
 function main()
 {
     var i;
+
+    // Category button collapser
     var colbuts = document.getElementsByClassName("collapse-button");
     for (i = 0; i < colbuts.length; i++)
     {
@@ -33,6 +35,7 @@ function main()
         );
     }
 
+    // Handle category section resize
     window.addEventListener('resize', 
         function(event) {
             for (i = 0; i < colbuts.length; i++)
@@ -40,6 +43,7 @@ function main()
         }, true
     );
 
+    // Handle image carousel
     var carousellist = document.getElementsByClassName("carousel-list")[0];
     var carouselobject = document.getElementsByClassName("carousel-object")[0];
     if (carouselobject != null)
@@ -94,6 +98,8 @@ function HideElementsInCollapsedCategory(content)
 
 function SetObjectVisiblity(content, visible)
 {
+    if (content == null)
+        return;
     if (visible)
         content.style.display = 'block';
     else
@@ -102,6 +108,8 @@ function SetObjectVisiblity(content, visible)
 
 function FadeObject(content, fadein)
 {
+    if (content == null)
+        return;
     if (fadein)
     {
         content.classList.remove("fadeout");
@@ -152,7 +160,8 @@ function FinishFadein(video, src)
 
 function SetIFrameVideo(video, src)
 {
-    console.log(video);
+    if (video == null)
+        return;
     var container = video.parentNode;
     video.remove();
     video.setAttribute("src", src);
