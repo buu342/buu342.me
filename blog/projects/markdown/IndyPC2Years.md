@@ -249,3 +249,16 @@ The biggest problem, in my opinion, is that I will probably have trouble fitting
 <p align="center">
 ![A photo of the PC and all the peripherals on top of it](images/IndyPC2Years/PCFinal.JPG)
 </p>
+
+</br>
+**Update 11/10/2024**
+
+October 10 came along, meaning it was time to update Kubuntu from 23.10 to 24.10. I made a restore point with timeshift, and proceeded to let it upgrade to 24.04 (you can't go directly to 24.10, you need to upgrade to the LTS version first). After it finished, I was greeted by a black login screen, even in recovery mode. This smelled like graphics issues, so I used timeshift to rollback the upgrade, and then I uninstalled the AMDGPU drivers.
+
+Now the upgrade to 24.04 worked out of the box, and so did subsequently going to 24.10. But now I had a big problem: I need to install the AMDGPU drivers (so that I can use Davinci Resolve), but those drivers only go up to 22.04 (As of writing this blog post the drivers for 24.04 have been made available). Downloading the AMDGPU installer and running it with `amdgpu-installer --usecase=opencl --no-dkms` would result in the script complaining that the packages could not be found. I manually went to the AMD repository and found the packages there, available for Ubuntu 24.04, so I just manually downloaded the necessary packages and installed them one by one, manually installing the dependencies first.
+
+After all of that, I was left with a login loop. So rolled back my changes with timeshift and tried different variations of the AMDGPU installer's commands, like trying to install only rocm. No matter what I'd do, either I was left with a login loop or Davinci Resolve would fail to detect OpenCL.
+
+After about 8 hours since I first did my upgrade, close to giving up because it was 4AM, I found [a Reddit post](https://www.reddit.com/r/davinciresolve/comments/1fj02pg/davinci_resolve_19_works_on_linux_with_amd_gpu/) that explains how to get Davinci Resolve working on Ubuntu 24.04. I tried it, and to my surprise, it worked! The only difference was that the `amdgpu-installer` script this user linked to was one on AMD's rocm website and not the GPU drivers website. This other script properly managed to detect the new packages on AMD's repository and install OpenCL using the first command that I had tried. I was baffled, but I couldn't be happier. Updated system and Davinci Resolve working!
+
+Too bad I woke up the next day with [benign paroxysmal positional vertigo](https://en.wikipedia.org/wiki/Benign_paroxysmal_positional_vertigo). I wonder if Linux is to blame...
