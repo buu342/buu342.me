@@ -106,7 +106,7 @@
                 "RCASwitchBox": {
                     "Date": "October 21, 2024",
                     "DisplayName": "Building an RCA Switch Box",
-                    "Icon": "",
+                    "Icon": "icons/RCASwitchBox.png",
                     "Index": 0,
                     "Tags": [
                         "CAD",

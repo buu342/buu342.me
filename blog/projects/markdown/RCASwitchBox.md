@@ -95,16 +95,63 @@ The wiring for this is easy. Essentially, the middle prongs will be your common 
 Image sourced from [here](https://www.stewmac.com/video-and-ideas/online-resources/learn-about-guitar-pickups-and-electronics-and-wiring/3pdt-stomp-switch-instructions/).
 </p>
 
-I recommend testing which is which using the continuity checker of your multimeter first, because you might get some surprises (more on this later).
+I recommend testing which is which using the continuity tester of your multimeter first, because you might get some surprises (more on this later).
 
 You might be curious, "what if I had a ton of inputs? Say, I want to make an N64 cartridge swapper. Would I need to get a 48PDT?". Yeah, you would, but you would probably have a really hard time finding such a thing. Something like that usually ends up getting done in a microcircuit instead, you would hook up an SPST to the voltage of a bunch of SPDT or DPDT relays. Relays are microswitches, and come in the same variety as normal switches (SPST, DPST, etc...). The downside of this being a microcircuit is that, for such a thing to work, you would need to externally power the conversion box.
 
-### Getting Everything I Need
+### Buying All the Parts
 
-### Making a Box For Everything
+Once again, I could get everything needed for this project at a questionable online retailer, but I prefer to support businesses in my region. There's an electronics store not too far from where I live, which is where I purchase most of my electronic components and tools from. Unfortunately, while the store's website did list female RCA jacks in the three colors I needed, I was having a hard time finding a 3PDT switch in stock. And most of the other sites I searched at either did not have all the RCA jack colors I needed, or did not have enough in stock (I needed 3 of each color). I wanted to avoid having to purchase all the parts from separate stores, but it seems that I would have to bite the bullet...
 
-Drilling I had to do
+Then I remembered "Wait, what if I search for a 4PDT?", and much to my surprise, those were actually in stock at my local store. So I placed the order, and in less than 24 hours I received a text telling me that the order was ready for pickup at the store.
 
-### Putting The Parts Together
+### Making a Box for the Switcher
 
-Talk about how I used the multimeter and found the switch was *backwards*.
+Next, I'd need to create a box to hold all the pieces in, and so I turned to my favorite testing analogue: cardboard. I measured out an equalateral triangle with sides of length 6cm, and a height of 2cm, and then I cut and glued together my pepakura masterpiece. The model taught me two things:
+1. 6cm isn't enough, as the outer RCA jacks would overlap with one another.
+2. 2cm, while enough, runs the risk of everything being too compact once the wires are soldered in. 
+
+So I decided to increase the triangle by two centimeters, and the height by one. I then used [FreeCAD](https://www.freecad.org/) to model out the box:
+
+<p align="center">
+![Box CAD](images/RCASwitchBox/BoxCAD.png)
+</p>
+
+The box has a top and bottom lid, both of which are to be screwed in place. The holes for the RCA plugs are 1.5cm apart from one another, and the entire box has 2mm of thickness. 
+
+The idea was that I could 3D print the box in order have something a bit more custom, as opposed to buying a [plastic project box](images/RCASwitchBox/ProjectBox.png) and drilling some holes in it. I looked around for 3D printing services (since I don't own one) and found someone nearby who would do it for me. I got my model the next day.
+
+The printed model, unfortunately, wasn't perfect. 3D printing isn't really a super accurate medium, and so I had to spend an afternoon sanding the parts and drilling in wider holes in the material (because the originals were slightly smaller than the spec). To be fair, I could have designed the top and bottom cover with a milimeter gap between the walls, but I was expecting to have to sand some stuff anyway...
+
+I opted to use a Dremel for the main plug holes, because I was afraid that the drill would crack the plastic. This turned out to be a bit more of a pain than I expected, because the Dremel wouldn't actually sand the material all that well. Rather, it would heat up the plastic and melt it. It never actually melted the box more than I would've liked, but it did make cleanup a bit more frustrating as I had to spend time cutting away bits of melted plastic and then sanding it smooth. For the top and bottom lid (as well as the screw supports inside the box), I drilled instead, which was definitely faster than using the Dremel.
+
+### Putting Everything Together
+
+With the box working properly and all the bits test fitted, I screwed the plugs and switch to their respective locations, tightened the washers on the opposite side of all the parts, and bent the ground leads on the plugs. The plugs especially need really tight washers, because it's very easy to twist and turn the RCA plugs as you try to pull them out. Tightening those washers will prevent the plugs from rotating inside the box, which could break off the soldered wires.
+
+Now, before you solder the data pins to the switch, it's important that you test it with the continuity tester of your multimeter to ensure the switch works as you expect. Mine didn't! I expected that pushing the switch to the left would bridge the legs on the left side of the switch with the center legs, but turns out that it actually works backwards! So I had to do a bit more wire crossing than I would have liked, but I tried to keep the pattern of how I did it consistent.
+
+Once all the data pins were soldered on and continuity tested with the multimeter, I soldered all the grounds together to create this gore of wires:
+
+<p align="center">
+![Box all wired up](images/RCASwitchBox/BoxInside.jpg)</br>
+I fear that I could accidentally summon a demon with this thing...
+</p>
+
+In hindsight, I should have used longer wires inside the box to give them a lot more slack and prevent them from breaking off easily in the case that the plug gets twisted, but since this is only a product for me I'll just simply be aware of how I pull out the jacks.
+
+Time to test:
+
+<p align="center">
+<video width="50%" controls>
+  <source src="images/RCASwitchBox/Final.mp4" type="video/mp4">
+</video>
+</p>
+
+All's good, so I just put some stickers on it to remind me what side does what:
+
+<p align="center">
+![Box with stickers](images/RCASwitchBox/Stickers.jpg)
+</p>
+
+And that's all there is to it! As usual, you can download the CAD files for the box from [here](downloads/RCABox.zip) if you want to build your own.

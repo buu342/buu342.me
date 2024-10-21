@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Building an RCA Switch Box</title>
+        <link rel="shortcut icon">
+        <link href="../blog.css" rel="stylesheet" type="text/css">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://buu342.me/blog/projects/RCASwitchBox.html">
+        <meta property="og:title" content="Building an RCA Switch Box">
+        <meta property="og:image" content="https://buu342.me/blog/projects/icons/RCASwitchBox.png">
+        <meta property="og:description" content="I cover the design process of a box that allows me to switch RCA signals" />
+    </head>
+    
+    <body>
+        <div class="box">
+            <h1>Building an RCA Switch Box</h1>
+            <h5>Published: October 21, 2024</h5>
+            <h5>Tags: <a href="../../tags/CAD.html">CAD</a>, <a href="../../tags/Soldering.html">Soldering</a></h5>
+            <hr>
+            <p>If you've read my previous blog posts, you would know that I have a CRT TV on my desk, next to my main PC monitor. I originally brought this old Grundig TV over to my room  so that I could connect my Nintendo 64 to it, as the N64 only comes with AV (RCA) output. Eventually though, I bought a cheap HDMI to AV conversion box, and thus I also had the ability to use the CRT as a second monitor for my PC. Now, I don't really <em>recommend</em> using a CRT as a second monitor, because you will not have a very fun time trying to read text on it. But if your intention is to use your second monitor mainly for watching videos on it, then it will work perfectly. The issue with my particular CRT is that it only has <em>one</em> external SCART input, but I have <em>two</em> things that I would like to connect to it at the same time.</p>
+<p>Enter the switch box:</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/SwitchBoxFosmon.jpg" loading="lazy" alt="AV switch box" title="AV switch box"></br>
+An example of an AV switch box, this particular one takes in three inputs.</br>
+Image sourced from <a href="https://www.fosmon.com/3-way-audio-video-av-rca-composite-switch-selector-box-splitter-combiner-black">here</a>.
+</p></p>
+<p>The concept is pretty simple: You plug into the box multiple different signal sources, one output cable, and you use the switch on the top of the box to select which input gets outputted. This saves you the trouble of having to repeatedly connect and disconnect cables.</p>
+<p>I looked around for switch boxes, and I saw that they were available for around 10 euro. I mean, I <em>could</em> get it for cheaper on sites which don't stress about selling <em>questionable</em> products, but I don't like to puchase from them... I thought &quot;hey, a thing like this seems really easy to build, I bet I could put one together for cheap&quot;.</p>
+<p>It's a pretty easy project, but I was surprised by the lack of information on how to build one. So let's get to it! First, an explanation of the basic components we'll need.</p>
+</br><h3 id="rcaav-cables-and-how-they-work"> <a href="#rcaav-cables-and-how-they-work">RCA/AV Cables and How They Work</a></h3>
+<p>RCA cables are called such because they were created by the Radio Corporation of America in the 1930s, but they are also reffered to as AV cables (Audio/Video) or erroneously as Composite cables.</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/RCACables.jpg" loading="lazy" alt="RCA cables" title="RCA cables"></br>
+The three colored cables that make up the RCA standard.</br>
+Image sourced from <a href="https://commons.wikimedia.org/wiki/File:Composite-cables.jpg">here</a>.
+</p></p>
+<p>There's three cables that make up the RCA standard: A yellow video signal cable (AKA <em>the</em> composite cable, called such because all video signal data is put in one cable (as opposed to the component cables which split video into three different cables)), a white left audio channel cable, and a red right audio channel cable. Typically, the order of these cables (from left to right) is yellow, white, red. The connector end of the cable has a pointy bit which carries the data, and a metal shield around it which acts as ground.</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/CableDiagram.jpg" loading="lazy" alt="Cable diagram" title="Cable diagram"></br>
+A diagram of the different parts of the RCA cable.</br>
+Original image sourced from <a href="https://commons.wikimedia.org/wiki/File:Composite-video-cable.jpg">here</a>.
+</p></p>
+<p>On the opposite end, you have the female plug of the cable. This will have a piece of metal that sticks out the butt end (which the pointy bit touches), and an extra piece of metal that sticks out perpendicular to the plug, it touches the entire metal enclosure and thus acts as our ground.</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/PlugDiagram.jpg" loading="lazy" alt="Female plug diagram" title="Female plug diagram"></br>
+A diagram of the different parts of the plug end.</br>
+Original image sourced from <a href="https://servelec.pt/product/ficha-rca-femea-prateada-vermelha-de-painel-18-4r">here</a>.
+</p></p>
+<p>That's all there really is to it, the RCA standard is pretty simple.</p>
+</br><h3 id="how-switches-work"> <a href="#how-switches-work">How Switches Work</a></h3>
+<p>You might be thinking &quot;wait, do I really need to be told how switches work? You push to one side and it turns on, push it to the other and it turns off.&quot;. Well, that's true, but that's for the basic type of switch, which won't do much for us in this situation. That type of switch is for turning stuff on and off, rather, we want to switch between signals at the flick of the switch.</p>
+<p>A typical on/off switch is known as a &quot;single pole, single throw&quot; (SPST) switch:
+<br>
+<p align="center">
+<img src="images/RCASwitchBox/SPST.png" loading="lazy" alt="SPST" title="SPST">
+</p>
+<br>
+While a switch that toggles between two states is known as a &quot;single pole, double throw&quot; (SPDT):
+<br>
+<p align="center">
+<img src="images/RCASwitchBox/SPDT.png" loading="lazy" alt="SPDT" title="SPDT">
+</p>
+<br>
+The &quot;throw&quot; means the number of outputs that switch has. So a &quot;single pole, triple throw&quot;  (SP3T) switch would have three outputs:
+<br>
+<p align="center">
+<img src="images/RCASwitchBox/SP3T.png" loading="lazy" alt="SP3T" title="SP3T">
+</p>
+<br></p>
+<p>Now, we can design our switch box by hooking up each video cable to the end of a SPDT switch. This would be silly though, because we'd have to flip three switches in order to fully change output sources. Rather, we need a switch that can change multiple inputs at the same time, rather than just one.</p>
+<p>An example of such a switch is a &quot;double pole, single throw&quot; (DTSP) switch:
+<br>
+<p align="center">
+<img src="images/RCASwitchBox/DTSP.png" loading="lazy" alt="DTSP" title="DTSP">
+</p>
+<br>
+This type of switch will toggle <em>two</em> separate inputs on and off, hence why it's &quot;double pole&quot;. Following the logic of the previous names, you should hopefully understand that a &quot;double pole, double throw&quot; (DPDT) switch is one that toggles each of the two inputs between two different outputs:
+<p align="center">
+<img src="images/RCASwitchBox/DPDT.png" loading="lazy" alt="DPDT" title="DPDT">
+</p>
+<br></p>
+<p>What we need for this specific project, is a &quot;triple pole, double throw&quot;  (3PDT) switch.</p>
+<p>If you look at a 3PDT, you might be a bit scared off by the number of legs sticking out the bottom:</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/3PDTUnder.jpg" loading="lazy" alt="Under a 3PDT" title="Under a 3PDT"></br>
+Image sourced from <a href="https://www.futurlec.com/Switches/3PDT11.shtml">here</a>.
+</p></p>
+<p>The wiring for this is easy. Essentially, the middle prongs will be your common output, while the prongs to the left and right of them are the two separate inputs:</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/3PDTDiagram.png" loading="lazy" alt="3PDT diagram" title="3PDT diagram"></br>
+Image sourced from <a href="https://www.stewmac.com/video-and-ideas/online-resources/learn-about-guitar-pickups-and-electronics-and-wiring/3pdt-stomp-switch-instructions/">here</a>.
+</p></p>
+<p>I recommend testing which is which using the continuity tester of your multimeter first, because you might get some surprises (more on this later).</p>
+<p>You might be curious, &quot;what if I had a ton of inputs? Say, I want to make an N64 cartridge swapper. Would I need to get a 48PDT?&quot;. Yeah, you would, but you would probably have a really hard time finding such a thing. Something like that usually ends up getting done in a microcircuit instead, you would hook up an SPST to the voltage of a bunch of SPDT or DPDT relays. Relays are microswitches, and come in the same variety as normal switches (SPST, DPST, etc...). The downside of this being a microcircuit is that, for such a thing to work, you would need to externally power the conversion box.</p>
+</br><h3 id="buying-all-the-parts"> <a href="#buying-all-the-parts">Buying All the Parts</a></h3>
+<p>Once again, I could get everything needed for this project at a questionable online retailer, but I prefer to support businesses in my region. There's an electronics store not too far from where I live, which is where I purchase most of my electronic components and tools from. Unfortunately, while the store's website did list female RCA jacks in the three colors I needed, I was having a hard time finding a 3PDT switch in stock. And most of the other sites I searched at either did not have all the RCA jack colors I needed, or did not have enough in stock (I needed 3 of each color). I wanted to avoid having to purchase all the parts from separate stores, but it seems that I would have to bite the bullet...</p>
+<p>Then I remembered &quot;Wait, what if I search for a 4PDT?&quot;, and much to my surprise, those were actually in stock at my local store. So I placed the order, and in less than 24 hours I received a text telling me that the order was ready for pickup at the store.</p>
+</br><h3 id="making-a-box-for-the-switcher"> <a href="#making-a-box-for-the-switcher">Making a Box for the Switcher</a></h3>
+<p>Next, I'd need to create a box to hold all the pieces in, and so I turned to my favorite testing analogue: cardboard. I measured out an equalateral triangle with sides of length 6cm, and a height of 2cm, and then I cut and glued together my pepakura masterpiece. The model taught me two things:</p>
+<ol>
+<li>6cm isn't enough, as the outer RCA jacks would overlap with one another.</li>
+<li>2cm, while enough, runs the risk of everything being too compact once the wires are soldered in.</li>
+</ol>
+<p>So I decided to increase the triangle by two centimeters, and the height by one. I then used <a href="https://www.freecad.org/">FreeCAD</a> to model out the box:</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/BoxCAD.png" loading="lazy" alt="Box CAD" title="Box CAD">
+</p></p>
+<p>The box has a top and bottom lid, both of which are to be screwed in place. The holes for the RCA plugs are 1.5cm apart from one another, and the entire box has 2mm of thickness.</p>
+<p>The idea was that I could 3D print the box in order have something a bit more custom, as opposed to buying a <a href="images/RCASwitchBox/ProjectBox.png">plastic project box</a> and drilling some holes in it. I looked around for 3D printing services (since I don't own one) and found someone nearby who would do it for me. I got my model the next day.</p>
+<p>The printed model, unfortunately, wasn't perfect. 3D printing isn't really a super accurate medium, and so I had to spend an afternoon sanding the parts and drilling in wider holes in the material (because the originals were slightly smaller than the spec). To be fair, I could have designed the top and bottom cover with a milimeter gap between the walls, but I was expecting to have to sand some stuff anyway...</p>
+<p>I opted to use a Dremel for the main plug holes, because I was afraid that the drill would crack the plastic. This turned out to be a bit more of a pain than I expected, because the Dremel wouldn't actually sand the material all that well. Rather, it would heat up the plastic and melt it. It never actually melted the box more than I would've liked, but it did make cleanup a bit more frustrating as I had to spend time cutting away bits of melted plastic and then sanding it smooth. For the top and bottom lid (as well as the screw supports inside the box), I drilled instead, which was definitely faster than using the Dremel.</p>
+</br><h3 id="putting-everything-together"> <a href="#putting-everything-together">Putting Everything Together</a></h3>
+<p>With the box working properly and all the bits test fitted, I screwed the plugs and switch to their respective locations, tightened the washers on the opposite side of all the parts, and bent the ground leads on the plugs. The plugs especially need really tight washers, because it's very easy to twist and turn the RCA plugs as you try to pull them out. Tightening those washers will prevent the plugs from rotating inside the box, which could break off the soldered wires.</p>
+<p>Now, before you solder the data pins to the switch, it's important that you test it with the continuity tester of your multimeter to ensure the switch works as you expect. Mine didn't! I expected that pushing the switch to the left would bridge the legs on the left side of the switch with the center legs, but turns out that it actually works backwards! So I had to do a bit more wire crossing than I would have liked, but I tried to keep the pattern of how I did it consistent.</p>
+<p>Once all the data pins were soldered on and continuity tested with the multimeter, I soldered all the grounds together to create this gore of wires:</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/BoxInside.jpg" loading="lazy" alt="Box all wired up" title="Box all wired up"></br>
+I fear that I could accidentally summon a demon with this thing...
+</p></p>
+<p>In hindsight, I should have used longer wires inside the box to give them a lot more slack and prevent them from breaking off easily in the case that the plug gets twisted, but since this is only a product for me I'll just simply be aware of how I pull out the jacks.</p>
+<p>Time to test:</p>
+<p><p align="center">
+<video width="50%" controls>
+<source src="images/RCASwitchBox/Final.mp4" type="video/mp4">
+</video>
+</p></p>
+<p>All's good, so I just put some stickers on it to remind me what side does what:</p>
+<p><p align="center">
+<img src="images/RCASwitchBox/Stickers.jpg" loading="lazy" alt="Box with stickers" title="Box with stickers">
+</p></p>
+<p>And that's all there is to it! As usual, you can download the CAD files for the box from <a href="downloads/RCABox.zip">here</a> if you want to build your own.</p>
+
+            </br>
+            <hr>
+            <td><a href="../../blog.html#projects">Return to blog</a></td>
+        </div>
+        <script src="../blog.js"></script>
+    </body>
+</html>
