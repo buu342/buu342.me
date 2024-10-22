@@ -8,11 +8,11 @@ An example of an AV switch box, this particular one takes in three inputs.</br>
 Image sourced from [here](https://www.fosmon.com/3-way-audio-video-av-rca-composite-switch-selector-box-splitter-combiner-black).
 </p>
 
-The concept is pretty simple: You plug into the box multiple different signal sources, one output cable, and you use the switch on the top of the box to select which input gets outputted. This saves you the trouble of having to repeatedly connect and disconnect cables.
+The concept is pretty simple: You plug multiple different signal sources into the box, one plug in an output cable, and you use the switch on the top of the box to select which input gets outputted. This saves you the trouble of having to repeatedly connect and disconnect cables.
 
 I looked around for switch boxes, and I saw that they were available for around 10 euro. I mean, I *could* get it for cheaper on sites which don't stress about selling *questionable* products, but I don't like to puchase from them... I thought "hey, a thing like this seems really easy to build, I bet I could put one together for cheap". 
 
-It's a pretty easy project, but I was surprised by the lack of information on how to build one. So let's get to it! First, an explanation of the basic components we'll need.
+It's a pretty easy project, but I was surprised by the lack of information on how to build one (likely because you won't see many people using RCA in this day and age). So let's get to it! First, an explanation of the basic components we'll need.
 
 ### RCA/AV Cables and How They Work
 
@@ -97,7 +97,7 @@ Image sourced from [here](https://www.stewmac.com/video-and-ideas/online-resourc
 
 I recommend testing which is which using the continuity tester of your multimeter first, because you might get some surprises (more on this later).
 
-You might be curious, "what if I had a ton of inputs? Say, I want to make an N64 cartridge swapper. Would I need to get a 48PDT?". Yeah, you would, but you would probably have a really hard time finding such a thing. Something like that usually ends up getting done in a microcircuit instead, you would hook up an SPST to the voltage of a bunch of SPDT or DPDT relays. Relays are microswitches, and come in the same variety as normal switches (SPST, DPST, etc...). The downside of this being a microcircuit is that, for such a thing to work, you would need to externally power the conversion box.
+You might be curious, "what if I had a ton of inputs? Say, I want to make an N64 cartridge swapper. Would I need to get a 48PDT?". Yeah, you would, but you would probably have a really hard time finding such a thing. Something like that usually ends up getting done in a microcircuit instead, you would hook up an SPST to the voltage of a bunch of SPDT or DPDT relays. Relays are microswitches, and come in the same variety as normal switches (SPST, DPST, etc...). The downside of this being a microcircuit is that, by virtue of it having parts that require a stable 5v input, you would need to externally power the conversion box.
 
 ### Buying All the Parts
 
@@ -119,11 +119,11 @@ So I decided to increase the triangle by two centimeters, and the height by one.
 
 The box has a top and bottom lid, both of which are to be screwed in place. The holes for the RCA plugs are 1.5cm apart from one another, and the entire box has 2mm of thickness. 
 
-The idea was that I could 3D print the box in order have something a bit more custom, as opposed to buying a [plastic project box](images/RCASwitchBox/ProjectBox.png) and drilling some holes in it. I looked around for 3D printing services (since I don't own one) and found someone nearby who would do it for me. I got my model the next day.
+The idea was that I could 3D print the box in order have something a bit more custom, as opposed to buying a [plastic project box](images/RCASwitchBox/ProjectBox.png) and drilling some holes in it. I looked around for 3D printing services (since I don't own one) and found someone nearby who prints models. I got my model the next day.
 
-The printed model, unfortunately, wasn't perfect. 3D printing isn't really a super accurate medium, and so I had to spend an afternoon sanding the parts and drilling in wider holes in the material (because the originals were slightly smaller than the spec). To be fair, I could have designed the top and bottom cover with a milimeter gap between the walls, but I was expecting to have to sand some stuff anyway...
+The printed model, unfortunately, wasn't perfect. 3D printing isn't really a super accurate medium, and so I had to spend an afternoon sanding the parts and drilling in wider holes in the material (because the originals were slightly smaller than the spec). I also should have designed the top and bottom cover with a milimeter gap between the walls, as they were an incredibly tight fit, but I was expecting to have to sand some stuff anyway...
 
-I opted to use a Dremel for the main plug holes, because I was afraid that the drill would crack the plastic. This turned out to be a bit more of a pain than I expected, because the Dremel wouldn't actually sand the material all that well. Rather, it would heat up the plastic and melt it. It never actually melted the box more than I would've liked, but it did make cleanup a bit more frustrating as I had to spend time cutting away bits of melted plastic and then sanding it smooth. For the top and bottom lid (as well as the screw supports inside the box), I drilled instead, which was definitely faster than using the Dremel.
+I opted to use a Dremel for the main plug holes, because I was afraid that the drill would crack the plastic due to the distance of the holes from one another. This turned out to be a bit more of a pain than I expected, because the Dremel wouldn't actually sand the material all that well. Rather, it would heat up the plastic and melt it. It never actually melted the box more than I would've liked, but it did make cleanup a bit more frustrating as I had to spend time cutting away bits of melted plastic and then sanding it smooth. For the top and bottom lid (as well as the screw supports inside the box), I drilled instead, which was definitely faster than using the Dremel.
 
 ### Putting Everything Together
 
@@ -131,14 +131,14 @@ With the box working properly and all the bits test fitted, I screwed the plugs 
 
 Now, before you solder the data pins to the switch, it's important that you test it with the continuity tester of your multimeter to ensure the switch works as you expect. Mine didn't! I expected that pushing the switch to the left would bridge the legs on the left side of the switch with the center legs, but turns out that it actually works backwards! So I had to do a bit more wire crossing than I would have liked, but I tried to keep the pattern of how I did it consistent.
 
-Once all the data pins were soldered on and continuity tested with the multimeter, I soldered all the grounds together to create this gore of wires:
+Once all the data pins were soldered onto the switch and continuity tested with the multimeter, I soldered all the grounds together to create this gore of wires:
 
 <p align="center">
 ![Box all wired up](images/RCASwitchBox/BoxInside.jpg)</br>
 I fear that I could accidentally summon a demon with this thing...
 </p>
 
-In hindsight, I should have used longer wires inside the box to give them a lot more slack and prevent them from breaking off easily in the case that the plug gets twisted, but since this is only a product for me I'll just simply be aware of how I pull out the jacks.
+In hindsight, I should have used longer wires inside the box to give them a lot more slack and prevent them from breaking off easily in the case that the plug gets twisted, but since this is only a product for me I'll just simply be careful with how I pull out the jacks.
 
 Time to test:
 
@@ -148,7 +148,7 @@ Time to test:
 </video>
 </p>
 
-All's good, so I just put some stickers on it to remind me what side does what:
+All's good (there isn't even any noticably added noise to the signal!), so I just put some stickers on it to remind me what side does what:
 
 <p align="center">
 ![Box with stickers](images/RCASwitchBox/Stickers.jpg)
