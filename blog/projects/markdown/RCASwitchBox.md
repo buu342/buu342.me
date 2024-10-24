@@ -8,7 +8,7 @@ An example of an AV switch box, this particular one takes in three inputs.</br>
 Image sourced from [here](https://www.fosmon.com/3-way-audio-video-av-rca-composite-switch-selector-box-splitter-combiner-black).
 </p>
 
-The concept is pretty simple: You plug multiple different signal sources into the box, one plug in an output cable, and you use the switch on the top of the box to select which input gets outputted. This saves you the trouble of having to repeatedly connect and disconnect cables.
+The concept is pretty simple: You plug multiple different signal sources into the box, and you use the switch on the top of the box to select which input gets outputted. This saves you the trouble of having to repeatedly connect and disconnect cables.
 
 I looked around for switch boxes, and I saw that they were available for around 10 euro. I mean, I *could* get it for cheaper on sites which don't stress about selling *questionable* products, but I don't like to puchase from them... I thought "hey, a thing like this seems really easy to build, I bet I could put one together for cheap". 
 
