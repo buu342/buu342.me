@@ -97,7 +97,7 @@ Image sourced from [here](https://www.stewmac.com/video-and-ideas/online-resourc
 
 I recommend testing which is which using the continuity tester of your multimeter first, because you might get some surprises (more on this later).
 
-You might be curious, "what if I had a ton of inputs? Say, I want to make an N64 cartridge swapper. Would I need to get a 48PDT?". Yeah, you would, but you would probably have a really hard time finding such a thing. Something like that usually ends up getting done in a microcircuit instead, you would hook up an SPST to the voltage of a bunch of SPDT or DPDT relays. Relays are microswitches, and come in the same variety as normal switches (SPST, DPST, etc...). The downside of this being a microcircuit is that, by virtue of it having parts that require a stable 5v input, you would need to externally power the conversion box.
+You might be curious, "what if I had a ton of inputs? Say, I want to make an N64 cartridge swapper. Would I need to get a 48PDT?". Yeah, you would, but you would probably have a really hard time finding such a thing. Something like that usually ends up getting done in a microcircuit instead, you would hook up a physical SPST to the voltage of a bunch of SPDT or DPDT relays. Relays are microswitches, and come in the same variety as normal switches (SPST, DPST, etc...). The downside of this being a microcircuit is that, by virtue of it having parts that require a stable 5v input, you would need to externally power the conversion box.
 
 ### Buying All the Parts
 
@@ -119,7 +119,7 @@ So I decided to increase the triangle by two centimeters, and the height by one.
 
 The box has a top and bottom lid, both of which are to be screwed in place. The holes for the RCA plugs are 1.5cm apart from one another, and the entire box has 2mm of thickness. 
 
-The idea was that I could 3D print the box in order have something a bit more custom, as opposed to buying a [plastic project box](images/RCASwitchBox/ProjectBox.png) and drilling some holes in it. I looked around for 3D printing services (since I don't own one) and found someone nearby who prints models. I got my model the next day.
+The idea was that I could 3D print the box in order have something a bit more custom, as opposed to buying a [plastic project box](images/RCASwitchBox/ProjectBox.jpg) and drilling some holes in it. I looked around for 3D printing services (since I don't own one) and found someone nearby who prints models. I got my model the next day.
 
 The printed model, unfortunately, wasn't perfect. 3D printing isn't really a super accurate medium, and so I had to spend an afternoon sanding the parts and drilling in wider holes in the material (because the originals were slightly smaller than the spec). I also should have designed the top and bottom cover with a milimeter gap between the walls, as they were an incredibly tight fit, but I was expecting to have to sand some stuff anyway...
 
