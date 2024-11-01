@@ -37,7 +37,80 @@
             </center>
             <h5>Released: July 16, 2022</h5>
             <h5>Tags: <a href="../../tags/Unity.html">Unity</a>, <a href="../../tags/Cs.html">C#</a>, <a href="../../tags/ProceduralGeneration.html">Procedural Generation</a>, <a href="../../tags/Blender.html">Blender</a>, <a href="../../tags/AI.html">AI</a></h5>
-            <p></p>            
+            <p><p>Scavenger Hunt is a third-person dungeon crawler where you play a scavenger who docks into an abandoned research vessel with the intent of looting it. Unfortunately the vessel isn't quite abandoned, it's inhabited by the former crew who have seemingly been infected by some unknown biological virus. Thankfully these crewmembers aren't that big of a threat, but there is an incredibly large and unkillable beast roaming the ship who is on the lookout for you.</p>
+<p>This game was developed by three people, I myself was in charge of implementing:</p>
+<ul>
+<li>Procedural music</li>
+<li>Procedural map generation and geometry culling</li>
+<li>Audio mixing</li>
+<li>Movement and shooting mechanics</li>
+<li>3D modeling and animation</li>
+</ul>
+<p>The task of implementing AI and multiplayer was left to my other team members. I didn't do any work on the multiplayer code (besides making changes to existing code to make it easier to network), but I did directly assist my colleague who was working on the enemy and stalker AI.</p>
+</br><h3 id="procedural-generation"> <a href="#procedural-generation">Procedural Generation</a></h3>
+<p>Worth spending some time talking a bit about the procedural generation in this project. The way that it works in this project is as follows:
+First, the map is considered to be a 3D grid, and a random amount of rectangular rooms are randomly placed in this grid. Rooms obviously are ignored if they overlap one another. Next, I generate a delaunay triangulation graph of the rooms, and then use a minimum spanning tree to ensure each room is reachable. A MST will not generate cycles, so I also randomly choose some extra edges to allow the rooms to connect to each other in loops. Finally, I use the A* algorithm to traverse the grid in order to generate the hallways.</p>
+<p>A* in this scenario is a bit tricky because in 3D space, the pathfinder would probably try to connect rooms that are at different heights with vertical hallways. Instead, we need to generate staircases, and we have to ensure that said staircases don't intersect with one another or get placed directly underneath other hallways. To solve this problem, for the pathfinder to climb up a cell in the Z axis, it must do so by generating the following:</p>
+<p><p align="center">
+<img src="images/Stairs.png" loading="lazy" alt="A star staircase" title="A star staircase">
+</p></p>
+<p>The blue cells are therefore considered ocupied, and the pathfinder must guarantee that the start and end cells are connected to a hallway.  There's a bunch of other rules in the pathfinder which are accomplished with a custom cost function, like:</p>
+<ul>
+<li>Reusing hallways should be incentivized.</li>
+<li>Doors should be placed in adjacent cells, the pathfinder should try to reuse doors.</li>
+<li>Hallways must be connected to a cell at the height of the floor in order for the room to be considered connected.</li>
+<li>Sometimes, with these constraints, the algorithm simply isn't able to find a way to connect a room. In this scenario, the room is removed.</li>
+<li>For the level to be valid, both the entrance and exit elevator must be connected to something, and a path from the entrance to the exit must exist. If the level is invalid, generate another.</li>
+</ul>
+<p>This animated GIF showcases the procedural generation:</p>
+<p><p align="center">
+<img src="images/ProcGenGIF.gif" loading="lazy" alt="Procedural generation showcase" title="Procedural generation showcase">
+</p></p>
+<p>After level generation, a navigation mesh is generated for the stalker to be able to traverse the level.</p>
+<p>Since rooms are always completely enclosed by doors, I can optimize rendering by not drawing rooms if the doors are closed. This allows me to have plenty of dynamic lights and particles in these rooms without having to worry about the framerate suffering.</p>
+<p>In terms of audio, the game has procedural music that works similarly to what I implemented in <a href="shelltime.html">Shell Time</a> (IE the music changes on beat, and only at the end of the current measure/bar of the song). There exists three main tracks, a calm song that plays before the player is spotted by the stalker, a heavy track that plays when the player is spotted, and a variant of the calm song that plays when the player managed to avoid the stalker. This is shown here:</p>
+<p><center>
+<iframe width="640" height="480" src="https://www.youtube.com/embed/bVE3A9XqB9k?si=NsDXoIBIuS6aDHTv&amp;start=21" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen>
+</iframe>
+</center></p>
+<p>There is also some procedural sound being performed in the sfx of the final game: the echo of your footsteps/guns changes based on the ceiling height of the room/hallway, and enemies make muffled noises if they're behind walls. This is all possible thanks to the sound manager I wrote, which was transferred over from Shell Time.</p>
+</br><h3 id="controls"> <a href="#controls">Controls</a></h3>
+<p>The game has a built-in tutorial covering the controls, but they will be written here just in case:</p>
+<ul>
+<li>WASD to move</li>
+<li>Aim with the mouse</li>
+<li>Right click to aim</li>
+<li>Left click to shoot</li>
+<li>F toggles your lights</li>
+</ul>
+<p>Besides the given controls, the following debug controls are available to aid the professors' evaluation:</p>
+<ul>
+<li>Pressing P pauses the game</li>
+<li>Pressing U toggles free camera movement</li>
+<li>Pressing I toggles framerate count</li>
+<li>Pressing 1 places the camera on the spawn</li>
+<li>Pressing 2 Places the camera on the exit</li>
+<li>Pressing 3 Places the camera on the Hunter</li>
+<li>Pressing 4 Places the camera on the Hunter's target position</li>
+</ul>
+</br><h3 id="asset-credits"> <a href="#asset-credits">Asset Credits</a></h3>
+<ul>
+<li>Skye's weapons and the scavenge models came from RAGE</li>
+<li>The models of the Hunter, as well as the pod on the Converted's heads, came from SOMA</li>
+<li>The Converted's body model came from Half-Life 2</li>
+<li>The Hunter's animations came from Resident Evil 2 Remake</li>
+<li>The Converted's animations came from Nazi Zombies</li>
+<li>Most of the ship's textures came from Doom 3</li>
+<li>The models for the decoration that is spread about the map, as well as the exit elevator, came from Doom 3.</li>
+<li>The skybox texture came from Technicolor Antichrist Box</li>
+<li>Some sound effects were taken from some audio effect CDs I have (Most came from &quot;1001 Sound Effects&quot;), but I mixed and combined them myself.</li>
+<li>The menu music is from Ion Fury, the level music came from Viscerafest.
+Everything else was made by either me or my colleagues.</li>
+</ul>
+</br><h3 id="foreword"> <a href="#foreword">Foreword</a></h3>
+<p>This project was unfortunately a bit rushed, and was essentially mostly put together in the span of 5 days with an all-nighter towards the end. This was not due to lack of caring, but rather I personally got very sick for two weeks and was unable to do any work whatsoever, and then by the time that I was feeling better the deadlines for all the projects and tests which I was supposed to have worked on during that time came crashing down. My colleagues were similarly quite busy, so we were left with having to squeeze in as much work as possible in such short time.</p>
+<p>Due to the aforementioned crunch, quite a bit of the game was left in a state we weren't particularly happy with, but the resulting game is fully playable and working. We unfortunately had to skimp out on the story, and the multiplayer support was left in a bit of a buggy state. That being said, it was a fun project and I hope you have fun playing it!</p>
+</p>            
             <a href="https://github.com/buu342/FCT-JS_GroupAssignment">
                 <img src="../downloadgh.png" width="200px">
             </a> 
