@@ -75,6 +75,7 @@ Besides the given controls, the following debug controls are available to aid th
 * The skybox texture came from Technicolor Antichrist Box
 * Some sound effects were taken from some audio effect CDs I have (Most came from "1001 Sound Effects"), but I mixed and combined them myself.
 * The menu music is from Ion Fury, the level music came from Viscerafest.
+
 Everything else was made by either me or my colleagues.
 
 ### Foreword

@@ -16,7 +16,7 @@ The game has a built-in tutorial covering the controls, but they will be written
 
 You can also use the 1 to 4 number keys to skip to different sections of the demo. Sometimes pressing the button will not jump to the correct level, so you'll need to press it again. Jumping between levels can potentially break scripting... Honestly it's there as a bodge so you can check out more of the game without having to play through it all.
 
-### (*)Asset Credits
+### Asset Credits
 
 Almost everything in this game was made by me, except the following:
 
