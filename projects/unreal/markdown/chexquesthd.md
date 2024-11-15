@@ -13,3 +13,5 @@ Here's a video of a Flemoid costume, commisioned by General Mills, which was mea
 <center>
 <iframe width="640" height="480" src="https://www.youtube.com/embed/cVGcZvZIZAE?si=uKa65xqCoWPeRvaz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </center>
+
+I would have liked to include some images of some of my animation work in Blender, but I can't find my source files on my old laptop, and the OneDrive that was used to share assets during development is no longer available :(

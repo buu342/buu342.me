@@ -729,7 +729,10 @@
                     "Date": "May 18, 2020",
                     "DisplayName": "Chex Quest HD",
                     "Icon": "icons/chexquesthd.png",
-                    "Images": null,
+                    "Images": [
+                        "images/Chex1.png",
+                        "images/ChexPackage.JPG"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "Unreal Engine 4",
