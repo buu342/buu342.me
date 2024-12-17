@@ -68,6 +68,7 @@ function main()
                         FadeObject(carouselimage);
                         if (this.classList.contains("video") && oldselected.classList.contains("video"))
                             SetIFrameVideo(carouselvideo, "https://www.youtube.com/embed/" + global_carouseltarget.id);
+                        else if (this.classList.contains("videomp4") && oldselected.classList.contains("videomp4"))
                         FadeObject(carouselvideo);
                         setTimeout(ChangeObject, 250, carouselimage, carouselvideo, this);
                         global_carouselstate = STATE_FADINGOUT;
@@ -163,7 +164,10 @@ function SetIFrameVideo(video, src)
     if (video == null)
         return;
     var container = video.parentNode;
+    console.log(src);
     video.remove();
+    if (src.endsWith(".mp4"))
+        src = src.replace("https://www.youtube.com/embed/", "");
     video.setAttribute("src", src);
     container.append(video);
 }

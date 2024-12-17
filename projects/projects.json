@@ -773,7 +773,11 @@
                     "Date": "April 02, 2024",
                     "DisplayName": "Forest Fire Visualization in VR (Dissertation)",
                     "Icon": "icons/forestfirevr.png",
-                    "Images": null,
+                    "Images": [
+                        "images/ThesisCover.png",
+                        "images/FireSpreadingGrids.mp4",
+                        "images/FireSpreadingVR.mp4"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "Unreal Engine 5",

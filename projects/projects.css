@@ -237,6 +237,13 @@ pre
     background: black;
 }
 
+.carousel-object video
+{
+    width: 100%;
+    height: 100%;
+    background: black;
+}
+
 .carousel-list
 {
     background-color: #AAAAAA;
@@ -273,6 +280,12 @@ pre
 }
 
 .carousel-list-object.video
+{
+    position: relative;
+    z-index: 1;
+}
+
+.carousel-list-object.videomp4
 {
     position: relative;
     z-index: 1;

@@ -2082,6 +2082,7 @@ void Main::CompileProjects_Project(Project* proj)
     const char* mdstr = proj->description.mb_str();
     std::vector<wxString> images;
     std::vector<wxString> youtubes;
+    std::vector<wxString> mp4s;
 
     // Skip this project if it wasn't modified
     if (!this->m_FullCompile && !proj->wasmodified)
@@ -2111,10 +2112,12 @@ void Main::CompileProjects_Project(Project* proj)
             youtubes.push_back(str.AfterFirst('=').Left(11));
         else if (str.Contains("youtu.be"))
             youtubes.push_back(str.Mid(str.Find('/', true), 11));
+        else if (str.Contains(".mp4"))
+            mp4s.push_back(str);
         else
             images.push_back(str);
     }
-    if (images.size() > 0 || youtubes.size() > 0)
+    if (images.size() > 0 || youtubes.size() > 0 || mp4s.size() > 0)
     {
         int i;
         wxString carousel = string_fromfile(this->m_WorkingDir + "/templates/project_carousel.html");
@@ -2129,21 +2132,43 @@ void Main::CompileProjects_Project(Project* proj)
         {
             carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_youtube.html");
             carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", youtubes[0]);
+            if (i == 0 && images.size() == 0)
+                carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "");
+            else
+                carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "display:none");
+        }
+        if (mp4s.size() > 0)
+        {
+            carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_mp4.html");
+            carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_MP4_", mp4s[0]);
+            if (i == 0 && images.size() == 0 && youtubes.size() == 0)
+                carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYMP4_", "");
+            else
+                carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYMP4_", "display:none");
+        }
+        i=0;
+        for (wxString str : mp4s)
+        {
+            wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_mp4.html");
+            wxString thumb = str;
+            if (i == 0 && images.size() == 0 && youtubes.size() == 0)
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
+            else
+                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
+            thumb.Replace(".mp4", ".jpg");
+            obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_MP4THUMB_", thumb);
+            obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_MP4_", str);
+            carousel_list += obj;
+            i++;
         }
         i=0;
         for (wxString str : youtubes)
         {
             wxString obj = string_fromfile(this->m_WorkingDir + "/templates/project_carousel_list_youtube.html");
             if (i == 0 && images.size() == 0)
-            {
                 obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "selected");
-                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "");
-            }
             else
-            {
                 obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_LIST_SELECTED_", "");
-                obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "display:none");
-            }
             obj.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", str);
             carousel_list += obj;
             i++;
