@@ -460,7 +460,7 @@
                     ]
                 },
                 "netlib": {
-                    "Date": "",
+                    "Date": "December 10, 2024",
                     "DisplayName": "NetLib",
                     "Icon": "icons/netlib.png",
                     "Images": null,
@@ -468,6 +468,7 @@
                     "Tags": [
                         "C",
                         "C++",
+                        "Java",
                         "wxWidgets",
                         "Libultra",
                         "Libdragon",
