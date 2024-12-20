@@ -52,7 +52,12 @@
                     "Date": "April 21, 2020",
                     "DisplayName": "Dominatrix",
                     "Icon": "icons/dominatrix.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=GROE7m9npQg",
+                        "images/Dominatrix1.png",
+                        "images/Dominatrix2.png",
+                        "images/Dominatrix3.png"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "Zandronum",
@@ -98,7 +103,10 @@
                     "Date": "February 16, 2023",
                     "DisplayName": "Emote System",
                     "Icon": "icons/emotesystem.png",
-                    "Images": null,
+                    "Images": [
+                        "images/Emote.gif",
+                        "images/EmoteConfig.gif"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "Zandronum",
