@@ -444,6 +444,21 @@
             "DisplayName": "Nintendo 64",
             "Index": 2,
             "Pages": {
+                "n64brewjam2024": {
+                    "Date": "December 31, 2024",
+                    "DisplayName": "N64brew Game Jam 2024",
+                    "Icon": "icons/n64brewjam2024.png",
+                    "Images": null,
+                    "Index": 4,
+                    "Tags": [
+                        "C",
+                        "Libdragon"
+                    ],
+                    "ToolTip": "I helped organize the N64brew charity Game Jam (like I have every year), except this time it required writing a template game and putting everyone's entries together into one big ROM.",
+                    "URLs": [
+                        "https://github.com/n64brew/N64brew-GameJam2024-Template"
+                    ]
+                },
                 "netlib": {
                     "Date": "",
                     "DisplayName": "NetLib",
@@ -468,7 +483,7 @@
                     "DisplayName": "Platform64",
                     "Icon": "icons/platform64.png",
                     "Images": null,
-                    "Index": 4,
+                    "Index": 5,
                     "Tags": [
                         "C",
                         "C++",
@@ -486,13 +501,16 @@
                     "Date": "December 25, 2018",
                     "DisplayName": "Pyoro64",
                     "Icon": "icons/pyoro64.png",
-                    "Images": null,
+                    "Images": [
+                        "images/Pyoro64.gif",
+                        "images/PyoroDocs.png"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "C",
                         "Libultra"
                     ],
-                    "ToolTip": "A clone of the Warioware minigame Pyoro for the N64. My first project for the console, which laid the foundation for many other homebrew developers.",
+                    "ToolTip": "A clone of the WarioWare minigame Pyoro for the N64. My first project for the console, which laid the foundation for many other homebrew developers.",
                     "URLs": [
                         "https://github.com/buu342/N64-Pyoro64"
                     ]
@@ -501,7 +519,11 @@
                     "Date": "September 20, 2021",
                     "DisplayName": "Sausage64",
                     "Icon": "icons/sausage64.png",
-                    "Images": null,
+                    "Images": [
+                        "images/CatherineBlender.png",
+                        "images/CatherineChorizo.png",
+                        "images/CatherineN64.png"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "C",
