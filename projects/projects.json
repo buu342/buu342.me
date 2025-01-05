@@ -448,7 +448,9 @@
                     "Date": "December 31, 2024",
                     "DisplayName": "N64brew Game Jam 2024",
                     "Icon": "icons/n64brewjam2024.png",
-                    "Images": null,
+                    "Images": [
+                        "images/BrewJam2024.gif"
+                    ],
                     "Index": 4,
                     "Tags": [
                         "C",
