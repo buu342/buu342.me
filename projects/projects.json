@@ -268,7 +268,7 @@
                     "DisplayName": "Amnesia Lantern SWEP",
                     "Icon": "icons/amnesialantern.png",
                     "Images": null,
-                    "Index": 6,
+                    "Index": 7,
                     "Tags": [
                         "Lua",
                         "SWEP",
@@ -286,7 +286,7 @@
                     "DisplayName": "Buu342's Weapon Base",
                     "Icon": "icons/buuswepbase.png",
                     "Images": null,
-                    "Index": 1,
+                    "Index": 2,
                     "Tags": [
                         "Lua",
                         "SWEP"
@@ -301,7 +301,7 @@
                     "DisplayName": "Buu's Swords",
                     "Icon": "icons/buuswords.png",
                     "Images": null,
-                    "Index": 3,
+                    "Index": 4,
                     "Tags": [
                         "Lua",
                         "SWEP",
@@ -319,7 +319,7 @@
                     "DisplayName": "The Ghoul's Forest 3 SNPCs",
                     "Icon": "icons/ghoulsnpcs.png",
                     "Images": null,
-                    "Index": 5,
+                    "Index": 6,
                     "Tags": [
                         "Lua",
                         "AI",
@@ -347,12 +347,34 @@
                         "https://steamcommunity.com/sharedfiles/filedetails/?id=1541525700"
                     ]
                 },
+                "outcast": {
+                    "Date": "January 23, 2015",
+                    "DisplayName": "Outcast",
+                    "Icon": "icons/outcast.png",
+                    "Images": [
+                        "images/outcast1.jpg",
+                        "images/outcast2.jpg",
+                        "images/outcast3.jpg",
+                        "images/outcast4.jpg",
+                        "images/outcast5.jpg"
+                    ],
+                    "Index": 1,
+                    "Tags": [
+                        "Lua",
+                        "Blender",
+                        "Gamemode"
+                    ],
+                    "ToolTip": "A realistic survival gamemode I wrote for a school project",
+                    "URLs": [
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=380034705"
+                    ]
+                },
                 "plasmacutter": {
                     "Date": "March 20, 2021",
                     "DisplayName": "Dead Space Plasma Cutter SWEP",
                     "Icon": "icons/plasmacutter.png",
                     "Images": null,
-                    "Index": 4,
+                    "Index": 5,
                     "Tags": [
                         "Lua",
                         "SWEP",
@@ -372,7 +394,7 @@
                     "Images": [
                         "https://www.youtube.com/watch?v=cGQ0qYkw9v4"
                     ],
-                    "Index": 2,
+                    "Index": 3,
                     "Tags": [
                         "Lua",
                         "SWEP",
