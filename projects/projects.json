@@ -302,7 +302,8 @@
                     ],
                     "ToolTip": "The weapon base which powers all of my weapons. Features dynamic movement animations, ironsights, fire modes, lasers, and sliding.",
                     "URLs": [
-                        "https://steamcommunity.com/sharedfiles/filedetails/?id=2428764566"
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=2428764566",
+                        "https://github.com/buu342/GMod-BuuBaseRedone"
                     ]
                 },
                 "buuswords": {
@@ -355,7 +356,8 @@
                     "DisplayName": "Monster Mash",
                     "Icon": "icons/monstermash.png",
                     "Images": [
-                        "https://www.youtube.com/watch?v=wRUP3oq6JZc?start=49 images/mm1.jpg",
+                        "https://www.youtube.com/watch?v=wRUP3oq6JZc?start=49",
+                        "images/mm1.jpg",
                         "images/mm2.jpg",
                         "images/mm3.jpg",
                         "images/mm4.jpg",
