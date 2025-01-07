@@ -267,7 +267,12 @@
                     "Date": "February 5, 2018",
                     "DisplayName": "Amnesia Lantern SWEP",
                     "Icon": "icons/amnesialantern.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=qinIAmQpc1s",
+                        "images/lantern1.jpg",
+                        "images/lantern2.jpg",
+                        "images/lantern3.jpg"
+                    ],
                     "Index": 7,
                     "Tags": [
                         "Lua",
@@ -285,7 +290,11 @@
                     "Date": "March 18, 2021",
                     "DisplayName": "Buu342's Weapon Base",
                     "Icon": "icons/buuswepbase.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=pqMTysmoD3I",
+                        "https://www.youtube.com/watch?v=PU7XsK-jWTw",
+                        "images/wepbase2.gif"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "Lua",
@@ -300,7 +309,12 @@
                     "Date": "June 8, 2016",
                     "DisplayName": "Buu's Swords",
                     "Icon": "icons/buuswords.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=ipC_5Sy-fyM",
+                        "images/buuswords1.png",
+                        "images/buuswords2.png",
+                        "images/buuswords3.png"
+                    ],
                     "Index": 4,
                     "Tags": [
                         "Lua",
@@ -318,7 +332,13 @@
                     "Date": "July 4, 2018",
                     "DisplayName": "The Ghoul's Forest 3 SNPCs",
                     "Icon": "icons/ghoulsnpcs.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=aFbd3M-arO0",
+                        "images/ghouls1.jpg",
+                        "images/ghouls2.jpg",
+                        "images/ghouls3.jpg",
+                        "images/ghouls4.jpg"
+                    ],
                     "Index": 6,
                     "Tags": [
                         "Lua",
@@ -334,7 +354,13 @@
                     "Date": "October 17, 2018",
                     "DisplayName": "Monster Mash",
                     "Icon": "icons/monstermash.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=wRUP3oq6JZc?start=49 images/mm1.jpg",
+                        "images/mm2.jpg",
+                        "images/mm3.jpg",
+                        "images/mm4.jpg",
+                        "images/mm5.jpg"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "Lua",
@@ -373,7 +399,14 @@
                     "Date": "March 20, 2021",
                     "DisplayName": "Dead Space Plasma Cutter SWEP",
                     "Icon": "icons/plasmacutter.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=BVkHKCkmFCI",
+                        "images/plasmacutter1.gif",
+                        "images/plasmacutter2.gif",
+                        "images/plasmacutter3.jpg",
+                        "images/plasmacutter4.jpg",
+                        "images/plasmacutter5.jpg"
+                    ],
                     "Index": 5,
                     "Tags": [
                         "Lua",
@@ -392,7 +425,12 @@
                     "DisplayName": "RAGE SWEPs",
                     "Icon": "icons/ragesweps.png",
                     "Images": [
-                        "https://www.youtube.com/watch?v=cGQ0qYkw9v4"
+                        "https://www.youtube.com/watch?v=cGQ0qYkw9v4",
+                        "images/rage1.jpg",
+                        "images/rage2.jpg",
+                        "images/rage3.jpg",
+                        "images/rage4.jpg",
+                        "images/rage5.jpg"
                     ],
                     "Index": 3,
                     "Tags": [
