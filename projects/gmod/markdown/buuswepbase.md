@@ -5,10 +5,10 @@ My weapon base, on top of being heavily documented, features:
 * Shotgun reloading
 * Sniper scope with swaying
 * Ironsights
-* Dynamic LUA calculated animations for viewmodel sprinting, near-walls, jumping, walking, idling, breathing, and swaying
+* Dynamic LUA-based animations for viewmodel sprinting, near-walls, jumping, walking, idling, breathing, and swaying
 * Barrel smoke trail
 * Low ammo clicking
-* Support for weapon attachments like silencers
+* Support for weapon attachments, such as silencers
 * Multiple crosshairs, customizable too
 * Firemode switching, including built-in burst-fire mode
 * Run sliding
@@ -20,3 +20,4 @@ My weapon base, on top of being heavily documented, features:
 * Lots of clientside and serverside settings
 * Thirdperson animations
 
+This SWEP base is used in both my [RAGE SWEPs](ragesweps.html) and my [Dead Space Plasma Cutter](plasmacutter.html) addons.
