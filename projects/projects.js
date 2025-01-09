@@ -48,7 +48,7 @@ function main()
     var carouselobject = document.getElementsByClassName("carousel-object")[0];
     if (carouselobject != null)
     {
-        var carouselimage = carouselobject.children[0];
+        var carouselimage = carouselobject.children[0].children[0];
         var carouselvideo = carouselobject.children[1];
         var projobjbuts = document.getElementsByClassName("carousel-list-object");
         for (i = 0; i < projobjbuts.length; i++)
@@ -134,6 +134,8 @@ function ChangeObject(image, video, src)
     {
         SetIFrameVideo(video, "");
         image.src = global_carouseltarget.id;
+        console.log(image.parentNode)
+        image.parentNode.href = image.src;
         SetObjectVisiblity(image, false);
         SetObjectVisiblity(video, false);
         FadeObject(image, true);
