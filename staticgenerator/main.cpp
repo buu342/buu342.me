@@ -93,7 +93,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Label_Projects_Name = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_Projects_Name->Wrap(-1);
     m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_Name, 0, wxALL, 5);
-    this->m_TextCtrl_Projects_Name = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_Name = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RICH2);
     this->m_TextCtrl_Projects_Name->SetToolTip(wxT("The display name of the project"));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_Projects_Name->EnableProofCheck();
@@ -132,14 +132,14 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Label_Projects_ToolTip = new wxStaticText(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_Projects_ToolTip->Wrap(-1);
     m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_Label_Projects_ToolTip, 0, wxALL, 5);
-    this->m_TextCtrl_Projects_ToolTip = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Projects_ToolTip = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RICH2);
     this->m_TextCtrl_Projects_ToolTip->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_Projects_ToolTip->EnableProofCheck();
     #endif
     m_Sizer_ScrolledWindow_Editor_Main->Add(this->m_TextCtrl_Projects_ToolTip, 0, wxALL|wxEXPAND, 5);
     m_Sizer_ScrolledWindow_Editor->Add(m_Sizer_ScrolledWindow_Editor_Main, 1, wxEXPAND, 5);
-    this->m_TextCtrl_Projects_Description = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE);
+    this->m_TextCtrl_Projects_Description = new wxTextCtrl(this->m_ScrolledWindow_Project_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,-1), wxTE_MULTILINE | wxTE_RICH2);
     this->m_TextCtrl_Projects_Description->SetToolTip(wxT("The project description. Supports markdown."));
     this->m_TextCtrl_Projects_Description->SetMinSize(wxSize(-1,200));
     #if wxUSE_SPELLCHECK
@@ -181,7 +181,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Label_ProjectsCategory_DisplayName = new wxStaticText(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_ProjectsCategory_DisplayName->Wrap(-1);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_Label_ProjectsCategory_DisplayName, 0, wxALL, 5);
-    this->m_TextCtrl_ProjectsCategory_DisplayName = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_ProjectsCategory_DisplayName = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RICH2);
     this->m_TextCtrl_ProjectsCategory_DisplayName->SetToolTip(wxT("The display name of this category"));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_ProjectsCategory_DisplayName->EnableProofCheck();
@@ -192,7 +192,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(this->m_Label_ProjectsCategory_Description, 0, wxALL, 5);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main->Add(0, 0, 1, wxEXPAND, 5);
     m_Sizer_ScrolledWindow_ProjectCategory_Editor->Add(m_Sizer_ScrolledWindow_ProjectCategory_Editor_Main, 1, wxEXPAND, 5);
-    this->m_TextCtrl_ProjectsCategory_Description = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE);
+    this->m_TextCtrl_ProjectsCategory_Description = new wxTextCtrl(this->m_ScrolledWindow_ProjectCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_RICH2);
     this->m_TextCtrl_ProjectsCategory_Description->SetToolTip(wxT("The filename of the project"));
     this->m_TextCtrl_ProjectsCategory_Description->SetMinSize(wxSize(-1,200));
     #if wxUSE_SPELLCHECK
@@ -279,7 +279,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Label_Blog_Name = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_Blog_Name->Wrap(-1);
     m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_Name, 0, wxALL, 5);
-    this->m_TextCtrl_Blog_Name = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_Name = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RICH2);
     this->m_TextCtrl_Blog_Name->SetToolTip(wxT("The display name of the project"));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_Blog_Name->EnableProofCheck();
@@ -294,7 +294,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Label_Blog_ToolTip = new wxStaticText(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxT("Subtitle:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_Blog_ToolTip->Wrap(-1);
     m_Sizer_Blog_Editor_Details->Add(this->m_Label_Blog_ToolTip, 0, wxALL, 5);
-    this->m_TextCtrl_Blog_ToolTip = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_Blog_ToolTip = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RICH2);
     this->m_TextCtrl_Blog_ToolTip->SetToolTip(wxT("Brief description that shows up when hovering over a project with the mouse."));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_Blog_ToolTip->EnableProofCheck();
@@ -313,7 +313,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_TextCtrl_Blog_Tags->SetToolTip(wxT("Project tags, comma separated."));
     m_Sizer_Blog_Editor_Details->Add(this->m_TextCtrl_Blog_Tags, 0, wxALL|wxEXPAND, 5);
     m_Sizer_ScrolledWindow_Blog_Editor->Add(m_Sizer_Blog_Editor_Details, 1, wxEXPAND, 5);
-    this->m_TextCtrl_Blog = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,200), wxTE_MULTILINE);
+    this->m_TextCtrl_Blog = new wxTextCtrl(this->m_ScrolledWindow_Blog_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize(-1,200), wxTE_MULTILINE | wxTE_RICH2);
     this->m_TextCtrl_Blog->SetToolTip(wxT("The project description. Supports markdown."));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_Blog->EnableProofCheck();
@@ -352,7 +352,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Label_BlogCategory_DisplayName = new wxStaticText(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxT("Display Name:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_BlogCategory_DisplayName->Wrap(-1);
     m_Sizer_ScrolledWindow_BlogCategory_Editor_Main->Add(this->m_Label_BlogCategory_DisplayName, 0, wxALL, 5);
-    this->m_TextCtrl_BlogCategory_DisplayName = new wxTextCtrl(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
+    this->m_TextCtrl_BlogCategory_DisplayName = new wxTextCtrl(this->m_ScrolledWindow_BlogCategory_Editor, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_RICH2);
     this->m_TextCtrl_BlogCategory_DisplayName->SetToolTip(wxT("The display name of this category"));
     #if wxUSE_SPELLCHECK
         this->m_TextCtrl_BlogCategory_DisplayName->EnableProofCheck();
@@ -2159,7 +2159,7 @@ void Main::CompileProjects_Project(Project* proj)
         {
             carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_youtube.html");
             carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_YOUTUBE_", youtubes[0]);
-            if (i == 0 && images.size() == 0)
+            if (images.size() == 0)
                 carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "");
             else
                 carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYYOUTUBE_", "display:none");
@@ -2168,7 +2168,7 @@ void Main::CompileProjects_Project(Project* proj)
         {
             carousel_object += string_fromfile(this->m_WorkingDir + "/templates/project_carousel_object_mp4.html");
             carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_MP4_", mp4s[0]);
-            if (i == 0 && images.size() == 0 && youtubes.size() == 0)
+            if (images.size() == 0 && youtubes.size() == 0)
                 carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYMP4_", "");
             else
                 carousel_object.Replace("_TEMPLATE_PROJECTS_CAROUSEL_SHOULDDISPLAYMP4_", "display:none");

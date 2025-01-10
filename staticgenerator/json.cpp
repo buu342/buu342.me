@@ -44,8 +44,8 @@ int json_loadcategories(wxString filepath, std::vector<Category*>* categorylist)
         cat = new Category();
         cat->foldername = catfoldername;
         cat->index = (*it)["Index"];
-        cat->displayname = wxString((*it)["DisplayName"]);
-        cat->description = wxString((*it)["Description"]);
+        cat->displayname = wxString(std::string((*it)["DisplayName"]));
+        cat->description = wxString(std::string((*it)["Description"]));
         cat->wasmodified = false;
         cat->treeid = NULL;
         cat->pages.clear();
@@ -105,21 +105,21 @@ void json_loadprojects(wxString workingdir, std::vector<Category*>* categorylist
             Project* proj = new Project();
             proj->index = (*itproj)["Index"];
             proj->filename = wxString(itproj.key());
-            proj->displayname = wxString((*itproj)["DisplayName"]);
-            proj->icon = wxString((*itproj)["Icon"]);
-            proj->date = wxString((*itproj)["Date"]);
-            proj->tooltip = wxString((*itproj)["ToolTip"]);
+            proj->displayname = wxString(std::string((*itproj)["DisplayName"]));
+            proj->icon = wxString(std::string((*itproj)["Icon"]));
+            proj->date = wxString(std::string((*itproj)["Date"]));
+            proj->tooltip = wxString(std::string((*itproj)["ToolTip"]));
             proj->wasmodified = false;
             proj->description = string_fromfile(workingdir + wxString("/projects/") + cat_elem->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
             proj->images.clear();
             for (nlohmann::json::iterator it = (*itproj)["Images"].begin(); it != (*itproj)["Images"].end(); ++it)
-                proj->images.push_back(wxString(*it));
+                proj->images.push_back(wxString(std::string(*it)));
             proj->urls.clear();
             for (nlohmann::json::iterator it = (*itproj)["URLs"].begin(); it != (*itproj)["URLs"].end(); ++it)
-                proj->urls.push_back(wxString(*it));
+                proj->urls.push_back(wxString(std::string(*it)));
             proj->tags.clear();
             for (nlohmann::json::iterator it = (*itproj)["Tags"].begin(); it != (*itproj)["Tags"].end(); ++it)
-                proj->tags.push_back(wxString(*it));
+                proj->tags.push_back(wxString(std::string(*it)));
             proj->category = cat_elem;
             proj->treeid = NULL;
             projects.push_back(proj);
@@ -187,15 +187,15 @@ void json_loadblogentries(wxString workingdir, std::vector<Category*>* categoryl
             Blog* bentry = new Blog();
             bentry->index = (*itblog)["Index"];
             bentry->filename = wxString(itblog.key());
-            bentry->displayname = wxString((*itblog)["DisplayName"]);
-            bentry->icon = wxString((*itblog)["Icon"]);
-            bentry->date = wxString((*itblog)["Date"]);
-            bentry->tooltip = wxString((*itblog)["ToolTip"]);
+            bentry->displayname = wxString(std::string((*itblog)["DisplayName"]));
+            bentry->icon = wxString(std::string((*itblog)["Icon"]));
+            bentry->date = wxString(std::string((*itblog)["Date"]));
+            bentry->tooltip = wxString(std::string((*itblog)["ToolTip"]));
             bentry->wasmodified = false;
             bentry->content = string_fromfile(workingdir + wxString("/blog/") + cat_elem->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
             bentry->tags.clear();
             for (nlohmann::json::iterator it = (*itblog)["Tags"].begin(); it != (*itblog)["Tags"].end(); ++it)
-                bentry->tags.push_back(wxString(*it));
+                bentry->tags.push_back(wxString(std::string(*it)));
             bentry->category = cat_elem;
             bentry->treeid = NULL;
             blogs.push_back(bentry);
