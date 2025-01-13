@@ -40,7 +40,16 @@
             </center>
             <h5>Released: July 4, 2018</h5>
             <h5>Tags: <a href="../../tags/Lua.html">Lua</a>, <a href="../../tags/AI.html">AI</a>, <a href="../../tags/Horror.html">Horror</a></h5>
-            <p></p>            
+            <p><p><a href="https://www.youtube.com/watch?v=rphe8-Kqz44">Ghoul's Forest 3</a> is a horror WAD for DOOM 2, made in 2006 by CutManMike. It has a really simple premise: you're in a dark spooky forest with only a bow and arrow, and you must kill the four ghouls before they kill you. Each ghoul has their own special ability and/or gimmick, so you also have to figure out how to best deal with them. I'm a big fan of the original WAD and its multiplayer &quot;sequel&quot; Ghouls vs Humans, but I don't quite remember why I suddenly had an intrest in porting these enemies over to GMod. I think it was mostly the fact that I wanted to do some work in AI, and Ghoul's Forest 3 had a relatively small roster with pretty varied abilities.</p>
+<p>I wrote an animation system to mimick how ZDoom's DECORATE works, so that those could be as faithful to the original as possible, and then I got to work on the AI. These NPCs use a mixture of custom movement code and Source Engine's Navigation Meshes to help them hunt down the player. The addon <a href="https://www.youtube.com/watch?v=aFbd3M-arO0&amp;lc=UgzYMqzS4_mkjiftcpV4AaABAg">was praised by CutManMike</a> for being &quot;surprisingly faithful to the source material&quot;.</p>
+<p>The abilities of the Ghouls are as follows:</p>
+<ul>
+<li>Jitterskull, instead of moving, teleports a few meters towards you in an erratic pattern every second. Upon getting close enough, he will charge directly at you.</li>
+<li>Sjas flies really quickly around the map. When hit, he teleports to a random place in the map.</li>
+<li>The Creeper slowly moves towards the player. When hurt, the creeper flees really quickly.</li>
+<li>The Yurei slowly teleports around the player, appearing only for a second before disappearing. Each time she pops into existence, she's closer. If she gets close enough, she kills you.</li>
+</ul>
+</p>            
             <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=1430740294">
                 <img src="../downloadsw.png" width="200px">
             </a> 
