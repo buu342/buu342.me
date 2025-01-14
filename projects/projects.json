@@ -76,7 +76,7 @@
                         "ACS",
                         "DECORATE"
                     ],
-                    "ToolTip": "A control points gamemode for Zandronum and ZDaemon",
+                    "ToolTip": "A control points gamemode for Zandronum and ZDaemon.",
                     "URLs": [
                         "https://github.com/buu342/ACS-Dominatrix"
                     ]
@@ -211,7 +211,7 @@
                         "GML",
                         "Game Maker 8"
                     ],
-                    "ToolTip": "A parkour platformer where you use the recoil of a shotgun to propel you",
+                    "ToolTip": "A parkour platformer where you use the recoil of a shotgun to propel you.",
                     "URLs": [
                         "Downloads/ShotgunNinja.zip"
                     ]
@@ -401,7 +401,7 @@
                         "Blender",
                         "Gamemode"
                     ],
-                    "ToolTip": "A realistic survival gamemode I wrote for a school project",
+                    "ToolTip": "A realistic survival gamemode I wrote for a school project.",
                     "URLs": [
                         "https://steamcommunity.com/sharedfiles/filedetails/?id=380034705"
                     ]
@@ -474,7 +474,7 @@
                         "C",
                         "Arduino"
                     ],
-                    "ToolTip": "An AI for competing in Blokus Duo games, designed to be run in an Arduino. Winner of the 'Newbie' category at the 2018 XIV Jornadas Sobre Sistemas Reconfiguraveis competition.",
+                    "ToolTip": "An AI for competing in Blokus Duo games, designed to be run in an Arduino. Winner of the 'Newbie' category at the 2018 XIV Jornadas Sobre Sistemas Reconfiguráveis competition.",
                     "URLs": [
                         "https://github.com/buu342/FCT-BlokusDuoREC2018"
                     ]
@@ -708,7 +708,7 @@
                 },
                 "pokeminers": {
                     "Date": "August 2, 2020",
-                    "DisplayName": "PokeMiners",
+                    "DisplayName": "PokéMiners",
                     "Icon": "icons/pokeminers.png",
                     "Images": null,
                     "Index": 2,
@@ -717,7 +717,7 @@
                         "Unity",
                         "Blender"
                     ],
-                    "ToolTip": "Digging through Pokemon Go's assets since 2019!",
+                    "ToolTip": "Digging through Pokémon Go's assets since 2019!",
                     "URLs": [
                         "https://github.com/PokeMiners/pogo_assets/"
                     ]
