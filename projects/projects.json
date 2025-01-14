@@ -710,7 +710,9 @@
                     "Date": "August 2, 2020",
                     "DisplayName": "PokéMiners",
                     "Icon": "icons/pokeminers.png",
-                    "Images": null,
+                    "Images": [
+                        "images/PokemonGoRip.png"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "Reverse Engineering",
