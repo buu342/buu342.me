@@ -1,1 +1,1 @@
-
+For 2019's Lisbon Comic Con, I decided to go as Isaac Clarke's Level 3 armor from the 2008 horror game Dead Space. This costume was made entirely out of EVA foam, and features a bunch of LED lights. The build took about two months to do. It was documented in its entirety in a blog post (available below).

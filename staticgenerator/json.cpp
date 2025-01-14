@@ -233,8 +233,8 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
         std::string catstr = cat->foldername.ToStdString();
         projectjson["Categories"][catstr] = {};
         projectjson["Categories"][catstr]["Index"] = cat->index;
-        projectjson["Categories"][catstr]["DisplayName"] = cat->displayname;
-        projectjson["Categories"][catstr]["Description"] = cat->description;
+        projectjson["Categories"][catstr]["DisplayName"] = cat->displayname.ToStdString();
+        projectjson["Categories"][catstr]["Description"] = cat->description.ToStdString();
         projectjson["Categories"][catstr]["Pages"] = {};
         for (void* child : cat->pages)
         {
@@ -243,19 +243,19 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
             wxTextFile projmd(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/") + proj->filename + wxString(".md"));
             projectjson["Categories"][catstr]["Pages"][projstr] = {};
             projectjson["Categories"][catstr]["Pages"][projstr]["Index"] = proj->index;
-            projectjson["Categories"][catstr]["Pages"][projstr]["DisplayName"] = proj->displayname;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Icon"] = proj->icon;
-            projectjson["Categories"][catstr]["Pages"][projstr]["Date"] = proj->date;
-            projectjson["Categories"][catstr]["Pages"][projstr]["ToolTip"] = proj->tooltip;
+            projectjson["Categories"][catstr]["Pages"][projstr]["DisplayName"] = proj->displayname.ToStdString();
+            projectjson["Categories"][catstr]["Pages"][projstr]["Icon"] = proj->icon.ToStdString();
+            projectjson["Categories"][catstr]["Pages"][projstr]["Date"] = proj->date.ToStdString();
+            projectjson["Categories"][catstr]["Pages"][projstr]["ToolTip"] = proj->tooltip.ToStdString();
             projectjson["Categories"][catstr]["Pages"][projstr]["Images"] = {};
             for (wxString str :  proj->images)
-                projectjson["Categories"][catstr]["Pages"][projstr]["Images"].push_back(str);
+                projectjson["Categories"][catstr]["Pages"][projstr]["Images"].push_back(str.ToStdString());
             projectjson["Categories"][catstr]["Pages"][projstr]["URLs"] = {};
             for (wxString str :  proj->urls)
-                projectjson["Categories"][catstr]["Pages"][projstr]["URLs"].push_back(str);
+                projectjson["Categories"][catstr]["Pages"][projstr]["URLs"].push_back(str.ToStdString());
             projectjson["Categories"][catstr]["Pages"][projstr]["Tags"] = {};
             for (wxString str :  proj->tags)
-                projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(str);
+                projectjson["Categories"][catstr]["Pages"][projstr]["Tags"].push_back(str.ToStdString());
             if (!wxDirExists(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/")))
                 wxFileName::Mkdir(workingdir + wxString("/projects/") + cat->foldername + wxString("/markdown/"));
             if (!projmd.Exists())
@@ -284,13 +284,13 @@ void json_save(wxString workingdir, std::vector<Category*>* categorylist_project
             wxTextFile blogmd(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/") + bentry->filename + wxString(".md"));
             blogjson["Categories"][catstr]["Pages"][blogstr] = {};
             blogjson["Categories"][catstr]["Pages"][blogstr]["Index"] = bentry->index;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["DisplayName"] = bentry->displayname;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["Icon"] = bentry->icon;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["Date"] = bentry->date;
-            blogjson["Categories"][catstr]["Pages"][blogstr]["ToolTip"] = bentry->tooltip;
+            blogjson["Categories"][catstr]["Pages"][blogstr]["DisplayName"] = bentry->displayname.ToStdString();
+            blogjson["Categories"][catstr]["Pages"][blogstr]["Icon"] = bentry->icon.ToStdString();
+            blogjson["Categories"][catstr]["Pages"][blogstr]["Date"] = bentry->date.ToStdString();
+            blogjson["Categories"][catstr]["Pages"][blogstr]["ToolTip"] = bentry->tooltip.ToStdString();
             blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"] = {};
             for (wxString str : bentry->tags)
-                blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(str);
+                blogjson["Categories"][catstr]["Pages"][blogstr]["Tags"].push_back(str.ToStdString());
             if (!wxDirExists(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/")))
                 wxFileName::Mkdir(workingdir + wxString("/blog/") + cat->foldername + wxString("/markdown/"));
             if (!blogmd.Exists())

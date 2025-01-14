@@ -15,12 +15,34 @@
         <div class="box">
             <h1>Far Cry 3 Animations</h1>
             <hr>
-
+            <center>
+                <div class="carousel-container">
+                    <div class="carousel-object">
+                        <a href="images/FC3RE1.png" target="_blank">
+                            <img src="images/FC3RE1.png" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="carousel-list">
+                        <div class="carousel-list-object img selected" id="images/FC3RE1.png">
+                            <img src="images/FC3RE1.png">
+                        </div>                        <div class="carousel-list-object img " id="images/FC3RE2.png">
+                            <img src="images/FC3RE2.png">
+                        </div>                        <div class="carousel-list-object img " id="images/FC3RE3.png">
+                            <img src="images/FC3RE3.png">
+                        </div>
+                    </div>
+                </div>
+            </center>
             <h5>Released: November 4, 2023</h5>
             <h5>Tags: <a href="../../tags/ReverseEngineering.html">Reverse Engineering</a>, <a href="../../tags/Ghidra.html">Ghidra</a>, <a href="../../tags/CheatEngine.html">Cheat Engine</a>, <a href="../../tags/HexEditor.html">Hex Editor</a>, <a href="../../tags/Blender.html">Blender</a>, <a href="../../tags/Python.html">Python</a></h5>
-            <p></p>            
+            <p><p>Wanting to take a break from my dissertation work, I decided to start reverse engineering the animation system in Ubisoft's 2012 game Far Cry 3. FC3 runs on the Dunia engine, and its asset structure, model+texture format, and sound format has been long deciphered. Unfortunately, no progress has been made on how the game stores animations. I decided to take a stab at it myself.</p>
+<p>I've documented my progress in a thread on the gaming forum knockout.chat (which is linked below). I've been using a mixture of static analysis and dynamic analysis (via Cheat Engine), as well as some decompilation work using Ghidra. So far, I have been able to completely extract rotation animation data from simple models, but have yet to figure out how to extract translation data or how to parse more complicated animation files. All of my discoveries have been documented in a GitHub repository (linked below as well), which also includes a Python script which can parse and extract some information from the animation files.</p>
+<p>This is a project I'd like to continue tackling in the future, but I am currently not focused on it because I am still in my N64 development rabbit hole.</p>
+</p>            
             <a href="https://knockout.chat/thread/55079">
                 <img src="../downloadko.png" width="200px">
+            </a>             <a href="https://github.com/buu342/PY-DuniaAnimationExtractor">
+                <img src="../downloadgh.png" width="200px">
             </a> 
             <hr>
             <td><a href="../../projects.html#re">Return to projects</a></td>

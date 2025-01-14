@@ -15,10 +15,29 @@
         <div class="box">
             <h1>Blokus Duo Arduino AI</h1>
             <hr>
-
+            <center>
+                <div class="carousel-container">
+                    <div class="carousel-object">
+                        <a href="images/Victory.JPG" target="_blank">
+                            <img src="images/Victory.JPG" loading="lazy">
+                        </a>
+                    </div>
+                    <div class="carousel-list">
+                        <div class="carousel-list-object img selected" id="images/Victory.JPG">
+                            <img src="images/Victory.JPG">
+                        </div>
+                    </div>
+                </div>
+            </center>
             <h5>Released: Februrary 15, 2018</h5>
             <h5>Tags: <a href="../../tags/C.html">C</a>, <a href="../../tags/Arduino.html">Arduino</a></h5>
-            <p></p>            
+            <p><p>Shortly after my first semester in University, Jo&atilde;o Santos, a friend of mine, knew that I was a strong programmer and asked me to participate with him in the XIV Jornadas Sobre Sistemas Reconfigur&aacute;veis competition. The gist of it was that we had to develop an AI that could play the board game Blokus, which was to run on a small embedded system, and ultimately compete against other participants. Since we were first-year students, we would be developing on a more potent Arduino, which allowed us to use the C programming language. In the more advanced category, we would need to implement the game in Verilog or similar HDL since it would be running on a lower powered FPGA instead. The full rules of the competition are available <a href="https://web.tecnico.ulisboa.pt/~ist14551/BlokusDuo2018/rules.html">here</a>.</p>
+<p>Our team, Voltage Spikes, won first place in the Newbie category, and second place overall (after the competition ended, we unofficially competed against all boards just for fun). For getting first place, we received a certificate and a DE10-Lite FPGA, which I offered to Jo&atilde;o since he would likely have more use for it than I would.</p>
+<p>The C code for the AI is available on GitHub, linked below.</p>
+</br><h3 id="ai-overview"> <a href="#ai-overview">AI Overview</a></h3>
+<p>It has been 8 years since I wrote that code, but the gist of it relatively easy. The main strategy in Blokus is to use all your large pieces first, and to run towards the middle. The AI will start by choosing the highest scoring piece and position it where valid. If a valid move is found, the AI will store it as a possibility, keeping track of the score which said move gives. Once all moves have been checked, it will then attempt to go a layer deeper to find the next best possible move, and add that score to the original move. It will keep trying moves until either all pieces and moves have been checked or it close to elapsing the maximum allowed processing time by the competition. When that happens, it chooses the best scoring move from the list of possibilities.</p>
+<p>It is a really simple algorithm, but it was more than enough to beat the competition. Had we had more time to dedicate to the competition, I would have tried to use a minimax tree with alpha-beta pruning and some custom heuristic function for evaluating moves, instead of bruteforcing it.</p>
+</p>            
             <a href="https://github.com/buu342/FCT-BlokusDuoREC2018">
                 <img src="../downloadgh.png" width="200px">
             </a> 

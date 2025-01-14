@@ -1,1 +1,3 @@
+Back in 2022, I wanted to take a small break from having to study for a grueling exam season. As one's mind tends to wander in these scenarios, I suddenly remembered an old rythm game I used to play on my LG Cookie Fresh phone called Music World. I did a cursory Google search about the game and found that it was considered lost media due to it only being available on these very old proprietary devices. So I took it upon myself to do some reverse engineering to rip out whatever assets I could.
 
+Through some static analysis and experimentation, I managed to reverse engineer the music, sound effects, and sprite assets from the game. I wrote a blog post on the matter (which you can read below) where I cover the entire reverse engineering process.

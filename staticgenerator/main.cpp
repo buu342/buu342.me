@@ -2106,7 +2106,8 @@ void Main::CompileProjects_Project(Project* proj)
     wxString projoutpath = this->m_WorkingDir + wxString("/") + relativepath + proj->filename + wxString(".html");
     wxTextFile projout(projoutpath);
     wxString html_md = wxString(""), pagetags = wxString("");
-    const char* mdstr = proj->description.mb_str();
+    wxString desccopy = proj->description;
+    const char* mdstr = md_sanitize(&desccopy)->mb_str();
     std::vector<wxString> images;
     std::vector<wxString> youtubes;
     std::vector<wxString> mp4s;
@@ -2122,10 +2123,11 @@ void Main::CompileProjects_Project(Project* proj)
     md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
     if (html_md.Length() == 0 && proj->description.Length() > 0)
     {
+        printf("Hello\n%s\n", mdstr);
         wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + proj->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
         dialog.ShowModal();
     }
-    html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", html_md);
+    html_final.Replace("_TEMPLATE_PROJECTS_DESCRIPTION_", *md_unsanitize(&html_md));
     html_final.Replace("_TEMPLATE_PROJECTS_CATEGORY_", proj->category->foldername);
     html_final.Replace("_TEMPLATE_PROJECT_URL_", relativepath + proj->filename + wxString(".html"));
     html_final.Replace("_TEMPLATE_PROJECT_IMAGE_", relativepath + proj->icon);
@@ -2313,7 +2315,8 @@ void Main::CompileBlog_List()
     {
         wxString html_blogentries = wxString("");
         wxString relativepath = wxString("blog/") + cat->foldername + wxString("/");
-        const char* mdstr = cat->description.mb_str();
+        wxString desccopy = cat->description;
+        const char* mdstr = md_sanitize(&desccopy)->mb_str();
         wxString desc = wxString("");
 
         // If there's no blog entries in this category, skip it
@@ -2343,7 +2346,7 @@ void Main::CompileBlog_List()
             dialog.ShowModal();
         }
         desc.Replace("<p>", "<p align=\"left\">");
-        html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", desc);
+        html_categories.Replace("_TEMPLATE_SECTION_DESCRIPTION_", *md_unsanitize(&desc));
         html_categories.Replace("_TEMPLATE_BLOG_LIST_", html_blogentries);
         html_categories.Append("\r\n");
         

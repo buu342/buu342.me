@@ -9,7 +9,11 @@
                     "Date": "September 8, 2019",
                     "DisplayName": "Garen (League of Legends)",
                     "Icon": "icons/garen.png",
-                    "Images": null,
+                    "Images": [
+                        "../../blog/projects/images/GarenCosplay/Final.JPG",
+                        "../../blog/projects/images/GarenCosplay/PiecesGluedPainted.JPG",
+                        "../../blog/projects/images/GarenCosplay/AllPieces.JPG"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "Cosplay",
@@ -17,7 +21,7 @@
                         "Crafts",
                         "League of Legends"
                     ],
-                    "ToolTip": "One of the main heroes in League of Legends, and my main (when I used to play). Made for the 2018 Lisbon Comic Con.",
+                    "ToolTip": "One of the champions in League of Legends, and my main (when I used to play). Made for the 2018 Lisbon Comic Con.",
                     "URLs": [
                         "https://buu342.me/blog/projects/GarenCosplay.html"
                     ]
@@ -26,7 +30,12 @@
                     "Date": "September 14, 2019",
                     "DisplayName": "Isaac Clarke (Dead Space)",
                     "Icon": "icons/isaacclarke.png",
-                    "Images": null,
+                    "Images": [
+                        "../../blog/projects/images/IsaacClarke/Final.JPG",
+                        "../../blog/projects/images/IsaacClarke/AllPiecesBlackWashed.JPG",
+                        "../../blog/projects/images/IsaacClarke/HelmetGluedDetails.JPG",
+                        "../../blog/projects/images/IsaacClarke/GunDetailed.jpg"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "Cosplay",
@@ -346,7 +355,7 @@
                         "AI",
                         "Horror"
                     ],
-                    "ToolTip": "The four scary monsters from the Ghoul's Forest series, ported over to Garry's Mod. ",
+                    "ToolTip": "The four scary monsters from the Ghoul's Forest series, ported over to Garry's Mod.",
                     "URLs": [
                         "https://steamcommunity.com/sharedfiles/filedetails/?id=1430740294"
                     ]
@@ -457,7 +466,9 @@
                     "Date": "Februrary 15, 2018",
                     "DisplayName": "Blokus Duo Arduino AI",
                     "Icon": "icons/blokusduoai.png",
-                    "Images": null,
+                    "Images": [
+                        "images/Victory.JPG"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "C",
@@ -472,7 +483,9 @@
                     "Date": "November 10, 2021",
                     "DisplayName": "This Website (buu342.me)",
                     "Icon": "icons/buu342me.png",
-                    "Images": null,
+                    "Images": [
+                        "images/StaticSiteGenerator.png"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "Bad Life Decisions",
@@ -486,14 +499,18 @@
                     ],
                     "ToolTip": "The very website you're gazing your eyes upon!",
                     "URLs": [
-                        "https://buu342.me/blog/meta/StaticGenerator.html"
+                        "https://buu342.me/blog/meta/SiteGenerator.html"
                     ]
                 },
                 "sgiindypc": {
                     "Date": "September 4, 2022",
                     "DisplayName": "SGI Indy Sleeper PC",
                     "Icon": "icons/sgiindypc.png",
-                    "Images": null,
+                    "Images": [
+                        "../../blog/projects/images/SGIIndySleeper/End.jpg",
+                        "../../blog/projects/images/SGIIndySleeper/PCInside.jpg",
+                        "../../blog/projects/images/SGIIndySleeper/Chassis.jpg"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "PC Building",
@@ -649,7 +666,11 @@
                     "Date": "November 4, 2023",
                     "DisplayName": "Far Cry 3 Animations",
                     "Icon": "icons/fc3anims.png",
-                    "Images": null,
+                    "Images": [
+                        "images/FC3RE1.png",
+                        "images/FC3RE2.png",
+                        "images/FC3RE3.png"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "Reverse Engineering",
@@ -661,14 +682,17 @@
                     ],
                     "ToolTip": "A work in progress RE of Far Cry 3's .mab animation format.",
                     "URLs": [
-                        "https://knockout.chat/thread/55079"
+                        "https://knockout.chat/thread/55079",
+                        "https://github.com/buu342/PY-DuniaAnimationExtractor"
                     ]
                 },
                 "musicworld": {
                     "Date": "January 22, 2022",
                     "DisplayName": "Music World",
                     "Icon": "icons/musicworld.png",
-                    "Images": null,
+                    "Images": [
+                        "../../blog/projects/images/MusicWorldRE/MusicWorldRipCollection.png"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "Reverse Engineering",
@@ -709,20 +733,28 @@
                     "Date": "April 23, 2015",
                     "DisplayName": "Memories - Shadow of the Colossus",
                     "Icon": "icons/sotc.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=jFdeIFqyUfc",
+                        "images/MemoriesSample.png"
+                    ],
                     "Index": 3,
                     "Tags": [
                         "Shadow of the Colossus",
                         "Piano"
                     ],
                     "ToolTip": "A piano medley from an unused track in Shadow of the Colossus.",
-                    "URLs": null
+                    "URLs": [
+                        "downloads/Memories.zip"
+                    ]
                 },
                 "movingroom": {
                     "Date": "October 18, 2023",
                     "DisplayName": "The Moving Room - Andrew W.K.",
                     "Icon": "icons/ccwbw.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=07WtUxm1yIE",
+                        "images/MovingRoomSample.png"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "Andrew W.K.",
@@ -730,13 +762,18 @@
                         "Vocals"
                     ],
                     "ToolTip": "My favorite song! Contains piano and vocals.",
-                    "URLs": null
+                    "URLs": [
+                        "downloads/The Moving Room.zip"
+                    ]
                 },
                 "remembertonight": {
                     "Date": "September 28, 2023",
                     "DisplayName": "You Will Remember Tonight - Andrew W.K.",
                     "Icon": "icons/ccwbw.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=AhdL3ugNjso",
+                        "images/RememberTonightSample.png"
+                    ],
                     "Index": 1,
                     "Tags": [
                         "Andrew W.K.",
@@ -744,13 +781,18 @@
                         "Vocals"
                     ],
                     "ToolTip": "A relatively easy (but tiring) song. Includes piano and vocals.",
-                    "URLs": null
+                    "URLs": [
+                        "downloads/You Will Remember Tonight.zip"
+                    ]
                 },
                 "thesong": {
                     "Date": "March 12, 2024",
                     "DisplayName": "The Song - Andrew W.K.",
                     "Icon": "icons/thewolf.png",
-                    "Images": null,
+                    "Images": [
+                        "https://www.youtube.com/watch?v=Sy7N8tn-UTw",
+                        "images/TheSongSample.png"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "Andrew W.K.",
@@ -758,7 +800,9 @@
                         "Vocals"
                     ],
                     "ToolTip": "Very boring title, but very catchy. Also very easy to sing and play.",
-                    "URLs": null
+                    "URLs": [
+                        "downloads/The Song.zip"
+                    ]
                 }
             }
         },

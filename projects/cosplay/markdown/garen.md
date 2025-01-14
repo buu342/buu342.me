@@ -1,1 +1,1 @@
-
+For 2018's Lisbon Comic Con, I decided to go as Garen from the online MOBA League of Legends. This was one of my first relatively complex cosplay builds, with the armor being made entirely out of EVA foam, while the swords was made out of extruded polystyrene. The build took about two months to do. It was documented in its entirety in a blog post (available below).

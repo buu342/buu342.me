@@ -1,1 +1,5 @@
+Wanting to take a break from my dissertation work, I decided to start reverse engineering the animation system in Ubisoft's 2012 game Far Cry 3. FC3 runs on the Dunia engine, and its asset structure, model+texture format, and sound format has been long deciphered. Unfortunately, no progress has been made on how the game stores animations. I decided to take a stab at it myself.
 
+I've documented my progress in a thread on the gaming forum knockout.chat (which is linked below). I've been using a mixture of static analysis and dynamic analysis (via Cheat Engine), as well as some decompilation work using Ghidra. So far, I have been able to completely extract rotation animation data from simple models, but have yet to figure out how to extract translation data or how to parse more complicated animation files. All of my discoveries have been documented in a GitHub repository (linked below as well), which also includes a Python script which can parse and extract some information from the animation files.
+
+This is a project I'd like to continue tackling in the future, but I am currently not focused on it because I am still in my N64 development rabbit hole.
