@@ -89,7 +89,7 @@ I've also gotten myself an external disk drive, which I use to play some old gam
 
 ### The Indy Case is Brittle
 
-This is a very common complaint about SGI PC's, and it's unfortunately true for the Indy as well. While there hasn't been any scuffs on the outside of the PC, some of the little tabs on the inside of the case have, unfortunately, broken off. The locking handle that's at the back of the Indy is also held down by three melted plastic buttons, one of which was already broken when I got the case and another that eventually broke during a disassembly. 
+This is a very common complaint about SGI PC's, and it's unfortunately true for the Indy as well. While there hasn't been any scuffs on the outside of the PC, some of the little tabs on the inside of the case have, unfortunately, broken off. The locking handle that's at the back of the Indy is also held down by three melted plastic buttons, one of which was already broken when I got the case and another that eventually broke during a disassembly. This causes the case to get stuck when attempting to slide it back in, as the metal top is now sagging somewhat and it collides with the chassis.
 
 <p align="center">
 ![Broken tabs on the front of the Indy](images/IndyPC2Years/BrokenTabsFront.JPG)
@@ -138,7 +138,7 @@ Although I humbly await for 24.10 to break my system!
 
 ### 1337 Gaming
 
-This is probably the thing that a most people are interested about. I have to, once again, remind you that my Indy has best case scenario for cooling. I designed the chassis to intake air from the bottom and expel it out in whatever direction it can. The fact that it's on top of a TV stand, where its bottom is mostly unobstructed, is giving it more of a chance than keeping it on top of a desk would. I have also done very little to tune its fan curves and haven't done any overclocking. 
+This is probably the thing that most people are interested about. I have to, once again, remind you that my Indy has best case scenario for cooling. I designed the chassis to intake air from the bottom and expel it out in whatever direction it can. The fact that it's on top of a TV stand, where its bottom is mostly unobstructed, is giving it more of a chance than keeping it on top of a desk would. I have also done very little to tune its fan curves and haven't done any overclocking. 
 
 While idle, the PC tends to stay around the 40-50 degrees mark. Not incredible but not too out of the ordinary for higher powered components. Here's a snapshot from the `sensors` command after 30 minutes of light browsing:
 
@@ -266,7 +266,9 @@ Too bad I woke up the next day with [benign paroxysmal positional vertigo](https
 </br>
 **Update 08/12/2024**
 
-The whole thing about desktop icons rearranging themselves? The reason that's not happening anymore is because KDE now uses Wayland display protocol by default, as opposed to X11. That's cool, but you know what isn't? Not being able to screen share. Apparently, this has been a known problem with Wayland with a lot of software. Yeah no thanks, I'd rather deal with X11 messing my desktop every now and then than not being able to stream my desktop over the internet. I'll just need to be very careful not to turn my main monitor off unless the computer is completely asleep.
+The whole thing about desktop icons rearranging themselves? The reason that's not happening anymore is because KDE now uses the Wayland display protocol by default, as opposed to X11. That's cool, but you know what isn't? Not being able to screen share. Apparently, this has been a known problem with Wayland with a lot of software. Yeah no thanks, I'd rather deal with X11 messing my desktop every now and then than not being able to stream my desktop over the internet. I'll just need to be very careful not to turn my main monitor off unless the computer is completely asleep.
+
+Kubuntu 24 also brought some annoying problems that didn't exist before, namely plugging in my iPhone no longer properly works as KIO AFC is now broken in Dolphin. I also can't rip MP3s in Dolphin anymore due to the same issue.
 
 But anyway, I wanted to post a small update because **I WANT TO FUCKING CRY**:
 

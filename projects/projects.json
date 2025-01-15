@@ -140,7 +140,7 @@
                     "DisplayName": "[Unfinished] Disfigured",
                     "Icon": "icons/disfigured.png",
                     "Images": null,
-                    "Index": 7,
+                    "Index": 5,
                     "Tags": [
                         "GML",
                         "Horror",
@@ -173,7 +173,7 @@
                     "DisplayName": "Light Maze",
                     "Icon": "icons/lightmaze.png",
                     "Images": null,
-                    "Index": 5,
+                    "Index": 4,
                     "Tags": [
                         "GML",
                         "Shaders",
@@ -189,7 +189,10 @@
                     "Date": "September 16, 2018",
                     "DisplayName": "N64 Texture Converter",
                     "Icon": "icons/n64texconv.png",
-                    "Images": null,
+                    "Images": [
+                        "images/GMTextureConverter.png",
+                        "images/GMTextureConverterHelp.png"
+                    ],
                     "Index": 0,
                     "Tags": [
                         "GML",
@@ -206,7 +209,7 @@
                     "DisplayName": "[Unfinished] Shotgun Ninja",
                     "Icon": "icons/shotgunninja.png",
                     "Images": null,
-                    "Index": 4,
+                    "Index": 3,
                     "Tags": [
                         "GML",
                         "Game Maker 8"
@@ -218,9 +221,13 @@
                 },
                 "smbclone": {
                     "Date": "June 18, 2010",
-                    "DisplayName": "Super Mario Bros Clone",
+                    "DisplayName": "Super Mario Bros. Clone",
                     "Icon": "icons/smbclone.png",
-                    "Images": null,
+                    "Images": [
+                        "images/SMBClone1.png",
+                        "images/SMBClone2.png",
+                        "images/SMBClone3.png"
+                    ],
                     "Index": 6,
                     "Tags": [
                         "GML",
@@ -235,8 +242,13 @@
                     "Date": "August 2, 2009",
                     "DisplayName": "Space Invaders Extreme",
                     "Icon": "icons/spaceinvaders.png",
-                    "Images": null,
-                    "Index": 1,
+                    "Images": [
+                        "images/SpaceInvadersEx1.png",
+                        "images/SpaceInvadersEx2.png",
+                        "images/SpaceInvadersEx3.png",
+                        "images/SpaceInvadersEx4.png"
+                    ],
+                    "Index": 7,
                     "Tags": [
                         "GML",
                         "Game Maker 5"
@@ -251,7 +263,7 @@
                     "DisplayName": "[Unfinished] 3D Isometric Horror",
                     "Icon": "icons/wiphorror.png",
                     "Images": null,
-                    "Index": 3,
+                    "Index": 1,
                     "Tags": [
                         "GML",
                         "Blender",
@@ -507,7 +519,7 @@
                     "DisplayName": "SGI Indy Sleeper PC",
                     "Icon": "icons/sgiindypc.png",
                     "Images": [
-                        "../../blog/projects/images/SGIIndySleeper/End.jpg",
+                        "../../blog/projects/images/IndyPC2Years/PCFinal.jpg",
                         "../../blog/projects/images/SGIIndySleeper/PCInside.jpg",
                         "../../blog/projects/images/SGIIndySleeper/Chassis.jpg"
                     ],
