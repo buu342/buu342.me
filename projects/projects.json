@@ -131,16 +131,33 @@
             }
         },
         "gamemaker": {
-            "Description": "A fantastic engine for 2D games, not so much for everything else.\n\nI started making things back in Game Maker 5 at the age of 9, and I worked all the way up to GM Studio 2. Unfortunately, most of the things I made were published on the (now defunct) YoYo Games Sandbox... As is the usually the case for most people, a huge chunk of my projects have gone unfinished, but here are some things which I think are worth looking at.",
+            "Description": "A fantastic engine for 2D games, not so much for everything else.\n\nI started making things back in Game Maker 5 at the age of 9, and I worked all the way up to GM Studio 2. Unfortunately, most of the things I made were published on the (now defunct) YoYo Games Sandbox... Game Maker is a fantastic engine for 2D projects, but after moving on to GM8 I started really wanting to push the engine to making 3D games. It wasn't really its strong suit, and it didn't really provide tooling or even collision functions for it. That meant that I had to start learning game development \"properly\", like implementing collisions, physics, and tooling. \n\nAs is the usually the case for most people, a huge chunk of my projects have gone unfinished, but here are some things which I think are worth looking at.",
             "DisplayName": "Game Maker",
             "Index": 5,
             "Pages": {
+                "3dplatformer": {
+                    "Date": "",
+                    "DisplayName": "[Unfinished] 3D Platformer",
+                    "Icon": "",
+                    "Images": null,
+                    "Index": 6,
+                    "Tags": [
+                        "GML",
+                        "Game Maker 8"
+                    ],
+                    "ToolTip": "",
+                    "URLs": null
+                },
                 "disfigured": {
                     "Date": "November 10, 2013",
                     "DisplayName": "[Unfinished] Disfigured",
                     "Icon": "icons/disfigured.png",
-                    "Images": null,
-                    "Index": 5,
+                    "Images": [
+                        "images/Disfigured1.png",
+                        "images/Disfigured2.png",
+                        "images/Disfigured3.png"
+                    ],
+                    "Index": 9,
                     "Tags": [
                         "GML",
                         "Horror",
@@ -155,8 +172,12 @@
                     "Date": "June 17, 2016",
                     "DisplayName": "FPS Horror Game Monster AI",
                     "Icon": "icons/horrorai.png",
-                    "Images": null,
-                    "Index": 2,
+                    "Images": [
+                        "images/HorrorAI1.png",
+                        "images/HorrorAI2.png",
+                        "images/HorrorAI3.png"
+                    ],
+                    "Index": 4,
                     "Tags": [
                         "GML",
                         "AI",
@@ -168,12 +189,40 @@
                         "downloads/HorrorAI.zip"
                     ]
                 },
+                "isohorror": {
+                    "Date": "April 3, 2016",
+                    "DisplayName": "[Unfinished] 3D Isometric Horror",
+                    "Icon": "icons/wiphorror.png",
+                    "Images": [
+                        "https://www.youtube.com/watch?v=slCdK4grsJo",
+                        "https://www.youtube.com/watch?v=WaBe0Eo1CrA",
+                        "images/HorrorIso1.png",
+                        "images/HorrorIso2.png"
+                    ],
+                    "Index": 1,
+                    "Tags": [
+                        "GML",
+                        "Blender",
+                        "3D Modeling",
+                        "3D Animation",
+                        "Horror",
+                        "GameMaker: Studio"
+                    ],
+                    "ToolTip": "An engine I put together that contains 3D animation and a built-in level editor.",
+                    "URLs": [
+                        "downloads/IsoHorror.zip"
+                    ]
+                },
                 "lightmaze": {
                     "Date": "June 1, 2015",
                     "DisplayName": "Light Maze",
                     "Icon": "icons/lightmaze.png",
-                    "Images": null,
-                    "Index": 4,
+                    "Images": [
+                        "images/LightMaze.png",
+                        "images/LightEngine.png",
+                        "images/Detective.png"
+                    ],
+                    "Index": 3,
                     "Tags": [
                         "GML",
                         "Shaders",
@@ -197,19 +246,44 @@
                     "Tags": [
                         "GML",
                         "Shaders",
-                        "Game Maker Studio"
+                        "GameMaker: Studio"
                     ],
                     "ToolTip": "Yes I wrote a texture editor/converter in Game Maker. Why? Because it was convenient at the time.",
                     "URLs": [
                         "https://github.com/buu342/GML-N64TextureConverter/"
                     ]
                 },
+                "red": {
+                    "Date": "",
+                    "DisplayName": "Red",
+                    "Icon": "",
+                    "Images": null,
+                    "Index": 7,
+                    "Tags": null,
+                    "ToolTip": "",
+                    "URLs": null
+                },
+                "sands": {
+                    "Date": "",
+                    "DisplayName": "[Unfinished] Sands",
+                    "Icon": "",
+                    "Images": null,
+                    "Index": 5,
+                    "Tags": null,
+                    "ToolTip": "",
+                    "URLs": null
+                },
                 "shotgunninja": {
-                    "Date": "January 18, 2016",
+                    "Date": "January 18, 2015",
                     "DisplayName": "[Unfinished] Shotgun Ninja",
                     "Icon": "icons/shotgunninja.png",
-                    "Images": null,
-                    "Index": 3,
+                    "Images": [
+                        "images/ShotgunNinja1.png",
+                        "images/ShotgunNinja2.png",
+                        "images/ShotgunNinja3.png",
+                        "images/ShotgunNinja4.png"
+                    ],
+                    "Index": 8,
                     "Tags": [
                         "GML",
                         "Game Maker 8"
@@ -218,6 +292,16 @@
                     "URLs": [
                         "Downloads/ShotgunNinja.zip"
                     ]
+                },
+                "slendersforest": {
+                    "Date": "",
+                    "DisplayName": "[Unfinished] Slender's Forest",
+                    "Icon": "",
+                    "Images": null,
+                    "Index": 10,
+                    "Tags": null,
+                    "ToolTip": "",
+                    "URLs": null
                 },
                 "smbclone": {
                     "Date": "June 18, 2010",
@@ -228,7 +312,7 @@
                         "images/SMBClone2.png",
                         "images/SMBClone3.png"
                     ],
-                    "Index": 6,
+                    "Index": 11,
                     "Tags": [
                         "GML",
                         "Game Maker 7"
@@ -248,7 +332,7 @@
                         "images/SpaceInvadersEx3.png",
                         "images/SpaceInvadersEx4.png"
                     ],
-                    "Index": 7,
+                    "Index": 12,
                     "Tags": [
                         "GML",
                         "Game Maker 5"
@@ -258,24 +342,21 @@
                         "downloads/SIE.zip"
                     ]
                 },
-                "wiphorror": {
-                    "Date": "April 3, 2016",
-                    "DisplayName": "[Unfinished] 3D Isometric Horror",
-                    "Icon": "icons/wiphorror.png",
+                "towerdive": {
+                    "Date": "",
+                    "DisplayName": "[Unfinished] Tower Dive",
+                    "Icon": "",
                     "Images": null,
-                    "Index": 1,
+                    "Index": 2,
                     "Tags": [
                         "GML",
+                        "GameMaker: Studio",
                         "Blender",
                         "3D Modeling",
-                        "3D Animation",
-                        "Horror",
-                        "Game Maker Studio"
+                        "3D Animation"
                     ],
-                    "ToolTip": "An engine I put together that contains 3D animation and a built-in level editor.",
-                    "URLs": [
-                        "downloads/IsoHorror.zip"
-                    ]
+                    "ToolTip": "",
+                    "URLs": null
                 }
             }
         },
