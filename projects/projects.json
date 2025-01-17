@@ -131,7 +131,7 @@
             }
         },
         "gamemaker": {
-            "Description": "A fantastic engine for 2D games, not so much for everything else.\n\nI started making things back in Game Maker 5 at the age of 9, and I worked all the way up to GM Studio 2. Unfortunately, most of the things I made were published on the (now defunct) YoYo Games Sandbox... Game Maker is a fantastic engine for 2D projects, but after moving on to GM8 I started really wanting to push the engine to making 3D games. It wasn't really its strong suit, and it didn't really provide tooling or even collision functions for it. That meant that I had to start learning game development \"properly\", like implementing collisions, physics, and tooling. \n\nAs is the usually the case for most people, a huge chunk of my projects have gone unfinished, but here are some things which I think are worth looking at.",
+            "Description": "A fantastic engine for 2D games, not so much for everything else.\n\nI started making things back in Game Maker 5 at the age of 9, and I worked all the way up to GM Studio 2. Unfortunately, most of the things I made were published on the (now defunct) YoYo Games Sandbox... Game Maker is a fantastic engine for 2D projects, but after moving on to GM8 I started really wanting to push the engine to making 3D games. It wasn't really its strong suit, and it didn't really provide tooling or even collision functions for it. That meant that I had to start learning game development \"properly\", like implementing collisions, physics, and tooling. \n\nAs is the usually the case for most people, a huge chunk of my projects have gone unfinished, but here are some things which I think are worth looking at. The dates for a lot of these projects are the earliest file date I could find in that project's folder, so it's possible some were started earlier than the date I put.",
             "DisplayName": "Game Maker",
             "Index": 5,
             "Pages": {
@@ -169,7 +169,7 @@
                     ]
                 },
                 "horrorai": {
-                    "Date": "June 17, 2016",
+                    "Date": "August 13, 2015",
                     "DisplayName": "FPS Horror Game Monster AI",
                     "Icon": "icons/horrorai.png",
                     "Images": [
@@ -229,7 +229,7 @@
                         "Horror",
                         "Game Maker 8"
                     ],
-                    "ToolTip": "An experimental game that worked as a playground to test a dynamic light system I wrote. Place torches to keep track of the monsters hunting you down.",
+                    "ToolTip": "An experimental game that worked as a playground to test a dynamic light system I wrote.",
                     "URLs": [
                         "downloads/PyramidExplorer.zip"
                     ]
@@ -254,24 +254,40 @@
                     ]
                 },
                 "red": {
-                    "Date": "",
+                    "Date": "March 30, 2016",
                     "DisplayName": "Red",
-                    "Icon": "",
-                    "Images": null,
+                    "Icon": "icons/red.png",
+                    "Images": [
+                        "https://www.youtube.com/watch?v=tVh4bdNU1TM",
+                        "images/Red1.png",
+                        "images/Red2.png",
+                        "images/Red3.png",
+                        "images/Red4.png"
+                    ],
                     "Index": 7,
-                    "Tags": null,
-                    "ToolTip": "",
-                    "URLs": null
+                    "Tags": [
+                        "GML",
+                        "Game Maker 8"
+                    ],
+                    "ToolTip": "A twin-stick shooter with as simple graphics as possible.",
+                    "URLs": [
+                        "downloads/Red.zip"
+                    ]
                 },
                 "sands": {
-                    "Date": "",
+                    "Date": "August 20, 2017",
                     "DisplayName": "[Unfinished] Sands",
                     "Icon": "",
                     "Images": null,
                     "Index": 5,
-                    "Tags": null,
-                    "ToolTip": "",
-                    "URLs": null
+                    "Tags": [
+                        "GML",
+                        "GameMaker: Studio"
+                    ],
+                    "ToolTip": "A third person adventure game that takes place in a sandy dune.",
+                    "URLs": [
+                        "downloads/Sands.zip"
+                    ]
                 },
                 "shotgunninja": {
                     "Date": "January 18, 2015",
@@ -294,14 +310,24 @@
                     ]
                 },
                 "slendersforest": {
-                    "Date": "",
+                    "Date": "August 11, 2012",
                     "DisplayName": "[Unfinished] Slender's Forest",
-                    "Icon": "",
-                    "Images": null,
+                    "Icon": "icons/slenderforest.png",
+                    "Images": [
+                        "images/Slender1.png",
+                        "images/Slender2.png",
+                        "images/Slender3.png"
+                    ],
                     "Index": 10,
-                    "Tags": null,
-                    "ToolTip": "",
-                    "URLs": null
+                    "Tags": [
+                        "GML",
+                        "Game Maker 8",
+                        "Horror"
+                    ],
+                    "ToolTip": "My first attempt at making a full 3D horror game from scratch.",
+                    "URLs": [
+                        "downloads/SlenderForest.zip"
+                    ]
                 },
                 "smbclone": {
                     "Date": "June 18, 2010",
@@ -343,10 +369,15 @@
                     ]
                 },
                 "towerdive": {
-                    "Date": "",
+                    "Date": "November 16, 2017",
                     "DisplayName": "[Unfinished] Tower Dive",
-                    "Icon": "",
-                    "Images": null,
+                    "Icon": "icons/towerdive.png",
+                    "Images": [
+                        "https://www.youtube.com/watch?v=l8asKmQW7l0",
+                        "images/TowerDive1.png",
+                        "images/TowerDive2.png",
+                        "images/TowerDive3.png"
+                    ],
                     "Index": 2,
                     "Tags": [
                         "GML",
@@ -355,8 +386,10 @@
                         "3D Modeling",
                         "3D Animation"
                     ],
-                    "ToolTip": "",
-                    "URLs": null
+                    "ToolTip": "An arcade game about climbing an increasingly dangerous tower.",
+                    "URLs": [
+                        "downloads/TowerDive.zip"
+                    ]
                 }
             }
         },
