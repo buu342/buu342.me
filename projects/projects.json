@@ -131,22 +131,28 @@
             }
         },
         "gamemaker": {
-            "Description": "A fantastic engine for 2D games, not so much for everything else.\n\nI started making things back in Game Maker 5 at the age of 9, and I worked all the way up to GM Studio 2. Unfortunately, most of the things I made were published on the (now defunct) YoYo Games Sandbox... Game Maker is a fantastic engine for 2D projects, but after moving on to GM8 I started really wanting to push the engine to making 3D games. It wasn't really its strong suit, and it didn't really provide tooling or even collision functions for it. That meant that I had to start learning game development \"properly\", like implementing collisions, physics, and tooling. \n\nAs is the usually the case for most people, a huge chunk of my projects have gone unfinished, but here are some things which I think are worth looking at. The dates for a lot of these projects are the earliest file date I could find in that project's folder, so it's possible some were started earlier than the date I put.",
+            "Description": "A fantastic engine for 2D games, not so much for everything else.\n\nI started making things back in Game Maker 5 at the age of 9, and I worked all the way up to GM Studio 2. Unfortunately, most of the things I made were published on the (now defunct) YoYo Games Sandbox... Game Maker is a fantastic engine for 2D projects, but after moving on to GM8 I started really wanting to push the engine to making 3D games. It wasn't really its strong suit, and it didn't really provide tooling or even collision functions for it. That meant that I had to start learning game development \"properly\", like implementing collisions, physics, and tooling. \n\nAs is the usually the case for most people, a huge chunk of my projects have gone unfinished, but here are some things which I think are worth looking at. The dates for a lot of these unfinished projects are the rough estimate of when I stopped working on them, based on file dates.",
             "DisplayName": "Game Maker",
             "Index": 5,
             "Pages": {
                 "3dplatformer": {
-                    "Date": "",
+                    "Date": "August 12, 2015",
                     "DisplayName": "[Unfinished] 3D Platformer",
-                    "Icon": "",
-                    "Images": null,
+                    "Icon": "icons/3dplatformer.png",
+                    "Images": [
+                        "images/3DPlat1.png",
+                        "images/3DPlat2.png",
+                        "images/3DPlat3.png"
+                    ],
                     "Index": 6,
                     "Tags": [
                         "GML",
                         "Game Maker 8"
                     ],
-                    "ToolTip": "",
-                    "URLs": null
+                    "ToolTip": "Guess what this project is about.",
+                    "URLs": [
+                        "downloads/3DPlatformer.zip"
+                    ]
                 },
                 "disfigured": {
                     "Date": "November 10, 2013",
@@ -246,7 +252,8 @@
                     "Tags": [
                         "GML",
                         "Shaders",
-                        "GameMaker: Studio"
+                        "GameMaker: Studio",
+                        "C++"
                     ],
                     "ToolTip": "Yes I wrote a texture editor/converter in Game Maker. Why? Because it was convenient at the time.",
                     "URLs": [
@@ -277,12 +284,18 @@
                 "sands": {
                     "Date": "August 20, 2017",
                     "DisplayName": "[Unfinished] Sands",
-                    "Icon": "",
-                    "Images": null,
+                    "Icon": "icons/sands.png",
+                    "Images": [
+                        "images/Sands1.png",
+                        "images/Sands2.png",
+                        "images/Sands3.png"
+                    ],
                     "Index": 5,
                     "Tags": [
                         "GML",
-                        "GameMaker: Studio"
+                        "GameMaker: Studio",
+                        "3D Modeling",
+                        "3D Animation"
                     ],
                     "ToolTip": "A third person adventure game that takes place in a sandy dune.",
                     "URLs": [
