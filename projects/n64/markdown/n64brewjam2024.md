@@ -2,4 +2,4 @@ The N64brew community, since 2020, hosts a game jam every year where we raise mo
 
 This meant that this year, instead of just doing organizational stuff (as well as promotion, graphics, etc...) we also had to do quite a bit of work on the final entry as well. As part of the organization team, there were two Libdragon developers and myself: I wrote a big portion of the base template (including the loading of overlays and game loop with deltatimes), and mostly worked on the menus and savestate system in the final ROM.
 
-The jam overall was a success, we raised more money for charity (1750$) and had more participants than in any previous year!
+The jam overall was a success, we raised more money for charity ([1754$, which went to the Alzheimer's Association](images/AA.png)) and had more participants than in any previous year!
