@@ -1003,7 +1003,7 @@
             }
         },
         "unreal": {
-            "Description": "That engine that makes dev textures bring your computer to its knees.\n\nWhile I didn't really get that much of a chance to play with Unreal during the 4.26 days (due to my very limited hardware), I did get some playtime with it. Now that I have a proper PC, have been working with Unreal Engine all the way until 5.3.",
+            "Description": "That engine that makes dev textures bring your computer to its knees.\n\nWhile I didn't really get that much of a chance to play with Unreal during the 4.26 days (due to my very limited hardware), I did get some playtime with it. Now that I have a proper PC, I have been working with Unreal Engine all the way until 5.3.",
             "DisplayName": "Unreal Engine",
             "Index": 1,
             "Pages": {
