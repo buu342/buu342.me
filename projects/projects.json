@@ -870,6 +870,24 @@
             "DisplayName": "Music Transcriptions",
             "Index": 8,
             "Pages": {
+                "maskpriestbellchapel": {
+                    "Date": "February 25, 2025",
+                    "DisplayName": "The Mask of the Priest and the Bell of the Chapel",
+                    "Icon": "icons/hellsingraid.png",
+                    "Images": [
+                        "https://www.youtube.com/watch?v=mV08aY6XaNc",
+                        "images/MaskPriestSample.png"
+                    ],
+                    "Index": 4,
+                    "Tags": [
+                        "Hellsing",
+                        "Piano"
+                    ],
+                    "ToolTip": "One of many piano tracks in Hellsing (2001). Heard in episode 1, when Seras enters the church.",
+                    "URLs": [
+                        "downloads/The Mask of the Priest and the Bell of the Chapel.zip"
+                    ]
+                },
                 "memories": {
                     "Date": "April 23, 2015",
                     "DisplayName": "Memories - Shadow of the Colossus",
