@@ -870,15 +870,32 @@
             "DisplayName": "Music Transcriptions",
             "Index": 8,
             "Pages": {
+                "drdrumont": {
+                    "Date": "March 04, 2025",
+                    "DisplayName": "Dr. Drumont - Andrew W.K.",
+                    "Icon": "icons/ccwbw.png",
+                    "Images": [
+                        "https://www.youtube.com/watch?v=0VyEuO-6wek"
+                    ],
+                    "Index": 2,
+                    "Tags": [
+                        "Andrew W.K.",
+                        "Piano"
+                    ],
+                    "ToolTip": "A small improvisational piano piece that serves as a halfway marker for Close Calls with Brick Walls.",
+                    "URLs": [
+                        "downloads/Dr Drumont.zip"
+                    ]
+                },
                 "maskpriestbellchapel": {
                     "Date": "February 25, 2025",
-                    "DisplayName": "The Mask of the Priest and the Bell of the Chapel",
+                    "DisplayName": "The Mask of the Priest and the Bell of the Chapel - Yasushi Ishii",
                     "Icon": "icons/hellsingraid.png",
                     "Images": [
                         "https://www.youtube.com/watch?v=mV08aY6XaNc",
                         "images/MaskPriestSample.png"
                     ],
-                    "Index": 4,
+                    "Index": 5,
                     "Tags": [
                         "Hellsing",
                         "Piano"
@@ -896,7 +913,7 @@
                         "https://www.youtube.com/watch?v=jFdeIFqyUfc",
                         "images/MemoriesSample.png"
                     ],
-                    "Index": 3,
+                    "Index": 4,
                     "Tags": [
                         "Shadow of the Colossus",
                         "Piano"
@@ -952,7 +969,7 @@
                         "https://www.youtube.com/watch?v=Sy7N8tn-UTw",
                         "images/TheSongSample.png"
                     ],
-                    "Index": 2,
+                    "Index": 3,
                     "Tags": [
                         "Andrew W.K.",
                         "Piano",
