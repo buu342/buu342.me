@@ -875,7 +875,8 @@
                     "DisplayName": "Dr. Drumont - Andrew W.K.",
                     "Icon": "icons/ccwbw.png",
                     "Images": [
-                        "https://www.youtube.com/watch?v=0VyEuO-6wek"
+                        "https://www.youtube.com/watch?v=0VyEuO-6wek",
+                        "images/DrDrumontSample.png"
                     ],
                     "Index": 2,
                     "Tags": [
