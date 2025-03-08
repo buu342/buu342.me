@@ -6,7 +6,7 @@ Ultimately, Charles got in touch with General Mills, who offered to sponsor the 
 
 So, I ultimately don't know how much of my work made it into the final product... But my name is in the credits and I received a black marble plaque from General Mills! We were also given two boxes of Chex Quest goodies (one from Limited Run Games), and a big box full of Chex food products.
 
-Funny story, to announce the release of Chex Quest HD, General Mills offered us an all-expenses paid trip to San Diego Comic-Con. Unfortunately, [the year was 2020](https://en.wikipedia.org/wiki/COVID-19_pandemic)... So to compensate, General Mills instead gave us a monetary check, money which I used to build my [Silicon Graphics Sleeper PC](sgiindypc.html). 
+Funny story, to announce the release of Chex Quest HD, General Mills offered us an all-expenses paid trip to San Diego Comic-Con. Unfortunately, [the year was 2020](https://en.wikipedia.org/wiki/COVID-19_pandemic)... So to compensate, General Mills instead gave us a monetary check, money which I used to build my [Silicon Graphics Sleeper PC](../../blog/projects/SGIIndySleeper.html). 
 
 Here's a video of a Flemoid costume, commisioned by General Mills, which was meant to walk around the Comic-Con halls:
 

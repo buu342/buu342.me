@@ -38,7 +38,7 @@
                         "wxWidgets",
                         "HTML",
                         "CSS",
-                        "Javascript"
+                        "JavaScript"
                     ],
                     "ToolTip": "I make this website look half-decent by using a static site generator."
                 }

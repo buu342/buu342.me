@@ -281,7 +281,7 @@ The end!
 </br>
 **Update 16/09/2022**
 
-I have [soldered the Power LED to the wires and resistors](images/SGIIndySleeper/LEDProtoboard), and it works now. I had to connect it to the HDD LED cable though, because apparently the POWER LED cable is to tell you that the motherboard is connected to the socket, not that the PC is on. Whoops!
+I have [soldered the Power LED to the wires and resistors](images/SGIIndySleeper/LEDProtoboard.jpg), and it works now. I had to connect it to the HDD LED cable though, because apparently the POWER LED cable is to tell you that the motherboard is connected to the socket, not that the PC is on. Whoops!
 
 <p align="center">
     <video width="50%" controls>

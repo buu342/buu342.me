@@ -193,6 +193,7 @@ wxString sanitize_tagname(wxString tagname)
 {
     tagname.Replace("#", "s");
     tagname.Replace("+", "p");
+    tagname.Replace(":", "");
     tagname.Replace("-", "");
     tagname.Replace("/", "");
     tagname.Replace(".", "");

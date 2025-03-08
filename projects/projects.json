@@ -319,7 +319,7 @@
                     ],
                     "ToolTip": "A parkour platformer where you use the recoil of a shotgun to propel you.",
                     "URLs": [
-                        "Downloads/ShotgunNinja.zip"
+                        "downloads/ShotgunNinja.zip"
                     ]
                 },
                 "slendersforest": {
@@ -646,7 +646,7 @@
                     "DisplayName": "SGI Indy Sleeper PC",
                     "Icon": "icons/sgiindypc.png",
                     "Images": [
-                        "../../blog/projects/images/IndyPC2Years/PCFinal.jpg",
+                        "../../blog/projects/images/IndyPC2Years/PCFinal.JPG",
                         "../../blog/projects/images/SGIIndySleeper/PCInside.jpg",
                         "../../blog/projects/images/SGIIndySleeper/Chassis.jpg"
                     ],
