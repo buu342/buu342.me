@@ -670,6 +670,24 @@
             "DisplayName": "Nintendo 64",
             "Index": 2,
             "Pages": {
+                "inercia2021": {
+                    "Date": "October 31, 2021",
+                    "DisplayName": "Reflective Regret (Inércia 2021 Talk)",
+                    "Icon": "icons/inercia2021.png",
+                    "Images": [
+                        "https://www.youtube.com/watch?v=ZgPWE0Wkg7g"
+                    ],
+                    "Index": 6,
+                    "Tags": [
+                        "C",
+                        "Libultra",
+                        "Presentation"
+                    ],
+                    "ToolTip": "A talk I gave at Inercia 2021 about the state of the Nintendo 64 homebrew community.",
+                    "URLs": [
+                        "https://github.com/buu342/N64-ReflectiveRegretPresentation/"
+                    ]
+                },
                 "n64brewjam2024": {
                     "Date": "December 31, 2024",
                     "DisplayName": "N64brew Game Jam 2024",
@@ -1039,7 +1057,7 @@
             }
         },
         "unreal": {
-            "Description": "That engine that makes dev textures bring your computer to its knees.\n\nWhile I didn't really get that much of a chance to play with Unreal during the 4.26 days (due to my very limited hardware), I did get some playtime with it. Now that I have a proper PC, I have been working with Unreal Engine all the way until 5.3.",
+            "Description": "That engine that makes dev textures bring your computer to its knees.\n\nWhile I didn't really get that much of a chance to play with Unreal during the 4.26 days (due to my very limited hardware), I did get *some* playtime with it. Now that I have a proper PC, I have been working with Unreal Engine all the way until 5.3.",
             "DisplayName": "Unreal Engine",
             "Index": 1,
             "Pages": {
