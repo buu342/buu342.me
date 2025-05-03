@@ -4,4 +4,4 @@ Translating this one to the page was quite a pain in the butt, so there were som
 
 **Edit 11/04/2025:**
 
-I was watching an episode of [Malcolm in the Middle](https://en.wikipedia.org/wiki/Malcolm_in_the_Middle) yesterday, specifically Season 5, Episode 13. In this episode, Lois picks up her sister's phone, which is answered by a Dr. Dumont. Later in the episode, Andrew W.K.'s Long Live the Party plays when Malcolm and Reese head off for a party. Considering that this episode came out one year before Close Calls with Brick Walls, perhaps this song's name is a reference to this episode? That, or just a major conincidence! 
+I was watching an episode of [Malcolm in the Middle](https://en.wikipedia.org/wiki/Malcolm_in_the_Middle) yesterday, specifically Season 5, Episode 13. In this episode, Lois picks up her sister's phone, which is answered by a Dr. Dumont. Later in the episode, Andrew W.K.'s Long Live the Party plays when Malcolm and Reese head off for a party. Considering that this episode came out one year before Close Calls with Brick Walls, perhaps this song's name is a reference to this episode? That, or just a major coincidence! 
