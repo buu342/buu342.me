@@ -888,13 +888,13 @@
             "DisplayName": "Music Transcriptions",
             "Index": 8,
             "Pages": {
-                "drdrumont": {
+                "drdumont": {
                     "Date": "March 04, 2025",
-                    "DisplayName": "Dr. Drumont - Andrew W.K.",
+                    "DisplayName": "Dr. Dumont - Andrew W.K.",
                     "Icon": "icons/ccwbw.png",
                     "Images": [
                         "https://www.youtube.com/watch?v=0VyEuO-6wek",
-                        "images/DrDrumontSample.png"
+                        "images/DrDumontSample.png"
                     ],
                     "Index": 2,
                     "Tags": [
@@ -903,7 +903,7 @@
                     ],
                     "ToolTip": "A small improvisational piano piece that serves as a halfway marker for Close Calls with Brick Walls.",
                     "URLs": [
-                        "downloads/Dr Drumont.zip"
+                        "downloads/Dr Dumont.zip"
                     ]
                 },
                 "maskpriestbellchapel": {
