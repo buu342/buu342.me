@@ -431,7 +431,8 @@
                     ],
                     "ToolTip": "The lantern from Amnesia: The Dark Descent, but in Garry's Mod. An incredibly popular SWEP in medieval RP servers.",
                     "URLs": [
-                        "https://steamcommunity.com/sharedfiles/filedetails/?id=1292873521"
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=1292873521",
+                        "https://github.com/buu342/GMod-AmnesiaLanternRemake"
                     ]
                 },
                 "buuswepbase": {
@@ -496,7 +497,8 @@
                     ],
                     "ToolTip": "The four scary monsters from the Ghoul's Forest series, ported over to Garry's Mod.",
                     "URLs": [
-                        "https://steamcommunity.com/sharedfiles/filedetails/?id=1430740294"
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=1430740294",
+                        "https://github.com/buu342/GMod-Ghoul3SNPCS"
                     ]
                 },
                 "monstermash": {
@@ -520,7 +522,8 @@
                     ],
                     "ToolTip": "A wacky deathmatch gamemode with a dismemberment system.",
                     "URLs": [
-                        "https://steamcommunity.com/sharedfiles/filedetails/?id=1541525700"
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=1541525700",
+                        "https://github.com/buu342/GMod-MonsterMash"
                     ]
                 },
                 "outcast": {
@@ -567,7 +570,8 @@
                     ],
                     "ToolTip": "The iconic weapon from Dead Space, animated from scratch and ported over to Garry's Mod.",
                     "URLs": [
-                        "https://steamcommunity.com/sharedfiles/filedetails/?id=2430825132"
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=2430825132",
+                        "https://github.com/buu342/GMod-PlasmaCutter"
                     ]
                 },
                 "ragesweps": {
@@ -591,7 +595,8 @@
                     ],
                     "ToolTip": "Weapons from ID Software's FPS game, ported over to Garry's Mod. The animations were made from scratch to match the game's, due to the lack of conversion tools.",
                     "URLs": [
-                        "https://steamcommunity.com/sharedfiles/filedetails/?id=2451629126"
+                        "https://steamcommunity.com/sharedfiles/filedetails/?id=2451629126",
+                        "https://github.com/buu342/GMod-RAGESWEPS"
                     ]
                 }
             }
