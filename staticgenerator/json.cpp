@@ -11,6 +11,34 @@ bulky JSON header only library.
 #include "helper.h"
 #include "include/json.hpp"
 #include <wx/textfile.h>
+#include <wx/msgdlg.h>
+
+/*==============================
+    json_fromfilepath
+    Gets a JSON object from a filepath
+    @param  The filepath of the JSON file
+    @return The JSON object or NULL
+==============================*/
+
+nlohmann::json json_fromfilepath(wxString filepath)
+{
+    try
+    {
+        if (wxFileExists(filepath))
+        {
+            std::ifstream stream(filepath.mb_str());
+            if (stream.is_open())
+                return nlohmann::json::parse(stream);
+        }
+        else
+            wxMessageBox(wxString("JSON file at '"+filepath+"' does not exist."), wxString("Error opening JSON"), wxICON_ERROR);
+    }
+    catch (nlohmann::json::exception e)
+    {
+        wxMessageBox(wxString(e.what()), wxString("Error parsing JSON"), wxICON_ERROR);
+    }
+    return NULL;
+}
 
 
 /*==============================
@@ -24,11 +52,7 @@ bulky JSON header only library.
 int json_loadcategories(wxString filepath, std::vector<Category*>* categorylist)
 {
     int index = 0;
-    nlohmann::json pagejson = {};
-
-    // Open the projects json file
-    if (wxFileExists(filepath))
-        pagejson = nlohmann::json::parse(std::ifstream(filepath.ToUTF8()));
+    nlohmann::json pagejson = json_fromfilepath(filepath);
 
     // Add all the folders which are already included in the JSON
     for (nlohmann::json::iterator it = pagejson["Categories"].begin(); it != pagejson["Categories"].end(); ++it)
@@ -73,11 +97,7 @@ int json_loadcategories(wxString filepath, std::vector<Category*>* categorylist)
 
 void json_loadprojects(wxString workingdir, std::vector<Category*>* categorylist, wxTreeCtrl* tree)
 {
-    nlohmann::json pagejson = {};
-
-    // Open the projects json file
-    if (wxFileExists(workingdir + wxString("/projects/projects.json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(workingdir + wxString("/projects/projects.json")).ToUTF8()));
+    nlohmann::json pagejson = json_fromfilepath(wxString(workingdir + wxString("/projects/projects.json")));
 
     // Add the projects from the JSON file
     for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
@@ -155,11 +175,7 @@ void json_loadprojects(wxString workingdir, std::vector<Category*>* categorylist
 
 void json_loadblogentries(wxString workingdir, std::vector<Category*>* categorylist, wxTreeCtrl* tree)
 {
-    nlohmann::json pagejson = {};
-
-    // Open the blog json file
-    if (wxFileExists(workingdir + wxString("/blog/blog.json")))
-        pagejson = nlohmann::json::parse(std::ifstream(wxString(workingdir + wxString("/blog/blog.json")).ToUTF8()));
+    nlohmann::json pagejson = json_fromfilepath(workingdir + wxString("/blog/blog.json"));
 
     // Add the blog entries from the JSON file
     for (nlohmann::json::iterator itcat = pagejson["Categories"].begin(); itcat != pagejson["Categories"].end(); ++itcat)
