@@ -15,7 +15,19 @@
         <div class="box">
             <h1>NetLib</h1>
             <hr>
-
+            <center>
+                <div class="carousel-container">
+                    <div class="carousel-object">
+                        <iframe src="https://www.youtube.com/embed/v9aVrBq0aiY" frameBorder="0" style="" allowfullscreen></iframe>
+                    </div>
+                    <div class="carousel-list">
+                        <div class="carousel-list-object video selected" id="v9aVrBq0aiY">
+                            <span class="video-player"><img src="../video-icon.png" style="border: none;"></span>
+                            <img src="http://img.youtube.com/vi/v9aVrBq0aiY/default.jpg">
+                        </div>
+                    </div>
+                </div>
+            </center>
             <h5>Released: December 10, 2024</h5>
             <h5>Tags: <a href="../../tags/C.html">C</a>, <a href="../../tags/Cpp.html">C++</a>, <a href="../../tags/Java.html">Java</a>, <a href="../../tags/wxWidgets.html">wxWidgets</a>, <a href="../../tags/Libultra.html">Libultra</a>, <a href="../../tags/Libdragon.html">Libdragon</a>, <a href="../../tags/Multiplayer.html">Multiplayer</a></h5>
             <p><p>NetLib is a collection of tools and libraries to connect Nintendo 64 homebrew to the internet by leveraging the USB port on developer (and consumer) flashcarts for internet connectivity. The repository contains some example game servers (a &quot;Hello World&quot; example, a Tic-Tac-Toe example, and an example demonstrating the components of realtime game (prediction, reconciliation, and interpolation)), a master server application for game servers to register themselves to, a client application to act as the server browser and USB tether, and finally a library for the N64. The master server and game server examples are written in Java, the client app is written in C++ with wxWidgets, and the N64 library is written in C for the Libultra and Libdragon SDKs. Everything is designed to work using UDP, and implements a reliability system not too different from Valve's <a href="https://github.com/ValveSoftware/GameNetworkingSockets">GameNetworkingSockets</a>. The source code for everything is also thoroughly documented, and the repository contains <a href="https://github.com/buu342/N64-NetLib/wiki">a wiki</a> with plenty of information about the networking protocol, how to extend it (if necessary), and how to write your own game servers and NetLib compatible N64 games.</p>
