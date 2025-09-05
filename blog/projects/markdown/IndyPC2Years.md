@@ -287,3 +287,12 @@ Basically, I was at Inércia Demoparty 2024, and like I do every year I brought 
 This is so infuriating because the case was in *perfect condition* until now. For fuck's sake...
 
 One thing I could do is to color in the crack with a blue marker, but I do want to be careful not to ruin the case any more than it already is. Next time I intend on taking this computer anywhere, I think I will design some styrofoam pieces to ensure the computer is completely padded at all times.
+
+</br>
+**Update 22/07/2025**
+
+I have just finished updating my Ubuntu to 25.04, which came out in April, despite it currently being late July. The reason for this was because I was expecting to have to go through the AMD GPU driver song and dance again, and I wanted to finish editing my NetLib video first. Much to my surprise, the update went without a hitch, and it fixed the two bugs I complained about:
+1) The desktop icons no longer rearrange themselves on my main monitor when I turn it off.
+2) KIO AFC is fixed. I can rip CDs and connect my iPhone again!
+
+The update removed `rocm-hip-runtime` but it doesn't seem to have made a difference, since Davinci Resolve and Blender are both detecting HIP correctly. The update, surprisngly, didn't break my Wine install either. Awesome. 
