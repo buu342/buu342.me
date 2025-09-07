@@ -604,7 +604,7 @@
         "misc": {
             "Description": "Anything which didn't fit above goes here, duh.",
             "DisplayName": "Miscellaneous",
-            "Index": 9,
+            "Index": 10,
             "Pages": {
                 "blokusduoai": {
                     "Date": "Februrary 15, 2018",
@@ -821,6 +821,30 @@
                 }
             }
         },
+        "pepakura": {
+            "Description": "",
+            "DisplayName": "Pepakura",
+            "Index": 8,
+            "Pages": {
+                "ScubaCat": {
+                    "Date": "September 07, 2025",
+                    "DisplayName": "Scuba Cat (We Love Katamari)",
+                    "Icon": "icons/ScubaCat.png",
+                    "Images": [
+                        "images/ScubaCat.jpg"
+                    ],
+                    "Index": 0,
+                    "Tags": [
+                        "Pepakura",
+                        "Reverse Engineering"
+                    ],
+                    "ToolTip": "Everyone's favorite little goblin from the underwater level in We Love Katamari.",
+                    "URLs": [
+                        "downloads/ScubaCat.zip"
+                    ]
+                }
+            }
+        },
         "re": {
             "Description": "Because looking at Ghidra and a hex editor is my idea of a \"fun afternoon\".\n\nAs a big proponent of right to repair and the preservation of games, reverse engineering is something that is straight up my alley.",
             "DisplayName": "Reverse Engineering",
@@ -893,7 +917,7 @@
         "transcriptions": {
             "Description": "Since I'm a trained pianist and singer with a very particular music taste (a bad one), I often struggle to find _accurate_ scores of songs I enjoy. So, I take it upon myself to transcribe what I hear by ear and write it down using some ancient software known as Mozart. I have since moved to MuseScore because opening a virtual machine to compose was starting to get a little silly...",
             "DisplayName": "Music Transcriptions",
-            "Index": 8,
+            "Index": 9,
             "Pages": {
                 "drdumont": {
                     "Date": "March 04, 2025",
