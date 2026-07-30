@@ -29,7 +29,7 @@ First and foremost, because I am making a clone of an existing board, I need to 
 ![Scan of the keyboard PCB](images/BuuKeeb/FinalScan.png)
 </p>
 
-I made sure the scale of the image matched its real life measurements by playing around with the Pixels Per Inch values. The next step was to trace everything that was relevant in an SVG program. I use [Inkscape](https://inkscape.org/), and after a few hours I made this:
+I made sure the scale of the image matched its real life measurements by playing around with the Pixels Per Inch values. The next step was to trace everything that was relevant in an SVG program. Having an SVG has a few advantages, namely that SVGs have "infinite" precision compared to images, which are limited by the number of pixels. That sub-pixel precision allows me to ensure everything is placed as accurately as possible. I use [Inkscape](https://inkscape.org/) for my SVG beeds, and after a few hours I made this:
 
 <p align="center">
 ![SVG version of the scan](images/BuuKeeb/SVG.png)
@@ -37,7 +37,7 @@ I made sure the scale of the image matched its real life measurements by playing
 
 The SVG contains the silkscreen (the white decorative squares where each key is) in blue, the outline of the board, and holes in green. These holes included a spot for the LEDs, hotswap sockets, and mounting holes. There were 6 additional holes (in yellow in the SVG) which were brass mounts that screws were fed through. These mounts don't have any screw threads in them, so I'm not sure why they are different from the other mounting holes, but since I'm going through all this trouble I might as well mark them properly. You might have also noticed the purple star. That star exists so that I can align the layers when I import them one by one into the CAD program.
 
-Now, it would've been really embarrasing if I went through all this work and then it turned out that all the keys were misaligned by an entire milimeter, which wouldn't fit in the case, so I decided to make a cardboard model. I wasn't sure if the printer dialog in InkScape would print the image to scale, and when I tried importing the SVG into LibreOffice Writer (open source Microsoft Word) I couldn't find a way to have it *not* scale the image. LibreOffice Impress (open source Microsoft Powerpoint) imported it perfectly, so I put the SVG in Impress, made 2 slides (since the board wouldn't fit in a single A4), printed it out, cut it, taped the two halves together, glued it to a piece of cardboard (for thickness and sturdyness), and then cut the mounting holes using an exacto knife and a drill. After all that work, I put it inside the case, and it seemed to be a perfect match.
+Now, it would've been really embarrassing if I went through all this work and then it turned out that all the keys were misaligned by an entire millimeter, which wouldn't fit in the case, so I decided to make a cardboard model. I wasn't sure if the printer dialog in InkScape would print the image to scale, and when I tried importing the SVG into LibreOffice Writer (open source Microsoft Word) I couldn't find a way to have it *not* scale the image. LibreOffice Impress (open source Microsoft Powerpoint) imported it perfectly, so I put the SVG in Impress, made 2 slides (since the board wouldn't fit in a single A4), printed it out, cut it, taped the two halves together, glued it to a piece of cardboard (for thickness and sturdiness), and then cut the mounting holes using an exacto knife and a drill. After all that work, I put it inside the case, and it seemed to be a perfect match.
 
 <p align="center">
 ![Cardboard model](images/BuuKeeb/CardboardModel.jpg)</br>
@@ -77,7 +77,7 @@ You should now go into a paint program and decide how you will want your keyboar
 ![My keyboard layout wired up](images/BuuKeeb/LayoutMatrix.png)
 </p>
 
-That gives me 21 colums and 6 rows, for a total of 27 GPIO on the MCU.
+That gives me 21 columns and 6 rows, for a total of 27 GPIO on the MCU.
  
 ### Making the Schematic
 
@@ -111,7 +111,7 @@ Wiring that is easy:
 Confusingly, despite the 3.3V arrow pointing away from the circuit, the voltage direction is actually going towards the MCU. This is the drawing convention for schematics, don't ask me why.
 </p>
 
-I did skip over one important thing which is capacitors. A capacitor is a "mini rechargeable battery", and one of their main purposes on a PCB is to serve as a voltage stabilizer (these are known as decoupling capacitors). For example, if a specific line of the circuit is being fed 3.3V but for some reason that drops to 2.7, a capacitor will provide some of its stored power to push the signal back to 3.3. Subsequently, if the line erratically gets too much voltage, like 3.7, the capacitor will absorb that voltage to put it back at 3.3. It's pretty normal to have at least one capacitor for every power source of an integrated circuit (IC). The STM32 recommends having:
+I did skip over one important thing which is capacitors. A capacitor is like a "mini rechargeable battery", and one of their main purposes on a PCB is to serve as a voltage stabilizer (these are known as decoupling capacitors). For example, if a specific line of the circuit is being fed 3.3V but for some reason that drops to 2.7, a capacitor will provide some of its stored power to push the signal back to 3.3. Subsequently, if the line erratically gets too much voltage, like 3.7, the capacitor will absorb that voltage to put it back at 3.3. It's pretty normal to have at least one capacitor for every power source of an integrated circuit (IC). The STM32 recommends having:
 - A 100nF capacitor for every power input (VDD, VBAT, VDDA, VDDIO2).
 - VDDA should also have an extra 10uF capacitor hooked up to it.
 - The very start of the 3.3V rail should have a 4.7uF capacitor.
@@ -158,7 +158,8 @@ Since the D+ and D- are both inputs and outputs, the flag I gave them points in 
 To hook up USB to the STM32, we need to have a connector. I would've loved to put USB-C on my keyboard, but after a lot of measuring and trying, there is unfortunately no space inside the case for it. So I'm gonna have to use the same 90º 5 pin connector that the original board uses (the 5th pin is "Shield Ground"). It's usually a good idea to have a 500mA fuse on the USB connector's power line in case we plug the keyboard into a faulty USB that sends too much current down the 5V line. The fuse will pop but it will save everything else on our board. 
 
 <p align="center">
-![USB connector schematic](images/BuuKeeb/USBConnector.png)
+![USB connector schematic](images/BuuKeeb/USBConnector.png)</br>
+VBUS and 5V are basically the same thing, except we usually designate VBUS as "raw unsafe voltage straight from the connector", it becomes a safe 5V after going through the fuse.
 </p>
 
 If you are using a sane type of USB connection, like USB-C, you'll need to hook up some extra components for proper functionality. Refer to your spec sheet. 
@@ -166,7 +167,8 @@ If you are using a sane type of USB connection, like USB-C, you'll need to hook 
 The fuse will "protect" the voltage line but we also need to protect the data pins from electrostatic discharge corrupting our data and potentially frying something. A common IC that does the job is the USB6B1:
 
 <p align="center">
-![USB6B1 schematic](images/BuuKeeb/ESDProtection.png)
+![USB6B1 schematic](images/BuuKeeb/ESDProtection.png)</br>
+We can feed VBUS into the ESD protection because if you look at the spec sheet's wiring diagram, you'll see that it goes straight through the IC and does not touch anything. 
 </p>
 
 Lastly, USB provides 5 volts that we can use to power everything, however our STM32 needs 3.3v. To make sure we don't kill the processor, we need to have a step down converter that takes in the 5V from USB and provides 3.3V. We can use the XC6206 to do just that, along with some capacitors as per the spec sheet:
@@ -217,6 +219,8 @@ So how do we fix this? We place a component called a diode on each key, which on
 
 The diode on the S key prevents the current from flowing into it, which is perfect. Putting a diode on each key raises the cost of the keyboard ever so slightly (by a few cents), but it will allow us to have N-key rollover.
 
+In order to place the switches, you need to have marbastlib installed, because keyboard switches are not a standardized SMD parts. Marbastlib will provide schematics for the keyboard switches of your choice, which in my case was hotswappable MX switches.
+
 After a bit of CTRL+C and CTRL+V, you can have a nice schematic like this:
 
 <p align="center">
@@ -233,7 +237,7 @@ You need to be careful when you're wiring because you don't want the rows and co
 Now, we need to choose how we're going to hook the rows and columns to the GPIO. We're free to pick whatever order we want, so for the time being just hook them up in numerical order. We can change this later during the PCB stage to however is more convenient for the wiring.
 
 <p align="center">
-![Wiring mistake](images/BuuKeeb/STM32WiringPrePCB.png)
+![Almost finished STM32 Wiring](images/BuuKeeb/STM32WiringPrePCB.png)
 </p>
 
 Notice how I skipped the PF0 and PF1 leads. Many microprocessors require an external crystal oscillator to provide the timing for the logic, but the STM32 has a clock built into it. You can, however, supply it with an external clock by hooking it up to PF0 and PF1, however if you don't need the clock you can treat PF0 and PF1 as GPIO just like the rest. I've kept them as unconnected for the time being but considering that I will probably not be needing an external clock they are bound to be changed to GPIO when I get around to wiring the PCB.
@@ -243,7 +247,8 @@ Notice how I skipped the PF0 and PF1 leads. Many microprocessors require an exte
 The most popular type of LEDs for keyboards are "Neopixels", which are LEDs that are designed to be chained together to run effects and patterns. Of the "Neopixel" type, the two most used for keyboards seem to be SK6803 MINI-E and WS2812B. Typically, for LEDs, you have a blue, red, and green channel, as well as a ground, but Neopixels instead have voltage in, ground, and then a data-in and data-out pin. You send some bytes to the data-in with the RGB values for the LED to use, and then afterwards it will send the next chunk of LED data through its data-out pin into to the next LEDs's data-in. In other words, each LED will take a bit of the data and pass the rest to the next one in the chain.
 
 <p align="center">
-![LED Chain wiring example](images/BuuKeeb/LEDChain.png)
+![LED Chain wiring example](images/BuuKeeb/LEDChain.png)</br>
+These LEDs are also not a standardized SMD component, so you need marsbastlib for them as well.
 </p>
 
 The keyboard I'm cloning is using SK6803 MINI-E's, so that is what I will use as well. And since I have 105 keys, I will require 105 LEDs, as well as 3 extra LEDs for the CAPS LOCK, Num Lock, and Scroll Lock keys.  Wiring these is super simple, just connect all of them in parallel to the 5V line and the ground line, and then hook the data-out of one LED into the data-in of the next.
@@ -265,12 +270,12 @@ There is one last thing missing, which is that the spec sheet for the SK6803 MIN
 I put the LED chain in a separate schematic to reduce clutter, like I did with the matrix, and then I link to it in the main page.
 
 <p align="center">
-![LED Chain final](images/BuuKeeb/LEDChainFinal.png)</br>
+![LED Chain final](images/BuuKee[here](b/LEDChainFinal.png)</br>
 Notice how the chain starts on the right side, this is on purpose and will make more sense later, but you don't have to start there if you don't want to!</br>
 Since I'm starting on the left, I have to flip each odd row as opposed to each even row.
 </p>
 
-Do keep in mind that each LED can pull up to 12mA if it is running at full brigthness. 108 LEDs means 1.3A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
+Do keep in mind that each LED can pull up to 12mA if it is running at full brightness. 108 LEDs means 1.3A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
 
 Now, we can't just directly connect the LED data pin to the STM32, for one specific reason: The GPIO pins output 3.3V, and this _might_ work fine, but it might not considering it's a really long chain of LEDs. Since the logic operates anywhere between 3.2 and 6V, I am going to add a step up converter to boost the LED data data voltage from 3.3 to 5V. One good device for this is the 74AHCT1G125, which has 5 leads:
 1. Output enable
@@ -286,13 +291,47 @@ The spec sheet says "If the transceiver has an output enable pin, it will disabl
 I added a little diamond to the LED flag so that we know that it's an input being "passed into" this schematic. This isn't really standard, I just did it because it helps me keep track of the labels
 </p>
 
-Now we just assign the LED_DATA flag into any free GPIO in the STM32, and we are finally ready to start putting all of this on a printed circuit board.
+A 470 Ohm resistor is recommended to be placed before the start of the first SK6803 MINI-E's data-in pin (according to the spec sheet), so I added it after the transciever.
+
+Now we just assign the LED_DATA flag into any free GPIO in the STM32, and we are pretty close to being able to put all of this on a printed circuit board.
 
 ### Footprints
 
+So now that we have the schematic outlining what parts we need and how they're connected together, we need to know what the components look like. KiCAD has a button called "Assign Footprints" that let you select what space your component occupies on the board. 
+
+But how do you know what sizes to pick? Well, it depends. For instance, you can get resistors the size of a propane tank, or as small as a grain of sea salt. Different sizes usually mean different operating wattages and temperatures, and since a keyboard is not some hyper complex and power hungry beast, we can get away with small components. For keyboards, it's pretty common to use Surface Mount Devices (SMD). These come in a range of sizes, and typically those are 0402 and 0603, which stand for 0.4x0.2 inches and 0.6x0.3 inches respectively. Annoyingly for the sane parts of the world, when we refer to these sizes it's typically in inches, because if you refer to 0402 in metric you will get a component small enough to lodge itself in between the bumps on your fingerprints, and you will never see it again. Not ideal if you're planning on hand soldering.
+
+<p align="center">
+![Different sized resistors on a match head](images/BuuKeeb/MatchHead.png)</br>
+Image sourced from [here](https://startup88.com/hardware/2014/09/30/prototyping_hardware_15_lessons_learnt_the_hard_way/2336/attachment/resistors-on-match-head-2)
+</p>
+
+For parts in the nano range (like the 100nF capacitors), 0402 are usually good enough, while parts that push into the micro range (like the 10uF resistors) are safer at 0603. The resistors we'd use for a keyboard are probably fine at 0402. I would suggest using a 1206 for the fuse, since it's supposed to be something that pops in case of an emergency and you want to have an easier time soldering and desoldering them. Diodes use a different designator: "Small Outline Diode", and the numbers on these are not dimensions but rather just package codes. Because electrical engineers have a sense of humor, the numbers work backwards in this case, meaning SOD-123 is significantly larger than an SOD-923. SOD-123's are already plenty small and will serve fine for a keyboard.
+
+When in doubt, consult spec sheets for some components and see what temperatures and wattages they're safe to operate at.
+
+Lastly, we have ICs, which have a bunch of different designations. Too many abbreviations to list, just commit this diagram to memory:
+
+<p align="center">
+![Different IC packages](images/BuuKeeb/ICPackages.png)</br>
+Image sourced from [here](https://learn.sparkfun.com/tutorials/integrated-circuits/all)
+</p>
+
+You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transciver is a TSOP-5, the Voltage Regulator is SOT-23-3, and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
+
+The last footprints we need are the LEDs and the MX hotswap sockets. Like I said previously, these are available via marbastlib since they're not standardized parts. Just be careful selecting them because there's a bunch of variants, and you'll want to select the one that matches the spec sheet you're using. If you right click a footprint it lets you view it so you can confirm the size and pins match.
+
+Once all parts have footprints, we just need to confirm we have no problems with our schematic.
+
 ### Error Checking the Schematic
 
-PWR_FLAG
+KiCAD conveniently provides the Electrical Rules Checker, which will check for problems in your design. Ideally, you'd want zero warnings, and you'll need zero errors. Most of the errors are self explanatory, or explanatory enough with a quick Google search, but there is one error that is really weird: "Input Power pin not driven by any Output Power pins".
+
+Basically, KiCAD sometimes struggles to understand where exactly power comes from. You know that the USB connector provides the power, but _KiCAD_ doesn't know that. So the solution is to place a component called the PWR_FLAG near a power source to tell KiCAD to trust you. You only need to do this once for each net, so if you put the flag next to the VBUS, 5V, and GND lines of your USB connector, that should be enough to silence the error.
+
+<p align="center">
+![USB Connector after adding the PWR_FLAGs](images/BuuKeeb/USBConnectorWFlags.png)
+</p>
 
 ### Making the PCB
 
