@@ -175,6 +175,7 @@ class Main : public wxFrame
         wxButton* m_Button_Blog_Preview;
         wxMenuBar* m_Menubar_Main;
         wxMenu* m_Menu_File;
+        wxMenu* m_Menu_Edit;
         wxTimer* m_Timer;
         
         void m_Splitter_ProjectsOnIdle(wxIdleEvent& event);
@@ -214,6 +215,9 @@ class Main : public wxFrame
         void m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_Save_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_FullRecompile_OnMenuSelection(wxCommandEvent& event);
+        void m_MenuItem_Find_OnMenuSelection(wxCommandEvent& event);
+        void m_MenuItem_InsertImage_OnMenuSelection(wxCommandEvent& event);
+        void m_MenuItem_InsertVideo_OnMenuSelection(wxCommandEvent& event);
         void m_Timer_OnTimer(wxTimerEvent& event);
         void OnPopupClick_Projects(wxCommandEvent& event);
         void OnPopupClick_Blog(wxCommandEvent& event);

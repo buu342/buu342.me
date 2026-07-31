@@ -5,6 +5,9 @@ The main code of the static site generator
 ***************************************************************/
 
 #include "main.h"
+#include "framefind.h"
+#include "frameinsertimage.h"
+#include "frameinsertvideo.h"
 #include "helper.h"
 #include "json.h"
 #include "include/md4c/md4c-html.h"
@@ -405,7 +408,19 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     m_MenuItem_FullRecompile = new wxMenuItem(this->m_Menu_File, wxID_ANY, wxString(wxT("Full Website Recompile")), wxEmptyString, wxITEM_NORMAL);
     this->m_Menu_File->Append(m_MenuItem_FullRecompile);
     this->m_Menubar_Main->Append(this->m_Menu_File, wxT("File"));
-    this->SetMenuBar(m_Menubar_Main);
+    this->m_Menu_Edit = new wxMenu();
+    wxMenuItem* m_MenuItem_Find;
+    m_MenuItem_Find = new wxMenuItem(this->m_Menu_Edit, wxID_ANY, wxString(wxT("Find")) + wxT('\t') + wxT("CTRL+F"), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_Edit->Append(m_MenuItem_Find);
+    this->m_Menu_Edit->AppendSeparator();
+    wxMenuItem* m_MenuItem_InsertImage;
+    m_MenuItem_InsertImage = new wxMenuItem(this->m_Menu_Edit, wxID_ANY, wxString(wxT("Insert Image")) + wxT('\t') + wxT("CTRL+I"), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_Edit->Append(m_MenuItem_InsertImage);
+    wxMenuItem* m_MenuItem_InsertVideo;
+    m_MenuItem_InsertVideo = new wxMenuItem(this->m_Menu_Edit, wxID_ANY, wxString(wxT("Insert Video")) + wxT('\t') + wxT("CTRL+B"), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_Edit->Append(m_MenuItem_InsertVideo);
+    this->m_Menubar_Main->Append(this->m_Menu_Edit, wxT("Edit"));
+    this->SetMenuBar(this->m_Menubar_Main);
 
     // Start a timer to fix the splitter location
     this->m_Timer = new wxTimer();
@@ -451,6 +466,9 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_OpenDir_OnMenuSelection), this, m_MenuItem_OpenDir->GetId());
     this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Save_OnMenuSelection), this, m_MenuItem_Save->GetId());
     this->m_Menu_File->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_FullRecompile_OnMenuSelection), this, m_MenuItem_FullRecompile->GetId());
+    this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Find_OnMenuSelection), this, m_MenuItem_Find->GetId());
+    this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_InsertImage_OnMenuSelection), this, m_MenuItem_InsertImage->GetId());
+    this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_InsertVideo_OnMenuSelection), this, m_MenuItem_InsertVideo->GetId());
     this->m_Timer->Bind(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), this, this->m_Timer->GetId());
 
     // Load the projects and blog from the current working directory
@@ -561,6 +579,89 @@ void Main::m_MenuItem_OpenDir_OnMenuSelection(wxCommandEvent&)
 void Main::m_MenuItem_Save_OnMenuSelection(wxCommandEvent&)
 {
     this->Save();
+}
+
+
+/*==============================
+    m_MenuItem_Find_OnMenuSelection
+    Handles the Find menu event
+    @param Unused
+==============================*/
+
+void Main::m_MenuItem_Find_OnMenuSelection(wxCommandEvent& event)
+{
+    if (wxWindow::FindFocus() == this->m_TextCtrl_Projects_Description)
+    {
+        FrameFind* frame = new FrameFind(NULL);
+        frame->SetParent(this->m_TextCtrl_Projects_Description);
+        frame->Show();
+    }
+    else if (wxWindow::FindFocus() == this->m_TextCtrl_Blog)
+    {
+        FrameFind* frame = new FrameFind(NULL);
+        frame->SetParent(this->m_TextCtrl_Blog);
+        frame->Show();
+    }
+
+    event.Skip();
+}
+
+
+/*==============================
+    m_MenuItem_InsertImage_OnMenuSelection
+    Handles the Insert Image menu event
+    @param Unused
+==============================*/
+
+void Main::m_MenuItem_InsertImage_OnMenuSelection(wxCommandEvent& event)
+{
+    if (wxWindow::FindFocus() == this->m_TextCtrl_Projects_Description)
+    {
+        Project* proj = this->FindProject(this->m_SelectedItem);
+        wxString basepath = this->m_WorkingDir + wxString("/projects/") + proj->category->foldername + wxString("/");
+        FrameImageInsert* frame = new FrameImageInsert(this);
+        frame->SetParent(this->m_TextCtrl_Projects_Description, basepath);
+        frame->Show();
+    }
+    else if (wxWindow::FindFocus() == this->m_TextCtrl_Blog)
+    {
+        Blog* blog = this->FindBlog(this->m_SelectedItem);
+        wxString basepath = this->m_WorkingDir + wxString("/blog/") + blog->category->foldername + wxString("/");
+        FrameImageInsert* frame = new FrameImageInsert(this);
+        frame->SetParent(this->m_TextCtrl_Blog, basepath);
+        frame->Show();
+    }
+
+    event.Skip();
+}
+
+
+/*==============================
+    m_MenuItem_InsertVideo_OnMenuSelection
+    Handles the Insert Video menu event
+    @param Unused
+==============================*/
+
+void Main::m_MenuItem_InsertVideo_OnMenuSelection(wxCommandEvent& event)
+{
+    if (wxWindow::FindFocus() == this->m_TextCtrl_Projects_Description)
+    {
+        Project* proj = this->FindProject(this->m_SelectedItem);
+        wxString basepath = this->m_WorkingDir + wxString("/projects/") + proj->category->foldername + wxString("/");
+        FrameVideoInsert* frame = new FrameVideoInsert(this);
+        frame->SetParent(this->m_TextCtrl_Projects_Description, basepath);
+        frame->Show();
+    }
+    else if (wxWindow::FindFocus() == this->m_TextCtrl_Blog)
+    {
+        Blog* blog = this->FindBlog(this->m_SelectedItem);
+        wxString basepath = this->m_WorkingDir + wxString("/blog/") + blog->category->foldername + wxString("/");
+        FrameVideoInsert* frame = new FrameVideoInsert(this);
+        frame->SetParent(this->m_TextCtrl_Blog, basepath);
+        frame->Show();
+    }
+
+    event.Skip();
 }
 
 
@@ -1377,7 +1478,7 @@ void Main::m_Timer_OnTimer(wxTimerEvent&)
 
 
 /*==============================
-    m_Timer_OnTimer
+    OnPopupClick_Projects
     Handles the clicking of a project popup
     @param The event that was generated
 ==============================*/
@@ -1448,7 +1549,7 @@ void Main::OnPopupClick_Projects(wxCommandEvent& event)
 
 
 /*==============================
-    m_Timer_OnTimer
+    OnPopupClick_Blog
     Handles the clicking of a blog entry popup
     @param The event that was generated
 ==============================*/

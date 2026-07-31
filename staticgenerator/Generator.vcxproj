@@ -20,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="framefind.h" />
+    <ClInclude Include="frameinsertimage.h" />
+    <ClInclude Include="frameinsertvideo.h" />
     <ClInclude Include="helper.h" />
     <ClInclude Include="include\json.hpp" />
     <ClInclude Include="include\md4c\entity.h" />
@@ -32,6 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClInclude Include="framefind.cpp" />
+    <ClInclude Include="frameinsertimage.cpp" />
+    <ClInclude Include="frameinsertvideo.cpp" />
     <ClCompile Include="helper.cpp" />
     <ClCompile Include="include\md4c\entity.c" />
     <ClCompile Include="include\md4c\md4c-html.c" />

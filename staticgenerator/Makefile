@@ -1,4 +1,4 @@
-CODEFILES   = app.cpp main.cpp helper.cpp json.cpp include/md4c/entity.c include/md4c/md4c-html.c include/md4c/md4c.c
+CODEFILES   = app.cpp main.cpp helper.cpp json.cpp framefind.cpp frameinsertimage.cpp frameinsertvideo.cpp include/md4c/entity.c include/md4c/md4c-html.c include/md4c/md4c.c
 LIBFILES    = 
 BUILDDIR = build
 CODEOBJECTS = $(CODEFILES:%.cpp=${BUILDDIR}/%.o)

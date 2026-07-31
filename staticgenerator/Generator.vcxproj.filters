@@ -32,6 +32,15 @@
     <ClInclude Include="helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="framefind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frameinsertimage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="frameinsertvideo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="json.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -59,6 +68,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="framefind.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frameinsertimage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="frameinsertvideo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="helper.cpp">
