@@ -35,7 +35,7 @@ I made sure the scale of the image matched its real life measurements by playing
 ![SVG version of the scan](images/BuuKeeb/SVG.png)
 </p>
 
-The SVG contains the silkscreen (the white decorative squares where each key is) in blue, the outline of the board, and holes in green. These holes included a spot for the LEDs, hotswap sockets, and mounting holes. There were 6 additional holes (in yellow in the SVG) which were brass mounts that screws were fed through. These mounts don't have any screw threads in them, so I'm not sure why they are different from the other mounting holes, but since I'm going through all this trouble I might as well mark them properly. You might have also noticed the purple star. That star exists so that I can align the layers when I import them one by one into the CAD program.
+The SVG contains the silkscreen (the white decorative squares where each key is) in blue, the outline of the board, and holes in green. These holes include a spot for the LEDs, hotswap sockets, and mounting holes. There were 6 additional holes (in yellow in the SVG) which were brass mounts that screws were fed through. These mounts don't have any screw threads in them, so I'm not sure why they are different from the other mounting holes, but since I'm going through all this trouble I might as well mark them properly. You might have also noticed the purple star. That star exists so that I can align the layers when I import them one by one into the CAD program.
 
 Now, it would've been really embarrassing if I went through all this work and then it turned out that all the keys were misaligned by an entire millimeter, which wouldn't fit in the case, so I decided to make a cardboard model. I wasn't sure if the printer dialog in InkScape would print the image to scale, and when I tried importing the SVG into LibreOffice Writer (open source Microsoft Word) I couldn't find a way to have it *not* scale the image. LibreOffice Impress (open source Microsoft Powerpoint) imported it perfectly, so I put the SVG in Impress, made 2 slides (since the board wouldn't fit in a single A4), printed it out, cut it, taped the two halves together, glued it to a piece of cardboard (for thickness and sturdiness), and then cut the mounting holes using an exacto knife and a drill. After all that work, I put it inside the case, and it seemed to be a perfect match.
 
@@ -63,7 +63,7 @@ The rows and columns are not connected to one another, they are separate, hence 
 
 If I wanted to add another row of 3 keys, it would only take 1 extra leg of the processor instead of 3!
 
-A microprocessor has a bunch of legs and some of them will have very specific uses that cannot be changed, like one that takes in power, one that's grounded, one that restarts the MCU if it receives voltage, etc... There will be some pins called "GPIO", which stands for "General Purpose Input Output". GPIO don't serve any specific purpose, you can make your program do whatever you want with them. In our case, the GPIO will be for our keyboard rows and columns.
+A microprocessor has a bunch of legs and some of them will have very specific uses that cannot be changed, like one that takes in power, one that's grounded, one that restarts the MCU if it receives voltage, etc... There will be some pins called "GPIO", which stands for "General Purpose Input Output". **Most** GPIO don't serve any specific purpose, you can make your program do whatever you want with them. In our case, the GPIO will be for our keyboard rows and columns.
 
 So why am I bringing this up now? You see, in order to choose the right components for your keyboard, you need to know how many rows and columns you're going to need. In the case of my keyboard, I already have a very specific layout I have to use because I'm putting it in an already existing case, but if you are also making a custom case for your keyboard, it might be helpful to take a few minutes to use the [Keyboard Layout Editor](https://www.keyboard-layout-editor.com/) to decide how your keyboard will look. You can export the layout into a JSON file which can be used to speed up positioning the keys in CAD software, but just as importantly you can export an image of your layout:
 
@@ -81,7 +81,7 @@ That gives me 21 columns and 6 rows, for a total of 27 GPIO on the MCU.
  
 ### Making the Schematic
 
-Before you can make the PCB, you need to first make a schematic which explains how all the components are wired together. The first and most important thing you need to pick is the microprocessor for your keyboard. The one you choose depends on what stuff you want on your keyboard. Small keyboards tend to go with a Teensy 2.0 or ATmega32U4 since there are drop-in QMK firmwares available for them. If your keyboard is to be wireless, a popular option is the nRF52840. However, since I need to occupy 27 pins on the MCU just for the keyboard itself I'll need an MCU with lots of GPIO, so I have chosen another popular MCU called STM32, specifically the STM32F072C8T.  You should download the spec sheet of your specific MCU and check how many GPIO pins it provides. The STM32 has up to 37 GPIO pins, which is plenty since I'll need those 27 pins for the keyboard matrix, 2 pins for the USB Data, and 1 pin for the LED logic. The STM32F072C8T has 64KiB of flash memory which is enough for QMK, but you could go with a STM32F072CBT6 for 128KiB if you intend on having a lot of crazy firmware features.
+Before you can make the PCB, you need to first make a schematic which explains how all the components are wired together. The first and most important thing you need to pick is the microprocessor for your keyboard. The one you choose depends on what stuff you want on your keyboard. Small keyboards tend to go with a Teensy 2.0 or ATmega32U4 since there are drop-in QMK firmwares available for them. If your keyboard is to be wireless, a popular option is the nRF52840. However, since I need to occupy 27 pins on the MCU just for the keyboard itself I'll need an MCU with lots of GPIO, so I have chosen another popular MCU called STM32, specifically the STM32F072C8T.  You should download the spec sheet of your specific MCU and check how many GPIO pins it provides. The STM32 has up to 37 GPIO pins, which is plenty since I'll need those 27 pins for the keyboard matrix, 2 pins for the USB Data, and 1 pin for the LED logic. The STM32F072C8T has 64KiB of flash memory which is enough for the STM32 port of the QMK firmware, but you could go with a STM32F072CBT6 for 128KiB if you intend on having a lot of crazy firmware features.
 
 To make the schematic and the subsequent PCB, I will be using [KiCAD](https://www.kicad.org/) since it is free, open source, and widely used in the industry (including at my workplace). 
 
@@ -155,11 +155,11 @@ On the STM32, the PA11 and PA12 pins are *specifically* for USB D- and D+ respec
 Since the D+ and D- are both inputs and outputs, the flag I gave them points in both directions. The flag directions are purely cosmetic and don't affect functionality whatsoever.
 </p>
 
-To hook up USB to the STM32, we need to have a connector. I would've loved to put USB-C on my keyboard, but after a lot of measuring and trying, there is unfortunately no space inside the case for it. So I'm gonna have to use the same 90º 5 pin connector that the original board uses (the 5th pin is "Shield Ground"). It's usually a good idea to have a 500mA fuse on the USB connector's power line in case we plug the keyboard into a faulty USB that sends too much current down the 5V line. The fuse will pop but it will save everything else on our board. 
+To hook up USB to the STM32, we need to have a connector. I would've loved to put USB-C on my keyboard, but after a lot of measuring and trying, there is unfortunately no space inside the case for it. So I'm gonna have to use the same 90º 5 pin connector that the original board uses (the 5th pin is "Shield Ground"). It's usually a good idea to have a 500mA fuse on the USB connector's power line in case we plug the keyboard into a faulty USB that pushes too much current down the 5V line. The fuse will pop but it will save everything else on our board. USB 2.0 is usually limited by 500mA, USB 3.0 can do 900mA, and USB-C varies because the USB-C spec is a headache. 
 
 <p align="center">
 ![USB connector schematic](images/BuuKeeb/USBConnector.png)</br>
-VBUS and 5V are basically the same thing, except we usually designate VBUS as "raw unsafe voltage straight from the connector", it becomes a safe 5V after going through the fuse.
+VBUS and 5V are basically the same thing, except we usually designate VBUS as "raw unsafe voltage straight from the connector", it becomes a "safe and protected" 5V after going through the fuse.
 </p>
 
 If you are using a sane type of USB connection, like USB-C, you'll need to hook up some extra components for proper functionality. Refer to your spec sheet. 
@@ -171,7 +171,7 @@ The fuse will "protect" the voltage line but we also need to protect the data pi
 We can feed VBUS into the ESD protection because if you look at the spec sheet's wiring diagram, you'll see that it goes straight through the IC and does not touch anything. 
 </p>
 
-Lastly, USB provides 5 volts that we can use to power everything, however our STM32 needs 3.3v. To make sure we don't kill the processor, we need to have a step down converter that takes in the 5V from USB and provides 3.3V. We can use the XC6206 to do just that, along with some capacitors as per the spec sheet:
+Lastly, USB provides 5 volts that we can use to power everything, however our STM32 needs 3.3v. To make sure we don't kill the processor, we need to have a step down converter that takes in the 5V from USB and provides 3.3V. We can use the XC6206 to do just that (it's technically a linear regulator but it'll serve this task as well), along with some capacitors as per the spec sheet:
 
 <p align="center">
 ![Step Down Converter Schematic](images/BuuKeeb/StepDown.png)
@@ -244,14 +244,14 @@ Notice how I skipped the PF0 and PF1 leads. Many microprocessors require an exte
 
 ### LEDs
 
-The most popular type of LEDs for keyboards are "Neopixels", which are LEDs that are designed to be chained together to run effects and patterns. Of the "Neopixel" type, the two most used for keyboards seem to be SK6803 MINI-E and WS2812B. Typically, for LEDs, you have a blue, red, and green channel, as well as a ground, but Neopixels instead have voltage in, ground, and then a data-in and data-out pin. You send some bytes to the data-in with the RGB values for the LED to use, and then afterwards it will send the next chunk of LED data through its data-out pin into to the next LEDs's data-in. In other words, each LED will take a bit of the data and pass the rest to the next one in the chain.
+The most popular type of LEDs for keyboards are "Neopixels", which are LEDs that are designed to be chained together to run effects and patterns. Of the "Neopixel" type, the two most used for keyboards seem to be SK6812 MINI-E and WS2812B. Typically, for LEDs, you have a blue, red, and green channel, as well as a ground, but Neopixels instead have voltage in, ground, and then a data-in and data-out pin. You send some bytes to the data-in with the RGB values for the LED to use, and then afterwards it will send the next chunk of LED data through its data-out pin into to the next LEDs's data-in. In other words, each LED will take a bit of the data and pass the rest to the next one in the chain.
 
 <p align="center">
 ![LED Chain wiring example](images/BuuKeeb/LEDChain.png)</br>
 These LEDs are also not a standardized SMD component, so you need marsbastlib for them as well.
 </p>
 
-The keyboard I'm cloning is using SK6803 MINI-E's, so that is what I will use as well. And since I have 105 keys, I will require 105 LEDs, as well as 3 extra LEDs for the CAPS LOCK, Num Lock, and Scroll Lock keys.  Wiring these is super simple, just connect all of them in parallel to the 5V line and the ground line, and then hook the data-out of one LED into the data-in of the next.
+The keyboard I'm cloning is using SK6812 MINI-E's, so that is what I will use as well. And since I have 105 keys, I will require 105 LEDs, as well as 3 extra LEDs for the CAPS LOCK, Num Lock, and Scroll Lock keys.  Wiring these is super simple, just connect all of them in parallel to the 5V line and the ground line, and then hook the data-out of one LED into the data-in of the next.
 
 QMK will handle the LED logic for you because all you need to do is provide it with an XY coordinate for the LED, as well as its index in the chain. This means that you can wire them together however is most convenient to you. That can be like this:
 
@@ -259,25 +259,25 @@ QMK will handle the LED logic for you because all you need to do is provide it w
 ![LED Chain wiring method 1](images/BuuKeeb/LEDChainMethod1.png)
 </p>
 
-But this has the issue that the data wires are gonna be very long, so they risk losing signal integrity due to resistance in the long copper traces and interference from other signals. A better way to wire them would be to flip each second row of the LED chain, giving you this shorter path:
+But this has the issue that the data wires are gonna be very long, so they risk losing signal integrity due to impedance in the long copper traces and interference from other signals. A better way to wire them would be to flip each second row of the LED chain, giving you this shorter path:
 
 <p align="center">
 ![LED Chain wiring method 2](images/BuuKeeb/LEDChainMethod2.png)
 </p>
 
-There is one last thing missing, which is that the spec sheet for the SK6803 MINI-E recommends each LED have a 100nF capacitor hooked up to their power. It seems that most people do not bother to do this, and they claim the LEDs don't need them. But I don't mind spending a few extra cents on diodes if it means my keyboard is more robustly designed and up to spec.
+There is one last thing missing, which is that the spec sheet for the SK6812 MINI-E recommends each LED have a 100nF capacitor hooked up to their power. It seems that most people do not bother to do this, and they claim the LEDs don't need them. But I don't mind spending a few extra cents on diodes if it means my keyboard is more robustly designed and up to spec.
 
 I put the LED chain in a separate schematic to reduce clutter, like I did with the matrix, and then I link to it in the main page.
 
 <p align="center">
-![LED Chain final](images/BuuKee[here](b/LEDChainFinal.png)</br>
+![LED Chain final](images/BuuKeeb/LEDChainFinal.png)</br>
 Notice how the chain starts on the right side, this is on purpose and will make more sense later, but you don't have to start there if you don't want to!</br>
 Since I'm starting on the left, I have to flip each odd row as opposed to each even row.
 </p>
 
-Do keep in mind that each LED can pull up to 12mA if it is running at full brightness. 108 LEDs means 1.3A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
+Do keep in mind that each LED can pull up to 39mA (13mA per channel) if it is running at full brightness. 108 LEDs means 4.2A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
 
-Now, we can't just directly connect the LED data pin to the STM32, for one specific reason: The GPIO pins output 3.3V, and this _might_ work fine, but it might not considering it's a really long chain of LEDs. Since the logic operates anywhere between 3.2 and 6V, I am going to add a step up converter to boost the LED data data voltage from 3.3 to 5V. One good device for this is the 74AHCT1G125, which has 5 leads:
+Now, we can't just directly connect the LED data pin to the STM32, for one specific reason: The GPIO pins output 3.3V, and this _might_ work fine, but it might not considering it's a really long chain of LEDs. Since the logic operates anywhere between 3.2 and 6V, I am going to add a "logic level shifter" to boost the LED data data voltage from 3.3 to 5V. One good device for this is the 74AHCT1G125, which has 5 leads:
 1. Output enable
 2. Input data
 3. Ground
@@ -291,15 +291,15 @@ The spec sheet says "If the transceiver has an output enable pin, it will disabl
 I added a little diamond to the LED flag so that we know that it's an input being "passed into" this schematic. This isn't really standard, I just did it because it helps me keep track of the labels
 </p>
 
-A 470 Ohm resistor is recommended to be placed before the start of the first SK6803 MINI-E's data-in pin (according to the spec sheet), so I added it after the transciever.
+A 470 Ohm resistor is recommended to be placed before the start of the first SK6812 MINI-E's data-in pin (according to the spec sheet), so I added it after the transciever.
 
 Now we just assign the LED_DATA flag into any free GPIO in the STM32, and we are pretty close to being able to put all of this on a printed circuit board.
 
 ### Footprints
 
-So now that we have the schematic outlining what parts we need and how they're connected together, we need to know what the components look like. KiCAD has a button called "Assign Footprints" that let you select what space your component occupies on the board. 
+So now that we have the schematic outlining what parts we need and how they're connected together, we need to know what the components look like. KiCAD has a button called "Assign Footprints" that lets you select what space your component occupies on the board. 
 
-But how do you know what sizes to pick? Well, it depends. For instance, you can get resistors the size of a propane tank, or as small as a grain of sea salt. Different sizes usually mean different operating wattages and temperatures, and since a keyboard is not some hyper complex and power hungry beast, we can get away with small components. For keyboards, it's pretty common to use Surface Mount Devices (SMD). These come in a range of sizes, and typically those are 0402 and 0603, which stand for 0.4x0.2 inches and 0.6x0.3 inches respectively. Annoyingly for the sane parts of the world, when we refer to these sizes it's typically in inches, because if you refer to 0402 in metric you will get a component small enough to lodge itself in between the bumps on your fingerprints, and you will never see it again. Not ideal if you're planning on hand soldering.
+But how do you know what sizes to pick? Well, it depends. For instance, you can get resistors the size of a propane tank, or as small as a grain of sea salt. Different sizes usually mean different operating wattages and temperatures, and since a keyboard is not some hyper complex and power hungry beast, we can get away with small components. For keyboards, it's pretty common to use Surface Mount Devices (SMD) as opposed to larger through-hole components which are much easier to solder. SMD components come in a range of sizes, and typically those are 0402 and 0603, which stand for 0.4x0.2 inches and 0.6x0.3 inches respectively. Annoyingly for the sane parts of the world, when we refer to these sizes it's typically in inches, because if you refer to 0402 in metric you will get a component small enough to lodge itself in between the bumps on your fingerprints, and you will never see it again. Not ideal if you're planning on hand soldering.
 
 <p align="center">
 ![Different sized resistors on a match head](images/BuuKeeb/MatchHead.png)</br>
@@ -317,17 +317,17 @@ Lastly, we have ICs, which have a bunch of different designations. Too many abbr
 Image sourced from [here](https://learn.sparkfun.com/tutorials/integrated-circuits/all)
 </p>
 
-You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transciver is a TSOP-5, the Voltage Regulator is SOT-23-3, and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
+You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transciver is a TSOP-5, the Voltage Regulator is SOT-23 with 3 leads, and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
 
-The last footprints we need are the LEDs and the MX hotswap sockets. Like I said previously, these are available via marbastlib since they're not standardized parts. Just be careful selecting them because there's a bunch of variants, and you'll want to select the one that matches the spec sheet you're using. If you right click a footprint it lets you view it so you can confirm the size and pins match.
+The last footprints we need are the LEDs and the MX hotswap sockets. Like I said previously, these are available via marbastlib since they're not standardized parts. Just be careful selecting them because there's a bunch of variants, you'll want to select the one that matches the spec sheet you're using. If you right click a footprint it lets you view it so you can confirm the size and pins match.
 
 Once all parts have footprints, we just need to confirm we have no problems with our schematic.
 
 ### Error Checking the Schematic
 
-KiCAD conveniently provides the Electrical Rules Checker, which will check for problems in your design. Ideally, you'd want zero warnings, and you'll need zero errors. Most of the errors are self explanatory, or explanatory enough with a quick Google search, but there is one error that is really weird: "Input Power pin not driven by any Output Power pins".
+KiCAD conveniently provides the Electrical Rules Checker, which will check for problems in your design. This will not validate that you are following the specs of your ICs (KiCAD doesn't know anything about them or how they work), just if there are issues in your wiring. Ideally, you'd want zero warnings, and you'll need zero errors. Most of the errors are self explanatory, or explanatory enough with a quick Google search, but there is one error that is really weird: "Input Power pin not driven by any Output Power pins".
 
-Basically, KiCAD sometimes struggles to understand where exactly power comes from. You know that the USB connector provides the power, but _KiCAD_ doesn't know that. So the solution is to place a component called the PWR_FLAG near a power source to tell KiCAD to trust you. You only need to do this once for each net, so if you put the flag next to the VBUS, 5V, and GND lines of your USB connector, that should be enough to silence the error.
+Basically, KiCAD sometimes struggles to understand where exactly power comes from. You know that the USB connector provides the power and ground, but _KiCAD_ doesn't know that. So the solution is to place a component called the PWR_FLAG near a power source to tell KiCAD to trust you. You only need to do this once for each net, so if you put the flag next to the VBUS, 5V, and GND lines of your USB connector, that should be enough to silence the error.
 
 <p align="center">
 ![USB Connector after adding the PWR_FLAGs](images/BuuKeeb/USBConnectorWFlags.png)
@@ -335,6 +335,113 @@ Basically, KiCAD sometimes struggles to understand where exactly power comes fro
 
 ### Making the PCB
 
+Making the PCB is the most fun part, and it will probably be where you will spend a lot of time if you're like me and you can't help yourself but to George Lucas a project.
+
+So, what exactly is a PCB? It's essentially a really convenient and compact package for a circuit. PCBs are usually a sandwich of multiple layers of fiberglass and copper, each copper layer is electrically isolated from one another by the fiberglass. Simple PCBs are typically 1 or 2 layers of copper, but slightly more complex designs push four layers, while motherboards can go as high as 16 or 32.
+
+<p align="center">
+![A diagram of PCB layers](images/BuuKeeb/PCBLayers.png)</br>
+An example of a PCB sandwich. Notice that something is connecting the two copper layers on the right, we'll get to that.</br>
+Image sourced from [here](https://www.pcbasic.com/blog/pcb-layers.html)
+</p>
+
+The important thing to understand about PCBs is that a fabrication plant will lay an entire layer of copper first and then etch away what isn't needed. You don't need to worry about spending money on copper, you're already paying for the whole layer.
+
+For a keyboard, 2 copper layers is what is recommended. One is too constrained, and more than two is generally unecessary. KiCAD creates PCBs with two copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCAD provies. The most useful ones for us are:
+- F.Cu and B.Cu - The front and back copper layers (since we have 2 copper layers)
+- F.Silkscreen and B.Silkscreen - The front and back silkscreen layers, where you can put drawings on your PCB.
+- User.Drawings - Helper drawings that won't show up on the final PCB.
+- Edge.Cuts - The outline of your PCB + any holes you will put in.
+
+When you open the PCB editor in KiCAD, the first thing you have to do is to import the parts from the schematic. There is a button for it on the top called "Update From Schematic", which when you run it, will spawn all the parts for your keyboard at your mouse.
+
+<p align="center">
+![All the parts for the project](images/BuuKeeb/PCBParts.png)
+</p>
+
+Once you place the parts down, KiCAD will draw some wires showing how all the parts should be connected. Every time you change something in the schematic, you have to click the "Update From Schematic" button, and it will automatically spawn any new parts you created and update the legs or footprints of any parts you modified. It won't remove parts that already exist on your PCB, technology simply has not evolved that far.
+
+If you are making your keyboard layout from scratch, you can use the Keyboard Footprints Placer plugin to import the JSON file and automatically position all the keyswitches for you. In my case, I instead had to import those SVGs I made so that I can place the switches in the exact place they were on the board I'm cloning. I put the key outlines in the Front Silkscreen layer, the LED and mounting holes in the Edge Cut layer, the PCB outline in the Edge Cut Layer, and the keyswitch holes in the UserDrawings layer. Each of these SVGs had that purple star in it to help me position all the imported drawings in the exact same place. 
+
+<p align="center">
+![The PCB after importing all the layers](images/BuuKeeb/PCBBare.png)</br>
+KiCAD lets you view a 3D render of your board. It's a good idea to look at it a lot because you might spot mistakes!
+</p>
+
+The default footprints of components in KiCAD come with some drawings on the silkscreen layer. These will usually include an outline or marking that points to the ground pin of a component, and the component's name from the schematic. You can delete these if you want a super clean PCB (don't do it right now though or you will regret it), but if you're planning on hand soldering I would really recommend keeping them.
+
+Then I moved every single keyswitch to its exact position according to the drawing. To do that, I zoomed in as far as I could and tried to manually place them as centered as possible. Even if they're not exact, we're talking sub milimeters here, which is way smaller than the fabrication houses probably have tolerance for.
+
+Once the keyboard layout is to your liking, you need to draw an outline of your PCB in the edge cut layer to define the shape of your PCB. Since I had my outline SVG, I just imported it. Those who don't have a prepared SVG (which is probably all of you not cloning an existing keyboard like me) can just draw your own outline freestyle using the program's tools. 
+
+Now, all those hundred diodes, capacitors, LEDs, and everything else have to be placed on your board too. Remember that each one has a specific name, so don't place the diode that are supposed to be wired to the Q key where the M key is. Good thing they have their names on the silkscreen so you can identify them, and you were smart enough to not delete the silkscreen :)
+
+You don't have to fully commit to where you place the components, because you will likely change them around a lot as you find more convenient locations for things or realize during the wiring stage that you've run out of space. Don't forget that there is a front and back side to the PCB, so make sure you have the components on the correct side of your board. Usually the side with the switches will be bare or have an IC or two on it, while everything else is on the other side. It's up to you!
+
+<p align="center">
+![The back of the PCB with all the parts placed](images/BuuKeeb/PCBBackParts.png)
+</p>
+
+I think the only main thing you need to worry about regarding the placement of components is that it's highly recommended to place capacitors as close as possible to the pin it's supposed to be protecting. Having them far away makes them less effective. 
+
+Once you're happy with positioning everything, run the Design Rules Checker (DRC) to check if there aren't any horrible problems so far (besides the unconnected items), like overlapping components. If that passes, then I would recommend looking for the DRC rules for whichever fabrication house you intend on making the PCB at. The two most popular ones are [PCBWay](https://www.pcbway.com/) and [JLCPCB](https://jlcpcb.com/), and either one will do the job. My work colleagues use JLC for their stuff so that's what I will use as well, but my N64 colleagues use PCBWay. JLC has an article regarding their [design rules](https://jlcpcb.com/capabilities/pcb-capabilities), and there is [this project on GitHub](https://github.com/labtroll/KiCad-DesignRules) which translates them into DRC rules for KiCAD.
+
+If the only errors you have left on the DRC are unconnected items, it's time to wire everything together.
+
+### Wiring the PCB
+
+There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagentic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither.
+
+The other big one is to avoid is forks:
+
+<p align="center">
+![A track with two different forks on it](images/BuuKeeb/TraceFork.png)
+</p>
+
+The reason for this one is that the sharp bends created pockets that will cause the acid used during the etching of the copper to get trapped, and this risks damaging adjacent traces. *Supposedly*, modern PCB manufacturing has largely eliminated this issue, but the recommendation remains.
+
+If you recall from our keyboard matrix, we have lanes which cross over each other, but we don't want them to electrically connect. That is why we have 2 layers of copper, it lets us cross over tracks:
+
+<p align="center">
+![Two row and two column traces crossing over each other](images/BuuKeeb/TraceCrossing.png)
+</p>
+
+In the scenario you do want the two layers to connect, you can use a "via", which is a hole that drills into the other layer (if you remember the PCB sandwich diagram from earlier, it was what was connecting the two layers together). You can use vias to help cross over existing traces:
+
+<p align="center">
+![Using vias to help cross over a trace](images/BuuKeeb/TraceUnder.png)
+</p>
+
+The smartest thing you can do is keep one layer with only horizontal traces, and another with only vertical traces. This will help minimize how much space your traces occupy, because bends will take up real estate for both horizontal and vertical traces.
+
+KiCAD, by default, uses traces that are 2mm in size, and these are good enough for most things, but it is generally recommended to make traces that carry digital data + traces that carry power thicker. For power traces, the recommendation is because smaller traces will heat up more due to the constant current being pushed through them, while data traces are recommended to be thicker to improve signal integrity. There are math formulas and calculators built into KiCAD to help figure out the ideal trace widths, but I am not enough of an electrical engineer to be able to use them, I just went with the recommendations from other people. I chose 6mm for the USB data traces, 4mm for LED data + power traces, and everything else used the default width.
+
+The track you are probably going to be placing the most will be the ground, which will quickly occupy a lot of your track real-estate. Because of this, a common thing to do is to make a ground plane. The idea is that the entire copper layer becomes ground, and your traces and vias will be carved out of the ground. This picture demonstrates it better than I can explain:
+
+<p align="center">
+![An IC and the traces connected to it, carved out of the ground plane](images/BuuKeeb/GroundLayer.png)</br>
+The ground is the entire blue plane. Notice how the ground pads on the IC  are automatically connected to the plane.
+</p>
+
+Having a ground plane on both the top and bottom copper layers is a good idea and a great time saver, I originally started wiring everything without making a ground plane first and it created a few headaches. The only annoying thing about the ground plane is that KiCAD will not update it every time you place something down, you need to manually regenerate the planes. Sometimes you will create an island that is electrically isolated from everything else, which is why having the ground plane on both layers is convenient, because you can connect them together using vias:
+
+<p align="center">
+![An example of a ground plane island](images/BuuKeeb/GroundIsland.png)</br>
+The LED capacitor's ground plane is electrically isolated from the primary plane, so I placed a via to connect it to the plane in the other layer.
+</p>
+
+Sometimes KiCAD will not be able to make the ground plane automatically reach pins that have a lot going on around them, but you can usually just wire a track from the pin to the plane:
+
+<p align="center">
+![A groud track connecting to a ground plane](images/BuuKeeb/GroundHelp.png)
+</p>
+
+
+
+### Design Rules Checker
+
 ### Ordering
 
 ### QMK
+
+Matrix explanation was a lie
