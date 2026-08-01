@@ -79,6 +79,9 @@ FrameFind::FrameFind(wxWindow* parent, wxWindowID id, const wxString& title, con
     this->m_Button_Replace->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(FrameFind::m_Button_Replace_OnButtonClick), NULL, this);
     this->m_Button_ReplaceAll->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(FrameFind::m_Button_ReplaceAll_OnButtonClick), NULL, this);
     this->m_Button_Close->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(FrameFind::m_Button_Close_OnButtonClick), NULL, this);
+
+    // Set focus on the find input
+    this->m_Input_Find->SetFocus();
 }
 
 
