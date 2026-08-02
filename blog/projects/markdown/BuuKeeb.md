@@ -275,7 +275,7 @@ Notice how the chain starts on the right side, this is on purpose and will make 
 Since I'm starting on the left, I have to flip each odd row as opposed to each even row.
 </p>
 
-Do keep in mind that each LED can pull up to 39mA (13mA per channel) if it is running at full brightness. 108 LEDs means 4.2A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
+Do keep in mind that each LED can pull up to 13mA if it is running at full brightness. 108 LEDs means 1.3A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
 
 Now, we can't just directly connect the LED data pin to the STM32, for one specific reason: The GPIO pins output 3.3V, and this _might_ work fine, but it might not considering it's a really long chain of LEDs. Since the logic operates anywhere between 3.2 and 6V, I am going to add a "logic level shifter" to boost the LED data data voltage from 3.3 to 5V. One good device for this is the 74AHCT1G125, which has 5 leads:
 1. Output enable
@@ -374,7 +374,7 @@ Then I moved every single keyswitch to its exact position according to the drawi
 
 Once the keyboard layout is to your liking, you need to draw an outline of your PCB in the edge cut layer to define the shape of your PCB. Since I had my outline SVG, I just imported it. Those who don't have a prepared SVG (which is probably all of you not cloning an existing keyboard like me) can just draw your own outline freestyle using the program's tools. 
 
-Now, all those hundred diodes, capacitors, LEDs, and everything else have to be placed on your board too. Remember that each one has a specific name, so don't place the diode that are supposed to be wired to the Q key where the M key is. Good thing they have their names on the silkscreen so you can identify them, and you were smart enough to not delete the silkscreen :)
+Now, all those hundred diodes, capacitors, LEDs, and everything else have to be placed on your board too. Remember that each one has a specific name, so don't place the diode that is supposed to be wired to the Q key where the M key is. Good thing they have their names on the silkscreen so you can identify them, and you were smart enough to not delete the silkscreen :)
 
 You don't have to fully commit to where you place the components, because you will likely change them around a lot as you find more convenient locations for things or realize during the wiring stage that you've run out of space. Don't forget that there is a front and back side to the PCB, so make sure you have the components on the correct side of your board. Usually the side with the switches will be bare or have an IC or two on it, while everything else is on the other side. It's up to you!
 
@@ -382,15 +382,15 @@ You don't have to fully commit to where you place the components, because you wi
 ![The back of the PCB with all the parts placed](images/BuuKeeb/PCBBackParts.png)
 </p>
 
-I think the only main thing you need to worry about regarding the placement of components is that it's highly recommended to place capacitors as close as possible to the pin it's supposed to be protecting. Having them far away makes them less effective. 
+I think the only main thing you need to worry about regarding the placement of components is that it's highly recommended to place capacitors as close as possible to the pin it's supposed to be protecting. Having them far away makes them less effective. Likewise, the ESD protection should be right next to the connector.
 
 Once you're happy with positioning everything, run the Design Rules Checker (DRC) to check if there aren't any horrible problems so far (besides the unconnected items), like overlapping components. If that passes, then I would recommend looking for the DRC rules for whichever fabrication house you intend on making the PCB at. The two most popular ones are [PCBWay](https://www.pcbway.com/) and [JLCPCB](https://jlcpcb.com/), and either one will do the job. My work colleagues use JLC for their stuff so that's what I will use as well, but my N64 colleagues use PCBWay. JLC has an article regarding their [design rules](https://jlcpcb.com/capabilities/pcb-capabilities), and there is [this project on GitHub](https://github.com/labtroll/KiCad-DesignRules) which translates them into DRC rules for KiCAD.
 
-If the only errors you have left on the DRC are unconnected items, it's time to wire everything together.
+If the only errors you have left on the DRC are unconnected items, let's go over some recommendations for the wiring stage.
 
-### Wiring the PCB
+### Recommendations for Wiring the PCB
 
-There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagentic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither.
+There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagentic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither. [You can go fully curved](https://community.element14.com/technologies/open-source-hardware/b/blog/posts/vintage-curvy-pcb-traces-with-kicad-7) if a vintage look is your preferred aesthetic! 
 
 The other big one is to avoid is forks:
 
@@ -398,7 +398,7 @@ The other big one is to avoid is forks:
 ![A track with two different forks on it](images/BuuKeeb/TraceFork.png)
 </p>
 
-The reason for this one is that the sharp bends created pockets that will cause the acid used during the etching of the copper to get trapped, and this risks damaging adjacent traces. *Supposedly*, modern PCB manufacturing has largely eliminated this issue, but the recommendation remains.
+The reason for this one is that the sharp bends create pockets that will cause the acid that's used during the etching of the copper to get trapped, which risks damaging the traces. *Supposedly*, modern PCB manufacturing has largely eliminated this issue, but the recommendation remains.
 
 If you recall from our keyboard matrix, we have lanes which cross over each other, but we don't want them to electrically connect. That is why we have 2 layers of copper, it lets us cross over tracks:
 
@@ -409,10 +409,11 @@ If you recall from our keyboard matrix, we have lanes which cross over each othe
 In the scenario you do want the two layers to connect, you can use a "via", which is a hole that drills into the other layer (if you remember the PCB sandwich diagram from earlier, it was what was connecting the two layers together). You can use vias to help cross over existing traces:
 
 <p align="center">
-![Using vias to help cross over a trace](images/BuuKeeb/TraceUnder.png)
+![Using vias to help cross over a trace](images/BuuKeeb/TraceUnder.png)</br>
+You can also place vias on pads, but this is generally not recommended because it can introduce manufacturing defects. 
 </p>
 
-The smartest thing you can do is keep one layer with only horizontal traces, and another with only vertical traces. This will help minimize how much space your traces occupy, because bends will take up real estate for both horizontal and vertical traces.
+The smartest thing you can do is keep one layer with only horizontal traces, and another with only vertical traces. This will help minimize how many vias you need to place and also much space your traces occupy, because bends will take up real estate for both horizontal and vertical traces.
 
 KiCAD, by default, uses traces that are 2mm in size, and these are good enough for most things, but it is generally recommended to make traces that carry digital data + traces that carry power thicker. For power traces, the recommendation is because smaller traces will heat up more due to the constant current being pushed through them, while data traces are recommended to be thicker to improve signal integrity. There are math formulas and calculators built into KiCAD to help figure out the ideal trace widths, but I am not enough of an electrical engineer to be able to use them, I just went with the recommendations from other people. I chose 6mm for the USB data traces, 4mm for LED data + power traces, and everything else used the default width.
 
@@ -420,10 +421,10 @@ The track you are probably going to be placing the most will be the ground, whic
 
 <p align="center">
 ![An IC and the traces connected to it, carved out of the ground plane](images/BuuKeeb/GroundLayer.png)</br>
-The ground is the entire blue plane. Notice how the ground pads on the IC  are automatically connected to the plane.
+The ground is the entire blue plane. Notice how the ground pads on the IC  are automatically connected to the plane.I'm at 90 fm now because of this dumb grind
 </p>
 
-Having a ground plane on both the top and bottom copper layers is a good idea and a great time saver, I originally started wiring everything without making a ground plane first and it created a few headaches. The only annoying thing about the ground plane is that KiCAD will not update it every time you place something down, you need to manually regenerate the planes. Sometimes you will create an island that is electrically isolated from everything else, which is why having the ground plane on both layers is convenient, because you can connect them together using vias:
+Having a ground plane on both the top and bottom copper layers is a good idea and a great time saver. I originally started wiring everything without making a ground plane first, which created a few headaches. The only annoying thing about the ground plane is that KiCAD will not update it every time you place something down, you need to manually regenerate the planes. Sometimes you will create an island that is electrically isolated from everything else, which is why having the ground plane on both layers is convenient, because you can connect the island to the rest of the ground plane using vias:
 
 <p align="center">
 ![An example of a ground plane island](images/BuuKeeb/GroundIsland.png)</br>
@@ -436,9 +437,101 @@ Sometimes KiCAD will not be able to make the ground plane automatically reach pi
 ![A groud track connecting to a ground plane](images/BuuKeeb/GroundHelp.png)
 </p>
 
+Complicated PCBs with more than 2 layers will usually have an entire plane be a ground plane without any traces on it, another plane which will just be 3.3V, etc... and then electrically connect to them with vias.
 
+If you remember from your highschool physics, current running through a wire generates magnetic fields around it, which in turn messes with the electrons in adjacent wires. If you don't remember this detail, you can [re-traumatise yourself with this video](https://youtu.be/NJRDclzi5Vg?t=62). Either way, because of this physical phenomenon, it's a good idea to keep wires some distance from one another. It also means that wires (especially power wires that tend to have a lot of constant activity) should not run parallel to wires in the other layer. Try to minimize crossing wires, but of course it's not a huge deal if you must.
 
-### Design Rules Checker
+Everything else is, down to your aesthetic preferences. You can route stuff under ICs, and connect to pads perpendicularly, but doing this gives me severe botherations, so I avoid it as much as possible.
+
+<p align="center">
+![Routing perpendicularly](images/BuuKeeb/Botherations.png)</br>
+This works, but it does not spark joy.
+</p>
+
+When it comes to connecting tracks to pads, all you really need to do is to touch them. This would be completely valid wiring but will probably result in you getting bullied by nerds:
+
+<p align="center">
+![A track barely touching the pad](images/BuuKeeb/CaressingPad.png)
+</p>
+
+And lastly, but most importantly, the golden rule is to **keep your tracks as short as possible.** If you don't know why you need to do that, go back and re-read this entire section until you do. 
+
+Many of the rules that were outlined here are not set in stone, you can break them if you are having trouble wiring things as-is. But avoiding them as best as possible is generally advised.
+
+### Actually Wiring the PCB Together
+
+The very first thing you should wire in your PCB should be your USB data lines, since without them properly functioning, nothing in the keyboard will work. The USB data lines are also the only thing that needs to be wired differently from everything else in our design, because they are a differential pair. KiCAD has an option for wiring a differential pair, letting you do both tracks at the same time:
+
+<p align="center">
+![Wiring a differential pair](images/BuuKeeb/DifferentialPair.png)
+</p>
+
+The important thing about a differential pair is that both traces need to have the same length or the data will not arrive in sync. For USB 2.0, the maximum deviation you can get away with is a difference in length of 3.81mm between both tracks. When you need to have your tracks turn, it's common for one to get longer than the other, but luckily KiCAD lets you add some curves to make the shorter track longer:
+
+<p align="center">
+![Making one track longer to match the lengths](images/BuuKeeb/CoolS.png)</br>
+Now the left track matches the size of the right one.
+</p>
+
+In my case, because the USB connector has the data lines swapped from the inputs on the STM32, and because I can't rotate the connector, _and because_ I wanted to avoid routing the data lines under the ESD chip for signal integrity reasons, I had to do something gnarly:
+
+<p align="center">
+![Criss-crossing the USB data lines](images/BuuKeeb/Gore.png)
+</p>
+
+USB is relatively robust so doing this isn't going to be a horrible problem, but it should be avoided in your design if possible.
+
+An interesting recommendation that I was given is to place a bunch of vias that connect to the ground plane along the path of the USB differential pair. The reason for doing this is to give the ground on the connector a guaranteed shorter path, because otherwise there's no way to know how long the return path is gonna be and how far it'll divert away from the USB differential pair traces.
+
+Outside of the USB data differential pair, everything else can be routed pretty straightforwardly. There's a lot of different ways of routing the keyboard, I would recommend looking at a bunch of different open source keyboard designs and seeing what other people do. I went through 4 or 5 iterations of my routing before I settled on my current wiring.
+
+I had originally routed my rows and column tracks exactly how I had it in the schematic (IE always starting where the flags were positoned), and this resulted in tons of long tracks that surrounded the entire PCB:
+
+<p align="center">
+![The original way I wired the keys](images/BuuKeeb/WiringRound1.png)
+</p>
+
+During my many rewiring attempts, I did this instead which is perfectly valid.
+
+<p align="center">
+![The better wiring](images/BuuKeeb/WiringRound2.png)
+</p>
+
+Remember, you can change which pins in the STM32 the rows and columns are connected to, so swap things around
+ to make your wiring tighter!
+
+The other big thing that went through iterations on my design was the LED wiring. I originally had the 5V line of all the LEDs connected together:
+
+<p align="center">
+![The original LED power wiring method](images/BuuKeeb/WiringLED1.png)</br>
+I did not draw the capacitors on this wiring diagram, but just know they are all right next to the 5V pin on each LED.
+</p>
+
+But then I decided to have the odd and even rows connected seperately from one another to reduce how far the power would need to travel just to reach the last LED in the chain:
+
+<p align="center">
+![The better LED power wiring method](images/BuuKeeb/WiringLED2.png)<br>
+Notice how this also keeps vertical and horizontal traces in separate layers!
+</p>
+
+Though if I were gonna do one more rewiring to the keyboard, I would probably wire it like this:
+
+<p align="center">
+![Future LED power wiring method](images/BuuKeeb/WiringLED3.png)
+</p>
+
+Wiring everything else was relatively straight forward.
+
+After many days of channeling my inner George Lucas, I settled on the final wiring:
+
+<p align="center">
+![Final front copper layer](images/BuuKeeb/WiringFinalF.png)</br>
+![Final back copper layer](images/BuuKeeb/WiringFinalB.png)
+</p>
+
+When you're happy with your wiring, run the DRC and fix any potential overlapping wires, missed connections, isolated ground planes, ground connections without at least 2 paths, and other mistakes. 
+
+I added my face as well as a piece of text marking the revision to the silkscreen, and I was ready to send the PCB off to fabrication!
 
 ### Ordering
 
