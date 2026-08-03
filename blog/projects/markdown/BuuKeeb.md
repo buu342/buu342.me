@@ -23,13 +23,15 @@ Thus, I decided to go down a rabbit hole to make a custom keyboard which fit ins
 
 ### Making a scan of the original PCB
 
-First and foremost, because I am making a clone of an existing board, I need to know the positions of everything as accurately as possible. One side of the keyboard was completely flat excluding some minor bumps from a through-hole connector, so I desoldered it to have a fully flat face. My idea was to use a photocopier to take a scan of the board, so that I could then have an image I could trace over. Unfortunately the scanner I had at home was a bit too small, meaning that the keyboard would have to be slightly angled and require 2 scans. It being angled was a big no-no since it would cause perspective distortions that prevent getting accurate measurements. I went to a few photocopy houses that had bigger flatbeds and had them scan the flat side for me. All of them unfortunately required taking 2 scans as well but at least the flatbed was big enough to fit the whole board. I picked the best scans, and using Photoshop I straightened the scans (I brought a ruler to keep the board straight on the flatbed but despite my best efforts it would still end up ever so slightly angled) and stitched both halves together. The stitching wasn't perfect, since scanners use a moving camera which introduces minor visual distortions. However the two scans only really diverged by 2-3 pixels which would be equivalent to like 0.1mm, so it wasn't a big deal. The result was:
+First and foremost, because I am making a clone of an existing board, I need to know the positions of everything as accurately as possible. One side of the keyboard was completely flat excluding some minor bumps from a through-hole connector, so I desoldered it to have a fully flat face. My idea was to use a photocopier to take a scan of the board, so that I could then have an image I could trace over. Unfortunately the scanner I had at home was a bit too small, meaning that the keyboard would have to be slightly angled and require 2 scans. It being angled was a big no-no since it would cause perspective distortions that prevent getting accurate measurements. I went to a few photocopy houses that had bigger flatbeds and had them scan the flat side for me. All of them unfortunately required taking 2 scans as well but at least the flatbed was big enough to fit the whole board. 
+
+I picked the best scans, and using Photoshop I straightened the scans (I brought a ruler to keep the board straight on the flatbed but despite my best efforts it would still end up ever so slightly angled) and stitched both halves together. The stitching wasn't perfect, since scanners use a moving camera which introduces minor visual distortions. However the two scans only really diverged by 2-3 pixels which would be equivalent to like 0.1mm, so it wasn't a big deal. The result was:
 
 <p align="center">
 ![Scan of the keyboard PCB](images/BuuKeeb/FinalScan.png)
 </p>
 
-I made sure the scale of the image matched its real life measurements by playing around with the Pixels Per Inch values. The next step was to trace everything that was relevant in an SVG program. Having an SVG has a few advantages, namely that SVGs have "infinite" precision compared to images, which are limited by the number of pixels. That sub-pixel precision allows me to ensure everything is placed as accurately as possible. I use [Inkscape](https://inkscape.org/) for my SVG beeds, and after a few hours I made this:
+I made sure the scale of the image matched its real life measurements by playing around with the Pixels Per Inch values. The next step was to trace everything that was relevant in an SVG program. Having an SVG has a few advantages, namely that SVGs have "infinite" precision compared to images, which are limited by the number of pixels. That sub-pixel precision allows me to ensure everything is placed as accurately as possible. I use [Inkscape](https://inkscape.org/) for my SVG needs, and after a few hours I made this:
 
 <p align="center">
 ![SVG version of the scan](images/BuuKeeb/SVG.png)
@@ -347,7 +349,7 @@ Image sourced from [here](https://www.pcbasic.com/blog/pcb-layers.html)
 
 The important thing to understand about PCBs is that a fabrication plant will lay an entire layer of copper first and then etch away what isn't needed. You don't need to worry about spending money on copper, you're already paying for the whole layer.
 
-For a keyboard, 2 copper layers is what is recommended. One is too constrained, and more than two is generally unecessary. KiCAD creates PCBs with two copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCAD provies. The most useful ones for us are:
+For a keyboard, 2 copper layers is what is recommended. One is too constrained, and more than two is generally unnecessary. KiCAD creates PCBs with two copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCAD provies. The most useful ones for us are:
 - F.Cu and B.Cu - The front and back copper layers (since we have 2 copper layers)
 - F.Silkscreen and B.Silkscreen - The front and back silkscreen layers, where you can put drawings on your PCB.
 - User.Drawings - Helper drawings that won't show up on the final PCB.
@@ -390,7 +392,7 @@ If the only errors you have left on the DRC are unconnected items, let's go over
 
 ### Recommendations for Wiring the PCB
 
-There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagentic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither. [You can go fully curved](https://community.element14.com/technologies/open-source-hardware/b/blog/posts/vintage-curvy-pcb-traces-with-kicad-7) if a vintage look is your preferred aesthetic! 
+There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagnetic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither. [You can go fully curved](https://community.element14.com/technologies/open-source-hardware/b/blog/posts/vintage-curvy-pcb-traces-with-kicad-7) if a vintage look is your preferred aesthetic! 
 
 The other big one is to avoid is forks:
 
@@ -507,7 +509,7 @@ The other big thing that went through iterations on my design was the LED wiring
 I did not draw the capacitors on this wiring diagram, but just know they are all right next to the 5V pin on each LED.
 </p>
 
-But then I decided to have the odd and even rows connected seperately from one another to reduce how far the power would need to travel just to reach the last LED in the chain:
+But then I decided to have the odd and even rows connected separately from one another to reduce how far the power would need to travel just to reach the last LED in the chain:
 
 <p align="center">
 ![The better LED power wiring method](images/BuuKeeb/WiringLED2.png)<br>
@@ -535,6 +537,57 @@ I added my face as well as a piece of text marking the revision to the silkscree
 
 ### Ordering
 
+Once you are ready to unleash your creation upon the world, export gerber files of your PCB by going to File->Fabrication outputs. Since we are going to use JLCPCB, you'll need to configure the output to match [their requirements](https://jlcpcb.com/help/article/how-to-generate-gerber-and-drill-files-in-kicad-9). If you use the Fabrication Toolkit plugin, you can use it instead which will generate the gerbers (in a convenient zip package) as well as all the other files you're going to need. Either way, once you've exported something, head on over to your fabricator of choice. Most places will require you to place a minimum order of PCBs (because making them is costly). JLCPCB and PCBWay both have a minimum order quantity of 5. You can choose to keep only 1 of them but if you're paying for 5, you might as well get 5. You can share the extras with your friends! :D
+
+The default values in JLCPCB are perfectly fine for a keyboard, because keyboards are very undemanding. The only changes I made was to switch the PCB color to black so that it would match the board I'm cloning, and the surface finish from HASL to lead free HASL because I don't want to be responsible for making people more stupid than they already are. 
+
+JLCPCB also supports assembling your keyboards. While I originally planned on hand soldering myself, I thought "since this is my first PCB ever, I want to make sure that any problems on it are **not** because of mistakes in my soldering". JLCPCB's soldering is not perfect, I have heard complaints about it before like I have with PCBWay too. Manufacturing isn't perfect which is why you can also pay extra to have your assembly tested before shipping. Personally I don't mind spending a bit of my time inspecting the board and probing it with a multimeter, so I decided to forgo the cost + having to implement tests for them to run. I chose to have two boards assembled (the minimum amount), the rest I can hand solder if I end up doing anything with them besides collecting dust. Conveniently, since my board only has components on the back side, I didn't have to pay as much for the assembly. 
+
+If you don't want to pay for the assembly, you can buy all the parts you need from JLC as well.
+
+In order for JLCPCB to know what components your board is using for the assembly, you need to provide them with a Bill of Materials (BOM) as well as positions for all the components. If you used the Fabrication Toolkit, you should have those exported, if not you can follow [this article](https://jlcpcb.com/help/article/how-to-generate-the-bom-and-centroid-file-from-kicad) from JLCPCB to set up the export to their specifications. Once JLC finishes processing, it will present you with a table of what components it managed to find:
+
+<p align="center">
+![BOM from JLCPCB](images/BuuKeeb/JLCBOM.png)
+</p>
+
+Unfortunately for us, not everything was correctly found, so let's go over each one and try to solve it:
+* The resistors did not export "correctly" because JLC was expecting the comment column in the BOM table to have something else, but instead it just had "5.1k" or "470". Despite that, JLC did find components which matched the specifications anyway, so it was safe enough to click the checkbox.
+* JLC could not place the LEDs without me upgrading the assembly service from "Economic PCBA" to "Standard PCBA", so I had to accept those extra fees. 
+* The USB6B1 was out of stock. Searching "USB6B1" in JLC's part search yielded two different "USB6B1RL" which were in stock and had the same specifications, so I used it instead.
+
+JLC also failed to find these components because the names that KiCAD exported did not match anything on their database close enough. Finding the correct components might require a bit of detective work and careful browsing of their parts store:
+* Diodes - Searching for "SOD-123" found all the diodes with that footprint, so I selected "1N4148SOD" which matched my specifications
+* Connector - I looked around JLC's parts store and found "PZ200-1-05-W-2.0-G1" which seemed to match what I was looking for. This one was surprisingly difficult to find.
+* Hotswap MX switches - I searched for "CPG151101S11" and it listed a bunch in different colors. Black switches were out of stock so I went with whites.
+* STM32 - I put "STM32F072C8T" in the search box and it presented me with two parts that were in stock. I went with the "STM32F072C8T6", the T7 variant is exactly the same but has a higher operating temperature (which also ade it 4x more expensive). I don't expect to be using my keyboard next to a volcano so the T6 will do.
+* Voltage regulator - I searched for "XC6206P" and found a bunch, so I went with the "XC6206P332MR-G" which matched my needs.
+
+Once the BOM is error free, **double, triple, and quadrinipple check** the selected parts and _especially_ their spec sheets. For instance, SK6812MINI-E has a few variants which have the pins in a different order, so make sure they match your design.
+
+Afterwards, JLC will give you an interactive 3D view of the keyboard so that you can check the part placements are correct. If they're not, you should probably fix them:
+
+<p align="center">
+![JLCPCB component placements](images/BuuKeeb/ComponentPlacements.png)</br>
+Those switches need rotation and repositioning.</br>It was also very tempting to send the PCB off to fabrication with the connector rotated like that because I wanted to see how they would accomplish it.
+</p>
+
+ICs will usually have a little punched hole marking on one of the corners, and this punch will usually also correspond with a small arrow indicator in the silkscreen. Components that are polarized or that have a specific direction (for instance, diodes) will also usually have a line, a graphic, or even a specific shape on them to indicate their ground pin. Electrolytic capacitors usually are polarized and will explode epicly if wired backwards, however the ones used on SMD are ceramic capacitors, thus are not polarized. Again, do not rush through this step unless wasting money is something you enjoy doing!
+
+After a bit of tweaking, everything looked good but the voltage regulator for some reason had a missing model:
+
+<p align="center">
+![Missing 3D model](images/BuuKeeb/MissingModel.png)
+</p>
+
+Not much I could do about that, so I moved on to the next step, which was payment and shipping. In total I paid close to 200€. It was 27€ for the 5 boards, 86€ for the assembly of the 2 boards, and the rest was shipping + taxes. Yeah, that last part really stung...
+
+A few hours after you place your order, JLC provides a "DFM Analysis" that lets you check for any problems during the positioning, and when I went to investigate, there _was_ a problem that needed my attention. The voltage regulator was left unassembled, so I contacted support and they showed me an image of the voltage regulator's placement on the PCB: it was too small and did not fit the pads. It turns out that when JLCPCB automatically selected the part, it selected one with a size of TSOP-5, but the component size I'm using is SOT-23. I did not catch this mistake because the 3D model was missing, and the spec sheet showed me **all** the different sizes the package was available at. The size was explicitly stated in the BOM table but I glanced over it, whoops. 
+
+Fortunately, their online chat support allowed me to go back and set the component to the correct one (74AHCT1G125GW) at the cost of forgoing 2 extra cents that I paid (since the correct part was cheaper), and the error disappeared a few hours laters after being looked at by an engineer. Funnily enough, as I was talking to support I received an email warning me about the unconnected part, so I was a bit faster than their automated system.
+
 ### QMK
 
 Matrix explanation was a lie
+
+### Wrapping Up
