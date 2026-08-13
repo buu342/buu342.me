@@ -52,7 +52,7 @@
                 "BuuKeeb": {
                     "Date": "August 13, 2026",
                     "DisplayName": "Making a Custom Mechanical Keyboard PCB",
-                    "Icon": "",
+                    "Icon": "icons/BuuKeeb.png",
                     "Index": 0,
                     "Tags": [
                         "CAD",
