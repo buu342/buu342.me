@@ -83,7 +83,7 @@ That gives me 21 columns and 6 rows, for a total of 27 GPIO on the MCU.
  
 ### Making the Schematic
 
-Before you can make the PCB, you need to first make a schematic which explains how all the components are wired together. The first and most important thing you need to pick is the microprocessor for your keyboard. The one you choose depends on what stuff you want on your keyboard. Small keyboards tend to go with a Teensy 2.0 or ATmega32U4 since there are drop-in QMK firmwares available for them. If your keyboard is to be wireless, a popular option is the nRF52840. However, since I need to occupy 27 pins on the MCU just for the keyboard itself I'll need an MCU with lots of GPIO, so I have chosen another popular MCU called STM32, specifically the STM32F072C8T.  You should download the spec sheet of your specific MCU and check how many GPIO pins it provides. The STM32 has up to 37 GPIO pins, which is plenty since I'll need those 27 pins for the keyboard matrix, 2 pins for the USB Data, and 1 pin for the LED logic. The STM32F072C8T has 64KiB of flash memory which is enough for the STM32 port of the QMK firmware, but you could go with a STM32F072CBT6 for 128KiB if you intend on having a lot of crazy firmware features.
+Before you can make the PCB, you need to first make a schematic which explains how all the components are wired together. The first and most important thing you need to pick is the microprocessor for your keyboard. The one you choose depends on what stuff you want on your keyboard. Small keyboards tend to go with a Teensy 2.0 or ATmega32U4 since there are drop-in QMK firmwares available for them. If your keyboard is to be wireless, a popular option is the nRF52840. However, since I need to occupy 27 pins on the MCU just for the keyboard itself, I'll need an MCU with lots of GPIO, so I have chosen another popular MCU called STM32, specifically the STM32F072C8T.  You should download the spec sheet of your specific MCU and check how many GPIO pins it provides. The STM32 has up to 37 GPIO pins, which is plenty since I'll need 27 pins for the keyboard matrix, 2 pins for the USB Data, and 1 pin for the LED logic. The STM32F072C8T has 64KiB of flash memory which is enough for the STM32 port of the QMK firmware, but you could go with a STM32F072CBT6 for 128KiB if you intend on having a lot of crazy firmware features.
 
 To make the schematic and the subsequent PCB, I will be using [KiCAD](https://www.kicad.org/) since it is free, open source, and widely used in the industry (including at my workplace). 
 
@@ -113,7 +113,7 @@ Wiring that is easy:
 Confusingly, despite the 3.3V arrow pointing away from the circuit, the voltage direction is actually going towards the MCU. This is the drawing convention for schematics, don't ask me why.
 </p>
 
-I did skip over one important thing which is capacitors. A capacitor is like a "mini rechargeable battery", and one of their main purposes on a PCB is to serve as a voltage stabilizer (these are known as decoupling capacitors). For example, if a specific line of the circuit is being fed 3.3V but for some reason that drops to 2.7, a capacitor will provide some of its stored power to push the signal back to 3.3. Subsequently, if the line erratically gets too much voltage, like 3.7, the capacitor will absorb that voltage to put it back at 3.3. It's pretty normal to have at least one capacitor for every power source of an integrated circuit (IC). The STM32 recommends having:
+I did skip over one important thing which is capacitors. A capacitor is like a "mini rechargeable battery", and one of their main purposes on a PCB is to serve as a voltage stabilizer (these are known as decoupling capacitors). For example, if a specific line of the circuit is being fed 3.3V but for some reason that drops to 2.7, a capacitor will provide some of its stored power to push the signal back to 3.3. Subsequently, if the line erratically gets too much voltage, like 3.7, the capacitor will absorb that voltage to put it back at 3.3. This is only for short bursts of time, like to clean up the fact that signals take few microseconds to stabilize when switching between 0 and 1. It's pretty normal to have at least one capacitor for every power source of an integrated circuit (IC). The STM32 recommends having:
 - A 100nF capacitor for every power input (VDD, VBAT, VDDA, VDDIO2).
 - VDDA should also have an extra 10uF capacitor hooked up to it.
 - The very start of the 3.3V rail should have a 4.7uF capacitor.
@@ -136,7 +136,7 @@ Next, we need to hook up the reset system. In order to program the STM32 with ou
 ![Capacitor on NRST](images/BuuKeeb/NRST.png)
 </p>
 
-And then, in order to put the STM32 into "Bootloader Mode" (the safe state where it can be programmed with our custom firmware), we need to feed the BOOT0 pin 3.3V. If we give it 3.3V all the time then it's never going to leave bootloader mode, so I'm going to hook it up to a button so that we can choose to enter BM mode by holding the button down when plugging the board into power. This requires a 10K Ohm pulldown resistor to ensure the pin remains low when the button is not pressed, because without it the pin is "floating" and can pick up random signals from the environment. If you are using USB-C then you are going to already be using 5.1k resistors (as they're part of the spec), so it might be cheaper to use two 5.1Ks (which is a value close enough to 10K) as keeping all the resistor values the same will reduce costs due to having less varied parts. It's gonna be a very minor cost, however.
+And then, in order to put the STM32 into "Bootloader Mode" (the safe state where it can be programmed with our custom firmware), we need to feed the BOOT0 pin 3.3V. If we give it 3.3V all the time then it's never going to leave bootloader mode, so I'm going to hook it up to a button so that we can choose to enter bootloader mode by holding the button down when plugging the board into power. This requires a 10K Ohm pulldown resistor to ensure the pin remains low when the button is not pressed, because without it the pin is "floating" and can pick up random signals from the environment. If you are using USB-C then you are going to already be using 5.1k resistors (as they're part of the spec), so it might be cheaper to use two 5.1Ks (which is a value close enough to 10K) as keeping all the resistor values the same will reduce costs due to having less varied parts. It's gonna be a very minor cost, however.
 
 I added a label to the BOOT0 lead called BOOT, and I wired the boot circuit up separately:
 
@@ -161,7 +161,7 @@ To hook up USB to the STM32, we need to have a connector. I would've loved to pu
 
 <p align="center">
 ![USB connector schematic](images/BuuKeeb/USBConnector.png)</br>
-VBUS and 5V are basically the same thing, except we usually designate VBUS as "raw unsafe voltage straight from the connector", it becomes a "safe and protected" 5V after going through the fuse.
+VBUS and 5V are basically the same thing, except we usually designate VBUS as "raw (potentially) unsafe voltage straight from the connector", it becomes a "safe and protected" 5V after going through the fuse.
 </p>
 
 If you are using a sane type of USB connection, like USB-C, you'll need to hook up some extra components for proper functionality. Refer to your spec sheet. 
@@ -173,7 +173,7 @@ The fuse will "protect" the voltage line but we also need to protect the data pi
 We can feed VBUS into the ESD protection because if you look at the spec sheet's wiring diagram, you'll see that it goes straight through the IC and does not touch anything. 
 </p>
 
-Lastly, USB provides 5 volts that we can use to power everything, however our STM32 needs 3.3v. To make sure we don't kill the processor, we need to have a step down converter that takes in the 5V from USB and provides 3.3V. We can use the XC6206 to do just that (it's technically a linear regulator but it'll serve this task as well), along with some capacitors as per the spec sheet:
+Lastly, USB provides 5 volts that we can use to power everything, however our STM32 needs 3.3V. To make sure we don't kill the processor, we need to have a step down converter that takes in the 5V from USB and provides 3.3V. We can use the XC6206 to do just that (it's technically a linear regulator but it'll serve this task as well), along with some capacitors as per the spec sheet:
 
 <p align="center">
 ![Step Down Converter Schematic](images/BuuKeeb/StepDown.png)
@@ -230,6 +230,8 @@ After a bit of CTRL+C and CTRL+V, you can have a nice schematic like this:
 The labels for the rows and columns look different because they're "hierarchical labels" instead of global labels. This is so I can connect these labels to the main sheet.
 </p>
 
+If you look closely at the schematic, you might have noticed that if we try to send voltage to the rows like in my matrix explanation, it won't work because the diodes are pointing the other way. Whenever I looked at other keyboard designs, they always seemed to wire it like this. I assumed this was because QMK was designed to actually poll columns and not rows, so I left the wiring like this.  I found out after wiring the PCB that this was relatively easy to swap in the firmware, so I could've very much have wired it like in my explanation. In the end it won't really matter, since you need to manually check all combinations of rows and columns regardless of whether you choose to send voltage down the Column pins or the Row pins, it's just a matter of preference.
+
 You need to be careful when you're wiring because you don't want the rows and columns to be wired together. If you see a fat dot on the crossing between a row and column, delete it because it's not supposed to be there:
 
 <p align="center">
@@ -242,7 +244,7 @@ Now, we need to choose how we're going to hook the rows and columns to the GPIO.
 ![Almost finished STM32 Wiring](images/BuuKeeb/STM32WiringPrePCB.png)
 </p>
 
-Notice how I skipped the PF0 and PF1 leads. Many microprocessors require an external crystal oscillator to provide the timing for the logic, but the STM32 has a clock built into it. You can, however, supply it with an external clock by hooking it up to PF0 and PF1, however if you don't need the clock you can treat PF0 and PF1 as GPIO just like the rest. I've kept them as unconnected for the time being but considering that I will probably not be needing an external clock they are bound to be changed to GPIO when I get around to wiring the PCB.
+Notice how I skipped the PF0 and PF1 leads. Many microprocessors require an external crystal oscillator to provide the timing for the logic, but the STM32 has a clock built into it. You can, however, supply it with an external clock by hooking it up to PF0 and PF1, however if you don't need the clock you can treat PF0 and PF1 as GPIO just like the rest. I've kept them as unconnected for the time being but considering that I will probably not be needing an external clock they are bound to be changed to a row or column when I get around to wiring the PCB.
 
 ### LEDs
 
@@ -319,7 +321,7 @@ Lastly, we have ICs, which have a bunch of different designations. Too many abbr
 Image sourced from [here](https://learn.sparkfun.com/tutorials/integrated-circuits/all)
 </p>
 
-You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transciver is a TSOP-5, the Voltage Regulator is SOT-23 with 3 leads, and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
+You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transciver is a TSOP-5, the Voltage Regulator is SOT-23 with 3 leads (TSOP-5 and SOT-23 are different names for the same package size), and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
 
 The last footprints we need are the LEDs and the MX hotswap sockets. Like I said previously, these are available via marbastlib since they're not standardized parts. Just be careful selecting them because there's a bunch of variants, you'll want to select the one that matches the spec sheet you're using. If you right click a footprint it lets you view it so you can confirm the size and pins match.
 
@@ -349,7 +351,7 @@ Image sourced from [here](https://www.pcbasic.com/blog/pcb-layers.html)
 
 The important thing to understand about PCBs is that a fabrication plant will lay an entire layer of copper first and then etch away what isn't needed. You don't need to worry about spending money on copper, you're already paying for the whole layer.
 
-For a keyboard, 2 copper layers is what is recommended. One is too constrained, and more than two is generally unnecessary. KiCAD creates PCBs with two copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCAD provies. The most useful ones for us are:
+For a keyboard, 2 copper layers is what is recommended. One is too constrained, and more than two is generally unnecessary. KiCAD creates PCBs with two copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCAD provides. The most useful ones for us are:
 - F.Cu and B.Cu - The front and back copper layers (since we have 2 copper layers)
 - F.Silkscreen and B.Silkscreen - The front and back silkscreen layers, where you can put drawings on your PCB.
 - User.Drawings - Helper drawings that won't show up on the final PCB.
@@ -394,7 +396,7 @@ If the only errors you have left on the DRC are unconnected items, let's go over
 
 There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagnetic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither. [You can go fully curved](https://community.element14.com/technologies/open-source-hardware/b/blog/posts/vintage-curvy-pcb-traces-with-kicad-7) if a vintage look is your preferred aesthetic! 
 
-The other big one is to avoid is forks:
+The other big one is to minimize is forks:
 
 <p align="center">
 ![A track with two different forks on it](images/BuuKeeb/TraceFork.png)
@@ -423,7 +425,7 @@ The track you are probably going to be placing the most will be the ground, whic
 
 <p align="center">
 ![An IC and the traces connected to it, carved out of the ground plane](images/BuuKeeb/GroundLayer.png)</br>
-The ground is the entire blue plane. Notice how the ground pads on the IC  are automatically connected to the plane.I'm at 90 fm now because of this dumb grind
+The ground is the entire blue plane. Notice how the ground pads on the IC  are automatically connected to the plane.
 </p>
 
 Having a ground plane on both the top and bottom copper layers is a good idea and a great time saver. I originally started wiring everything without making a ground plane first, which created a few headaches. The only annoying thing about the ground plane is that KiCAD will not update it every time you place something down, you need to manually regenerate the planes. Sometimes you will create an island that is electrically isolated from everything else, which is why having the ground plane on both layers is convenient, because you can connect the island to the rest of the ground plane using vias:
@@ -531,6 +533,12 @@ After many days of channeling my inner George Lucas, I settled on the final wiri
 ![Final back copper layer](images/BuuKeeb/WiringFinalB.png)
 </p>
 
+And here's the final positions of all the labels on the STM32:
+
+<p align="center">
+![STM32 final wiring](images/BuuKeeb/STM32Final.png)
+</p>
+
 When you're happy with your wiring, run the DRC and fix any potential overlapping wires, missed connections, isolated ground planes, ground connections without at least 2 paths, and other mistakes. 
 
 I added my face as well as a piece of text marking the revision to the silkscreen, and I was ready to send the PCB off to fabrication!
@@ -556,7 +564,9 @@ Unfortunately for us, not everything was correctly found, so let's go over each 
 * JLC could not place the LEDs without me upgrading the assembly service from "Economic PCBA" to "Standard PCBA", so I had to accept those extra fees. 
 * The USB6B1 was out of stock. Searching "USB6B1" in JLC's part search yielded two different "USB6B1RL" which were in stock and had the same specifications, so I used it instead.
 
-JLC also failed to find these components because the names that KiCAD exported did not match anything on their database close enough. Finding the correct components might require a bit of detective work and careful browsing of their parts store:
+An interesting note, the fuse that was selected was the BSMD1206-050-33V, which is a resettable fuse. Usually a fuse will suicide to save the rest of the circuit, but a resettable fuse will increase its resistance to lower the current, which means it can be used multiple times. They do degrade every time they do this, however, so it's still ideal to not push them.
+
+JLC failed to find these components because the names that KiCAD exported did not match anything on their database close enough. Finding the correct components might require a bit of detective work and careful browsing of their parts store:
 * Diodes - Searching for "SOD-123" found all the diodes with that footprint, so I selected "1N4148SOD" which matched my specifications
 * Connector - I looked around JLC's parts store and found "PZ200-1-05-W-2.0-G1" which seemed to match what I was looking for. This one was surprisingly difficult to find.
 * Hotswap MX switches - I searched for "CPG151101S11" and it listed a bunch in different colors. Black switches were out of stock so I went with whites.
@@ -582,12 +592,293 @@ After a bit of tweaking, everything looked good but the voltage regulator for so
 
 Not much I could do about that, so I moved on to the next step, which was payment and shipping. In total I paid close to 200€. It was 27€ for the 5 boards, 86€ for the assembly of the 2 boards, and the rest was shipping + taxes. Yeah, that last part really stung...
 
-A few hours after you place your order, JLC provides a "DFM Analysis" that lets you check for any problems during the positioning, and when I went to investigate, there _was_ a problem that needed my attention. The voltage regulator was left unassembled, so I contacted support and they showed me an image of the voltage regulator's placement on the PCB: it was too small and did not fit the pads. It turns out that when JLCPCB automatically selected the part, it selected one with a size of TSOP-5, but the component size I'm using is SOT-23. I did not catch this mistake because the 3D model was missing, and the spec sheet showed me **all** the different sizes the package was available at. The size was explicitly stated in the BOM table but I glanced over it, whoops. 
+A few hours after you place your order, JLC provides a "DFM Analysis" that lets you check for any problems during the positioning, and when I went to investigate, there _was_ a problem that needed my attention. The voltage regulator was left unassembled, so I contacted support and they showed me an image of the voltage regulator's placement on the PCB: it was too small and did not fit the pads. It turns out that when JLCPCB automatically selected the part, it selected one with a size of SOT-353, but the component size I'm using is SOT-23. I did not catch this mistake because the 3D model was missing, and the spec sheet showed me **all** the different sizes the package was available at. The size was explicitly stated in the part info in the BOM table but I glanced over it, whoops. 
 
-Fortunately, their online chat support allowed me to go back and set the component to the correct one (74AHCT1G125GW) at the cost of forgoing 2 extra cents that I paid (since the correct part was cheaper), and the error disappeared a few hours laters after being looked at by an engineer. Funnily enough, as I was talking to support I received an email warning me about the unconnected part, so I was a bit faster than their automated system.
+Fortunately, their online chat support allowed me to go back and set the component to the correct one (74AHCT1G125GV) at the cost of forgoing 2 extra cents that I paid (since the correct part was cheaper), and the error disappeared a few hours laters after being looked at by an engineer. Funnily enough, as I was talking to support I received an email warning me about the unconnected part, so I was a bit faster than their automated system.
+
+After this, production on the board wrapped up a week later, and then shipping took another week. The boards arrived in a big box with a lot of anti-static bubble wrapping:
+
+<p align="center">
+![Board front side](images/BuuKeeb/Board1.jpg)</br>
+![Blank board back side](images/BuuKeeb/Board2.jpg)</br>
+![Populated board back side](images/BuuKeeb/Board3.jpg)
+</p>
+
+I was surprised how clear the logo looked, I was afraid that the tiny details would've gotten lost:
+
+<p align="center">
+![Logo on the board](images/BuuKeeb/BoardLogo.jpg)
+</p>
+
+Before trying anything, I did a quick scan of the two assembled boards to make sure everything was soldered + oriented correctly, and it was pretty spot-on sans this mistake with Diode 92:
+
+<p align="center">
+![Badly placed diode](images/BuuKeeb/BadDiode.png)
+</p>
+
+Fixing this was thankfully relatively easy with the soldering iron.
+
+I didn't truly appreciate how small some of these components were until I saw them on my board. Hand soldering these capacitors and resistors would be quite a challenge, but not impossible. It will be significantly easier if you have a hot air station, but I would not use it to solder the hotswap switches since they are plastic.
+
+Now, to fully test if everything is working, we would need to have the firmware set up, but for the time being we can do a very quick sanity test by holding the boot button down while plugging in the board to a PC. I am on Linux, so I did that, and then I opened the terminal and wrote `lsusb`, which listed a device named `STMicroelectronics STM Device in DFU Mode`. This told me that there was nothing obviously wrong with my board, hooray!
+
+Except my dear reader, I am actually a big fat liar. You see, as I was writing this article (while I waited for the boards to arrive) I made a horrible realization that in my many attempts of rewiring the board, I swapped the USB D+ and D- labels on the STM32 without thinking of the consequences. My revision 1 boards all came with this mistake (the drawings in the article have it correct), and now I was presented with two choices: cut the traces on the board with an x-acto knife and solder some bodge wires to swap them around, or swap the wires on the USB cable itself.
+
+I went with option 2 since the USB cable is specifically for the keyboard, given that it uses a female header connector. The cable conveniently came with the 5 wires correctly colored (red for vcc, green for D+, white for D-, and black for the two ground cables), and I confirmed that was the case by probing with a multimeter in continuity mode. Swapping the cables is relatively easy, the connector has a small plastic tab on each of the wires, lifting the tab releases the tension and allows you to pull out the wire:
+
+<p align="center">
+![Female header connector with a wire pulled out](images/BuuKeeb/FemaleConnector.png)</br>
+Image sourced from [here](https://tinkersphere.com/breadboarding/3721-5-pin-header-connector.html)
+</p>
+
+I did this with the two data wires on my cable before the boards arrived, which was why the `lsusb` test worked. And everyone will be none the wiser :)
 
 ### QMK
 
-Matrix explanation was a lie
+Last thing to take care of is QMK, and this is actually surprisingly easy. If you have a relatively straightforward keyboard, you can use the online [QMK Configurator](https://config.qmk.fm) to make your firmware with zero programming knowledge required. I, on the other hand, like to code so I chose to [write the firmware](https://docs.qmk.fm/newbs). If you're on Windows or Mac, you can use the [QMK Toolbox](https://github.com/qmk/qmk_toolbox) to flash and debug the keyboard. I am on Linux so I had to install it manually. For some reason, despite being 2026, QMK apparently has not heard of the [XDG Base Directory specification](https://farbenmeer.de/blog/xdg-basisverzeichnis-spezifikation) so it tries to install itself to your home directory by default.
+
+To create a new keyboard firmware, you type `qmk new-keyboard`. It will ask you for the name of your keyboard (`buukeeb` in my case), your GitHub username + real name (for attribution), and then the base layout to use. Since mine is a 100% ISO, I chose `fullsize_iso`. Afterwards it asks if you are using a development board (I'm not), and finally the microprocessor model (STM32F072). This will create a base firmware for your board inside the `qmk_firmware/keyboards` folder, with the idea here being that you can then PR your keyboard into the QMK repository so everyone else has access to it. Having to navigate there is a bit inconvenient so I cut+paste my keyboard firmware folder somewhere more convenient and then created a [symbolic link](https://en.wikipedia.org/wiki/Symbolic_link) there. 
+
+Most of QMK's configuration comes from editing two files: `keyboard.json` and `keymap.c`. We'll start with the JSON file, which defines all the settings for our keyboard. In the `matrix_pins`, I put the pins in order using the name that was on the KiCAD schematic. Column 1 is attached to `PB11` so I put `"B11"`, coumn 2 is `"B10"` right after, etc... Do this for rows and columns. You might have noticed `"diode_direction":` which is `"COL2ROW"` by default, which is correct since I put the diodes on the column pointing to the row.
+
+Now, the important part is to fill in the layout. The structure of each key is like this:
+```
+{"matrix": [row, col], "x": xu, "y": yu, "w":wu, "h":hu},
+``` 
+* `row` is the row number of the key, and `col` is the column number. Both numbers start at zero. For instance, my Esc key is `[0,0]` since it corresponds to row 1 and column 1 on the keyboard. F1 is `[0,2]` which corresponds to row 1 and column 3, etc...
+* `xu` and `yu` is the position of the top left of the key on the keyboard based on its unit size. A unit (u for short) is the measurement used to define the physical size of a key, with a standard key size (like your letter keys) being equivalent to 1u. Your backspace key is as long as 2 single keys, so it has a size of 2u. [This diagram](images/BuuKeeb/KeySizes.jpg) from [Keychron](https://www.keychron.com/pages/keychron-k8-keyboard-keycaps-layout-and-keycap-size-hd-picture) demonstrates it visually. The `xu` and `yu` is the coordinate of the key if you think of the keyboard as a grid of u's starting at `[0,0]` on the top left. The ESC key is at `[0,0]`, however on my keyboard there is a gap between F1 and ESC that is as big as a single key, so F1 is at `[2,0]`. The key just below ESC on my layout has a gap of half a key, so it's position is `[0,1.5]` . This can be a bit confusing, so I hope [this diagram](images/BuuKeeb/KeyPositionsExample.png) helps. If you used the Keyboard Layout Editor to make your layout, the coordinates used there are equivalent to these ones.
+* `wu` and `hu` are the unit sizes of the key. If you don't put `w` or `h`, it will assume 1u width and height. Again, if you used the Keyboard Layout Editor, the sizes used there are equivalent to these.
+
+The order of the keys on the layout section doesn't matter, but it would be best for you to keep it in sinistrodextral order (start from left to right, and when you reach the end of the row you move to the row below). The default key layout for a 100% ISO keyboard uses way more columns and rows than I did. Honestly, I feel like there should be a tool to autogenerate this layout data for me, but I searched around and found nothing...
+
+Once every key has been assigned its data, the next thing we need is the keymap, which tells the firmware what key gets sent to the computer when you press that switch. The list of keys will need to be in the same order as you defined your layout, so if you used sinistrodextral order then you shouldn't need to change keys around. The default generated layout matched my layout exactly, so I didn't need to change anything. If you need to, you can find the list of keycodes [here](https://docs.qmk.fm/keycodes_basic).  
+
+Now that my JSON and keymap was fully defined, it was time to flash it onto the board. I typed `qmk compile -kb buukeeb -km default` in the terminal to compile the keyboard, and I got an error. Apparently, QMK wants you to include a URL inside the `keyboard.json` or it will refuse to compile. So I had to add `"url":` followed by my project's GitHub link to the JSON, but if you don't have one yet you can just leave the URL itself blank. After adding this, the firmware compiled successfully. To flash it, I keep the boot button on my board pressed while plugging in the USB, and then I run `qmk flash -kb buukeeb -km default`, and after about 3 seconds, the keyboard has its firmware updated. I Googled a completely random [keyboard tester site](https://www.keyboardtester.com/tester.html), and made sure that all the keys were working. Not all keys will be properly detected by the website so you might need to test them outside as well. 
+
+If for some reason one of your rows is misaligned (for instance, pressing the S key inputs an A), that means you missed a key in your keymap or in your layout. Try to find what key you can correctly press before the misalignment occurs, the issue will be in that area.
+
+The next thing I wanted was to add Media Keys. Usually keyboards will have an FN key to switch between F key overrides, but I don't have an FN key on my board design. Instead, I wanted to treat AltGR as a hidden FN key, since the key doesn't get a lot of use outside of placing the euro symbol or brackets on the Portuguese layout. There are a few ways to go about doing this, the more popular option is to use layers, which allows you to have multiple defined keymaps and switch between them as needed. I opted to use key overrides instead, because I only wanted a few keys changed and because they support more complex behaviour.
+
+Adding a key override is just a matter of defining a struct like so:
+
+```
+const key_override_t myoverride_altgr_f1 = {
+    .trigger_mods    = MOD_BIT(KC_RALT),
+    .layers          = ~0,
+    .suppressed_mods = MOD_BIT(KC_RALT),
+    .trigger         = KC_F1,
+    .replacement     = KC_BRID,
+};
+``` 
+Where:
+* `trigger_mods` is the modifier key combination I want to trigger the override. Usually the modifiers are the ones listed in [this table](https://docs.qmk.fm/feature_advanced_keycodes), but since there wasn't a mask specifically for AltGR I had to use `MOD_BIT` to create the mask
+* `layers` is a bit mask of the layer you want to be affected. I only have one layer, but if I decide to have more I want all of them to be affected, so I bitwise NOT'ed 0 to create a mask that occupies all the bits (I couldn't find a definitive size for `layers` so I opted for this instead of `0xFFFF...`).
+* `suppressed_mods` is the keys you want to suppress when the modifier is pressed. For instance, if you decide to make CTRL+S a secret combo to type the Z key instead, if you don't suppress it the keyboard will send the Z key as well as CTRL, which will trigger an undo on most programs. I want to suppress the AltGR key from being sent if I press my override so I add the mask to it as well.
+* `trigger` is the key you want to trigger the override.
+* `replacement` is the key you want the keyboard to send instead. In my case, I want AltGR+F1 to send a "brightness down" key. The keycode of the key is the same as the list of keycodes used in the layout.
+
+And then you have to create a file named `rules.mk` with:
+
+```
+KEY_OVERRIDE_ENABLE = yes
+```
+
+And the key overrides should function.
+
+Sometimes you will want some more complex logic in your override, or some key codes simply do not work properly with the override system. In these situations, you can set `replacement` to `KC_NO`, and then add `.custom_action` to the override structure and have it point to a C function you want to execute. For instance, I had to do this for the `RM_VALD` key which is a key that's supposed to lower the RGB lighting (I'll get to lighting in a sec). I had custom action point to a function I called `keylayer_rgb_val_down` and then wrote this C function:
+
+```
+static bool keylayer_rgb_val_down(bool activated, void *context)
+{
+    if (activated)
+        rgb_matrix_decrease_val();
+    return false;
+}
+```
+
+Once all key overrides structures are written, you need to place them in a global array called `key_overrides`, like so:
+``` 
+const key_override_t *key_overrides[] = {
+    &myoverride_altgr_f1,
+    &myoverride_altgr_f2,
+    &myoverride_altgr_f3,
+    ...
+};
+```
+
+Once all the keys were working as I expected them to, it was time to tackle the per-key LEDs.
+
+### LED Woes with QMK
+
+Adding LED support for the keys is easy (in theory), you add `"rgb_matrix": true,` to the `features` section in your `keyboard.json`, and then you add an RGB matrix definition like this:
+```
+"rgb_matrix": {
+    "driver": "ws2812",
+    "max_brightness": 50,
+
+    "layout": [
+        { "x": 210, "y": 5, "flags": 8 },
+        { "x": 200, "y": 5, "flags": 8 },
+        { "x": 190, "y": 5, "flags": 8 },
+        
+        { "matrix": [0, 16], "x": 173, "y": 0, "flags": 4 },
+        { "matrix": [0, 15], "x": 163, "y": 0, "flags": 4 },
+        { "matrix": [0, 14], "x": 153, "y": 0, "flags": 4 },
+        ...
+    ]   
+}
+"ws2812": {
+    "pin": "A3"
+},
+```
+* You need to list the LEDs in the same order as they are wired in the schematic, so in my case that's the status LEDs first, then the pause, scroll lock, and print screen buttons, etc... 
+* The X and Y coordinates use the same coordinate system as the keys, but multiplied by 10. Decimal places aren't allowed, so if you end up with a decimal after multiplying the coordinate by 10, you need to round it up or down. 
+* `"flags"` is `4` for key LEDs, and `8` for status indicator LEDs. 
+* Key LEDs need a `"matrix"` value so that QMK knows what key on your layout that LED maps to. 
+* The SK6812 MINI-E uses the same driver as the WS2812 LEDs, so thats the driver I chose. 
+* `max_brightness` is the maximum brightness you want the LEDs to be able to reach, from 0 to 255. I used 50 as my initial value because I didn't want to risk popping the fuse. 
+* `"pin"` was set to `"A3"` because that's the `LED_DATA` pin in my STM32.
+
+Pretty simple right? I did all of that, and when I flashed my board all my keys were super bright, and they were white but quickly faded into red and remained there. "That's a weird default" I said to myself, but I didn't think much more of it, until I tried pressing keys and the keyboard would not respond. This meant that the LEDs were pulling too much current and so the STM32 was not being properly powered, so I removed all the LEDs except the status LEDs while I tried to diagnose why they were pulling so much juice. With only the 3 LEDs active, the LEDs would start red (which was the supposed default for QMK, not white) and keyboard would function normally. I tried changing the brightness value to something lower, but the keys remained at the same brightness, even when is set it to zero. Strange... Apparently LED brightness is stored in the keyboard's EEPROM (I'll get to explaining the EEPROM in a sec), so I tried clearing the EEPROM by assigning the `EE_CLR` key to my ESC key, and that didn't seem to do anything. Bizarre... When I tried to set colors on my LEDs via code in the `keymap.c`, the LEDs remained red. Very suspicious... I spent an entire afternoon trying to solve this, but no luck.
+
+Defeated, I decided the next step would be to ask in the QMK Discord server (a last resort for me because I hate joining Discord servers, but that's a rant for another day...). After explaining my issue, someone brought up that the LED driver defaults to bitbang mode for the WS2812 driver. This normally isn't an issue, however the code compiled by GCC 15 for the STMF072 is slightly different from previous GCC versions, which mess with the timings of the LED data. Switching to the driver to PWM mode by adding `"driver": "pwm",` to the `"ws2812":` section of the JSON, creating a config.h file with:
+```
+#define WS2812_PWM_DRIVER PWMD15
+#define WS2812_PWM_CHANNEL 2
+#define WS2812_PWM_PAL_MODE 0
+#define WS2812_PWM_DMA_STREAM STM32_DMA1_STREAM5
+#define WS2812_PWM_DMA_CHANNEL 5
+```
+Creating `halconf.h` with:
+```
+#pragma once
+
+#define HAL_USE_PWM TRUE
+
+#include_next <halconf.h>
+```
+And creating `mcuconf.h` with:
+``` 
+#pragma once
+
+#include_next <mcuconf.h>
+
+#undef STM32_PWM_USE_TIM15
+#define STM32_PWM_USE_TIM15 TRUE
+
+#define STM32_TIM15_SUPPRESS_ISR
+``` 
+Fixed the issue. I could finally manipulate the LED colors after clearing the EEPROM:
+
+<p align="center">
+![The status LEDs displaying 3 different colors.](images/BuuKeeb/StatusRGB.jpg)
+</p>
+
+I never would've gotten there on my own. The alternative solution was to switch to GCC 14 but this is a pain to do in Ubuntu thanks to how amazing `apt` is.
+
+I added all the other LEDs back to the JSON, and now the LEDs were finally respecting the `max_brightness` value I set, meaning I could use the keyboard while having all the lights on. A normal fuse would've popped when the LEDs were at max brightness, but since I have a resettable fuse it instead increased its resistance, explains why the LEDs faded to red and why the keyboard stopped working. However, the voltage limiting could have been on the USB driver in the PC instead of the fuse! I'd have to do some better measurements to give a definitive answer, but I think you can understand my hesitancy in wanting to sacrifice some fuses and potentially USB ports to find out :)
+
+I wanted my keyboard to default to a blue hue (to match my PC case), so I added this to `rgb_matrix` section of the JSON file:
+
+```
+"animations": {
+    "solid_color": true,
+},
+"default": {
+    "on": true,
+    "animation": "solid_color",
+    "hue": 148,
+    "sat": 255
+},
+```
+
+which worked after clearing the EEPROM. I had placed my board partially in its case to see how it looked, and to my surprise I actually managed to place my logo in a great spot without intending to:
+
+<p align="center">
+![The logo peeking back at me in the space bare section.](images/BuuKeeb/PeekingLogo.png)</br>
+My logo's eyes and the keyboard name + revision is visible through the space bar area. That was not on purpose but I wish it had been!
+</p>
+
+For the max brightness, I played around with some values but `100` seemed to be pretty good, and measured about 77mA on my fuse with all the LEDs turned on in pure white. White is the most intense color for an LED since it requires Red, Green, and Blue to make.
+
+I mentioned EEPROM a few times, what is it? In short, EEPROM stands for Electrically Erasable Programmable Read-Only Memory, and it is essentially a type of memory that keeps its values after being shut off. Game cartridges, for instance, store the game saves in an EEPROM chip. The STM32F072 does not have EEPROM, but it does have flash memory (64KiB for my specific device to be exact), and this is where the firmware gets flashed to). QMK treats the part of the flash memory that is not occupied by the firmware code as a sort of EEPROM, and it does this magically for you, so you can use the EEPROM functions despite not having an EEPROM chip. One of the function key modifiers I added was a key combo for lowering and raising the brightness of the LED backlighting, and much to my surprise when I unplugged and replugged my keyboard to the PC it remembered my brightness settings. which meant that it was saving this data to "EEPROM".
+
+That did bring up another concern, however. Flash memory can only be rewritten so many times before it degrades, so if I constantly change the keyboard brighness I could kill the memory since it would be saving every change I make. Fortunately, the people who developed QMK also thought about this, so the EEPROM code for the RGB brightness settings uses a timer that only allows for the EEPROM to be saved once the user stops making modifications after a few seconds. Really neat to have all of this functionality built-in, I thought I'd have to do it myself!
+
+One functionality I do have to add myself, however, is making the status indicator lights actually indicate what they're supposed to. This was quite easy to add in-however
+```
+static void set_led(uint32_t index, hsv_t hsv)
+{
+    hsv.v = RGB_MATRIX_MAXIMUM_BRIGHTNESS; // I want the LEDs to always be at max brightness regardless of the brightness setting of the keyboard backlights
+    rgb_t rgb = hsv_to_rgb(hsv);
+    rgb_matrix_set_color(index, rgb.r, rgb.g, rgb.b);
+}
+
+bool rgb_matrix_indicators_user(void)
+{
+    hsv_t hsv = rgb_matrix_get_hsv();
+
+    // Scroll Lock (LED 0 in the chain)
+    if (host_keyboard_led_state().scroll_lock)
+        set_led(0, hsv);
+    else
+        rgb_matrix_set_color(0, 0, 0, 0);
+
+    // Caps Lock (LED 1 in the chain)
+    if (host_keyboard_led_state().caps_lock)
+        set_led(1, hsv);
+    else
+        rgb_matrix_set_color(1, 0, 0, 0);
+
+    // Num Lock (LED 2 in the chain)
+    if (host_keyboard_led_state().num_lock)
+        set_led(2, hsv);
+    else
+        rgb_matrix_set_color(2, 0, 0, 0);
+
+    // Return true to continue running the keyboard-level callback
+    return true;
+}
+```
+
+Last thing I wanted to add support for was OpenRGB, which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone [OpenRGB's QMK Community Module](https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB) into the `qmk_firmware/modules` folder, rename the folder to `openrgb`, and then in my `keyboard.json file I just add `"modules": ["openrgb"],`. After reflashing and adding my keyboard to OpenRGB's "Manually Added Devices" section (using the Name, USB VID, and USB PID values defined in the `keyboard.json`), I could turn my keyboard gay:
+
+<p align="center">
+<video width="50%" controls>
+  <source src="images/BuuKeeb/Gayboard.mp4" type="video/mp4">
+</video></br>
+A keyboard that supports LGBT+ rights.
+</p>
+
+That was surprisingly easy to do, I was expecting much more of a fight...
 
 ### Wrapping Up
+
+So, to wrap up this behemoth of a blog post, should you make your own custom keyboard PCB?
+
+Here are good reasons to do so:
+* If you've never done it before, this is an awesome multi-disciplinary learning experience
+* You can have a keyboard 100% tailored to your physical needs, as well as a keyboard that can do whatever you can program it to.
+
+The reasons why you shouldn't:
+* Much more expensive than getting a pre-built. If you make a mistake in the board, you'll potentially have a bunch of useless boards.
+* Takes a lot of time to make. Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.
+
+How much you weigh these pros and cons depends on you. For me, the learning experience far outweighed the cons. Honestly, it's kinda bewildering that you can, as a hobbyst, make affordable printed circuit boards in your spare time for fun. A few years ago I couldn't even dream of such a possibility.
+
+Regarding my keyboard, there are some things that need tweaking:
+* The swapped USB data lines. This is a big issue, so I have published a rev 2 board that fixes this problem, as well as production files
+* The numpad on my final PCB is actually shifted to the left by a few tenths of a milimeter, which meant that they keys switches are *very subtly* tilted because they didn't fit properly. This has also been corrected in the rev 2 board and the published SVGs.
+* I would like to make some modifications to the firmware, but I'll leave that as an exercise for later since they're all related to OpenRGB:
+    * OpenRGB's direct mode purposefully ignores the `max_brightness` setting. I want to add a limiter for this in the firmware, although give users the choice to disable it if they want to "overclock" the LEDs but risk killing the fuse or something else.
+    * Speaking of direct mode, it's not saved into EEPROM, probably because the per LED data would consume a lot of memory. I would like to try adding this by myself, however.
+    * OpenRGB's LED view mode does not display the keyboard layout correctly because it ignores the status LEDs, which can make setting the key colors a bit confusng. It also prevents you from setting the color of the status LEDs, which remain red. 
+    * Status LEDs don't change color properly with certain effects, they remain red. Effects that set the entire keyboard a single color, however, do properly change thes status LED colors.
+
+I think the one thing about this project that I am a bit saddened about is how reliant it is on China, because I always like sourcing my things locally as doing so is better for the environment + economy. PCBWay/JLCPCB are both located in China, the European alternatives are twice as expensive for small hobbyist batches, and one of them even multiplied the price by 4 just because I wanted a black PCB. Many electronic components are more expensive if sourced here, and if we're frank they are probably made in China as well. I don't think there's an easy way to escape this unfortunately. But in the unlikely event I decide to make boards to sell, I'll look into trying to get them made here.
+
+This is in no way a dig at the quality of the boards or of the service. JLC did fantastic work, and their support team were super friendly and receptive to feedback from me.
+
+If you are interested in checking out the source code and files for this project, everything is available [on GitHub](https://github.com/buu342/BuuKeeb) as usual.
+
+Now, I need to go down another rabbit hole to find keycaps for my keyboard... I found [these on Etsy](https://www.etsy.com/listing/4410122575/black-refraction-keycap-set-artistic) which look sooo cool but obviously are not made for a Portuguese layout. Oh man, what have I gotten myself into...

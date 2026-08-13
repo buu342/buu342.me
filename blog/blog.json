@@ -49,11 +49,23 @@
             "DisplayName": "Projects",
             "Index": 0,
             "Pages": {
+                "BuuKeeb": {
+                    "Date": "August 13, 2026",
+                    "DisplayName": "Making a Custom Mechanical Keyboard PCB",
+                    "Icon": "",
+                    "Index": 0,
+                    "Tags": [
+                        "CAD",
+                        "Soldering",
+                        "C"
+                    ],
+                    "ToolTip": "I go insane and decide to make a keyboard for myself from scratch"
+                },
                 "GarenCosplay": {
                     "Date": "September 26, 2024",
                     "DisplayName": "Making a Garen Cosplay from League of Legends",
                     "Icon": "icons/GarenCosplay.png",
-                    "Index": 2,
+                    "Index": 3,
                     "Tags": [
                         "Cosplay",
                         "Blender",
@@ -66,7 +78,7 @@
                     "Date": "October 2, 2024",
                     "DisplayName": "SGI Indy Sleeper PC - 2 Years Later",
                     "Icon": "icons/IndyPC2Years.png",
-                    "Index": 1,
+                    "Index": 2,
                     "Tags": [
                         "PC Building",
                         "CAD",
@@ -80,7 +92,7 @@
                     "Date": "September 25, 2024",
                     "DisplayName": "Making Isaac Clarke's Level 3 Suit from Dead Space",
                     "Icon": "icons/IsaacClarke.png",
-                    "Index": 3,
+                    "Index": 4,
                     "Tags": [
                         "Cosplay",
                         "Blender",
@@ -95,7 +107,7 @@
                     "Date": "January 22, 2022",
                     "DisplayName": "Ripping Assets From An Old Mobile Game - Music World",
                     "Icon": "icons/MusicWorldRE.png",
-                    "Index": 5,
+                    "Index": 6,
                     "Tags": [
                         "Reverse Engineering",
                         "Python",
@@ -107,7 +119,7 @@
                     "Date": "October 21, 2024",
                     "DisplayName": "Building an RCA Switch Box",
                     "Icon": "icons/RCASwitchBox.png",
-                    "Index": 0,
+                    "Index": 1,
                     "Tags": [
                         "CAD",
                         "Soldering"
@@ -118,7 +130,7 @@
                     "Date": "September 04, 2022",
                     "DisplayName": "Building a Sleeper Computer from an SGI Indy",
                     "Icon": "icons/SGIIndySleeper.png",
-                    "Index": 4,
+                    "Index": 5,
                     "Tags": [
                         "PC Building",
                         "CAD",
