@@ -19,7 +19,7 @@ FrameVideoInsert::FrameVideoInsert(wxWindow* parent, wxWindowID id, const wxStri
     wxFlexGridSizer* m_Sizer_Main;
     m_Sizer_Main = new wxFlexGridSizer(0, 1, 0, 0);
     m_Sizer_Main->AddGrowableCol(0);
-    m_Sizer_Main->AddGrowableRow(5);
+    m_Sizer_Main->AddGrowableRow(3);
     m_Sizer_Main->SetFlexibleDirection(wxBOTH);
     m_Sizer_Main->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_SPECIFIED);
 
@@ -29,13 +29,6 @@ FrameVideoInsert::FrameVideoInsert(wxWindow* parent, wxWindowID id, const wxStri
 
     this->m_FilePicker_Video = new wxFilePickerCtrl(this, wxID_ANY, wxEmptyString, wxT("Select a file"), wxT("*.*"), wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE|wxFLP_USE_TEXTCTRL);
     m_Sizer_Main->Add(this->m_FilePicker_Video, 0, wxALL|wxEXPAND, 5);
-
-    this->m_Label_AltText = new wxStaticText(this, wxID_ANY, wxT("Alt text:"), wxDefaultPosition, wxDefaultSize, 0);
-    this->m_Label_AltText->Wrap(-1);
-    m_Sizer_Main->Add(this->m_Label_AltText, 0, wxALL, 5);
-
-    this->m_TextCtrl_Alt = new wxTextCtrl(this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0);
-    m_Sizer_Main->Add(this->m_TextCtrl_Alt, 0, wxALL|wxEXPAND, 5);
 
     this->m_Label_Caption = new wxStaticText(this, wxID_ANY, wxT("Caption:"), wxDefaultPosition, wxDefaultSize, 0);
     this->m_Label_Caption->Wrap(-1);
@@ -90,8 +83,8 @@ void FrameVideoInsert::m_Button_Add_OnButtonClick(wxCommandEvent& event)
 {
     wxString path = this->m_FilePicker_Video->GetPath();
     path.Replace(this->m_BasePath, "");
-    wxString str = "<p align=\"center\">\r\n";
-    str += "![" + this->m_TextCtrl_Alt->GetValue() + "](" + path + ")";
+    wxString str = "<p align=\"center\">\r\n    <video width=\"50%\" controls>\r\n";
+    str += "        <source src=\"" + path + "\" type=\"video/mp4\">\r\n    </video>";
     if (this->m_RichText_Caption->GetValue() != "")
     {
         str += "</br>\r\n";

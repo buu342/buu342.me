@@ -34,6 +34,25 @@ Fun fact, if you ever played cs_office back in the Counter Strike: Source days, 
 <p>Recently I came across a barebones keyboard for 30&euro; and it seemed to tick all the boxes except for QMK support. I thought to myself that even if it doesn't support QMK, I could always add that support in myself with a bit of hacking. Being a really cheap keyboard, I went ahead and bought it. Unfortunately for me, the specific board revision I received is a newer version that replaced the microprocessor with a crappy 8-bit one, so adding QMK support to it was infeasible. However, the case the keyboard came in was mostly metal and pretty nice, especially for the price.</p>
 <p>In December I started a new job as an Embedded Systems Engineer, and a bunch of my colleagues had their own custom mechanical keyboards. One of them had even designed his own in KiCad and had it printed. Since the company did a lot of custom hardware work, I thought that it would be a nice learning experience for me to design a keyboard PCB. This would also allow me to be more useful around the company, as I was the only pure computer science person in a team of electrical engineers.</p>
 <p>Thus, I decided to go down a rabbit hole to make a custom keyboard which fit inside the nice metal case.</p>
+<p>This blog post is sort of a tutorial and sort of a journal. Be warned that it's so big that I had to implement Table of Content functionality in my website!</p>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#making-a-scan-of-the-original-pcb">Making a scan of the original PCB</a></li>
+<li><a href="#keyboard-matrix">Keyboard Matrix</a></li>
+<li><a href="#making-the-schematic">Making the Schematic</a></li>
+<li><a href="#keyboard-matrix-schematic">Keyboard Matrix Schematic</a></li>
+<li><a href="#leds">LEDs</a></li>
+<li><a href="#footprints">Footprints</a></li>
+<li><a href="#error-checking-the-schematic">Error Checking the Schematic</a></li>
+<li><a href="#making-the-pcb">Making the PCB</a></li>
+<li><a href="#recommendations-for-wiring-the-pcb">Recommendations for Wiring the PCB</a></li>
+<li><a href="#actually-wiring-the-pcb-together">Actually Wiring the PCB Together</a></li>
+<li><a href="#ordering">Ordering</a></li>
+<li><a href="#qmk">QMK</a></li>
+<li><a href="#led-woes-with-qmk">LED Woes with QMK</a></li>
+<li><a href="#wrapping-up">Wrapping Up</a></li>
+</ul>
+</nav>
 </br><h3 id="making-a-scan-of-the-original-pcb"> <a href="#making-a-scan-of-the-original-pcb">Making a scan of the original PCB</a></h3>
 <p>First and foremost, because I am making a clone of an existing board, I need to know the positions of everything as accurately as possible. One side of the keyboard was completely flat excluding some minor bumps from a through-hole connector, so I desoldered it to have a fully flat face. My idea was to use a photocopier to take a scan of the board, so that I could then have an image I could trace over. Unfortunately the scanner I had at home was a bit too small, meaning that the keyboard would have to be slightly angled and require 2 scans. It being angled was a big no-no since it would cause perspective distortions that prevent getting accurate measurements. I went to a few photocopy houses that had bigger flatbeds and had them scan the flat side for me. All of them unfortunately required taking 2 scans as well but at least the flatbed was big enough to fit the whole board.</p>
 <p>I picked the best scans, and using Photoshop I straightened the scans (I brought a ruler to keep the board straight on the flatbed but despite my best efforts it would still end up ever so slightly angled) and stitched both halves together. The stitching wasn't perfect, since scanners use a moving camera which introduces minor visual distortions. However the two scans only really diverged by 2-3 pixels which would be equivalent to like 0.1mm, so it wasn't a big deal. The result was:</p>
@@ -612,7 +631,7 @@ bool rgb_matrix_indicators_user(void)
     return true;
 }
 <br></code></pre>
-<p>Last thing I wanted to add support for was OpenRGB, which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone <a href="https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB">OpenRGB's QMK Community Module</a> into the <code>qmk_firmware/modules</code> folder, rename the folder to <code>openrgb</code>, and then in my <code>keyboard.json file I just add </code>&quot;modules&quot;: [&quot;openrgb&quot;],<code>. After reflashing and adding my keyboard to OpenRGB's &quot;Manually Added Devices&quot; section (using the Name, USB VID, and USB PID values defined in the </code>keyboard.json`), I could turn my keyboard gay:</p>
+<p>Last thing I wanted to add support for was OpenRGB, which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone <a href="https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB">OpenRGB's QMK Community Module</a> into the <code>qmk_firmware/modules</code> folder, rename the folder to <code>openrgb</code>, and then in my <code>keyboard.json file</code> I just add <code>&quot;modules&quot;: [&quot;openrgb&quot;],</code>. After reflashing and adding my keyboard to OpenRGB's &quot;Manually Added Devices&quot; section (using the Name, USB VID, and USB PID values defined in the <code>keyboard.json</code>), I could turn my keyboard gay with the click of a button:</p>
 <p><p align="center">
 <video width="50%" controls>
 <source src="images/BuuKeeb/Gayboard.mp4" type="video/mp4">

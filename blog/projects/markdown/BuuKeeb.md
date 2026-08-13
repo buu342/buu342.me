@@ -21,6 +21,10 @@ In December I started a new job as an Embedded Systems Engineer, and a bunch of 
 
 Thus, I decided to go down a rabbit hole to make a custom keyboard which fit inside the nice metal case.
 
+This blog post is sort of a tutorial and sort of a journal. Be warned that it's so big that I had to implement Table of Content functionality in my website!
+
+[TOC]
+
 ### Making a scan of the original PCB
 
 First and foremost, because I am making a clone of an existing board, I need to know the positions of everything as accurately as possible. One side of the keyboard was completely flat excluding some minor bumps from a through-hole connector, so I desoldered it to have a fully flat face. My idea was to use a photocopier to take a scan of the board, so that I could then have an image I could trace over. Unfortunately the scanner I had at home was a bit too small, meaning that the keyboard would have to be slightly angled and require 2 scans. It being angled was a big no-no since it would cause perspective distortions that prevent getting accurate measurements. I went to a few photocopy houses that had bigger flatbeds and had them scan the flat side for me. All of them unfortunately required taking 2 scans as well but at least the flatbed was big enough to fit the whole board. 
@@ -841,7 +845,7 @@ bool rgb_matrix_indicators_user(void)
 }
 ```
 
-Last thing I wanted to add support for was OpenRGB, which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone [OpenRGB's QMK Community Module](https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB) into the `qmk_firmware/modules` folder, rename the folder to `openrgb`, and then in my `keyboard.json file I just add `"modules": ["openrgb"],`. After reflashing and adding my keyboard to OpenRGB's "Manually Added Devices" section (using the Name, USB VID, and USB PID values defined in the `keyboard.json`), I could turn my keyboard gay:
+Last thing I wanted to add support for was OpenRGB, which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone [OpenRGB's QMK Community Module](https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB) into the `qmk_firmware/modules` folder, rename the folder to `openrgb`, and then in my `keyboard.json file` I just add `"modules": ["openrgb"],`. After reflashing and adding my keyboard to OpenRGB's "Manually Added Devices" section (using the Name, USB VID, and USB PID values defined in the `keyboard.json`), I could turn my keyboard gay with the click of a button:
 
 <p align="center">
 <video width="50%" controls>

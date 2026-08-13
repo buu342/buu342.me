@@ -25,8 +25,6 @@ class FrameVideoInsert : public wxFrame
     protected:
         wxStaticText* m_Label_Path;
         wxFilePickerCtrl* m_FilePicker_Video;
-        wxStaticText* m_Label_AltText;
-        wxTextCtrl* m_TextCtrl_Alt;
         wxStaticText* m_Label_Caption;
         wxRichTextCtrl* m_RichText_Caption;
         wxButton* m_Button_Add;

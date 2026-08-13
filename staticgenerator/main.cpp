@@ -418,7 +418,9 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Menu_Edit->Append(m_MenuItem_InsertImage);
     wxMenuItem* m_MenuItem_InsertVideo;
     m_MenuItem_InsertVideo = new wxMenuItem(this->m_Menu_Edit, wxID_ANY, wxString(wxT("Insert Video")) + wxT('\t') + wxT("CTRL+B"), wxEmptyString, wxITEM_NORMAL);
-    this->m_Menu_Edit->Append(m_MenuItem_InsertVideo);
+    wxMenuItem* m_MenuItem_InsertTOC;
+    m_MenuItem_InsertTOC = new wxMenuItem(this->m_Menu_Edit, wxID_ANY, wxString(wxT("Insert Table of Contents")) + wxT('\t') + wxT("CTRL+T"), wxEmptyString, wxITEM_NORMAL);
+    this->m_Menu_Edit->Append(m_MenuItem_InsertTOC);
     this->m_Menubar_Main->Append(this->m_Menu_Edit, wxT("Edit"));
     this->SetMenuBar(this->m_Menubar_Main);
 
@@ -469,6 +471,7 @@ Main::Main(wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint
     this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_Find_OnMenuSelection), this, m_MenuItem_Find->GetId());
     this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_InsertImage_OnMenuSelection), this, m_MenuItem_InsertImage->GetId());
     this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_InsertVideo_OnMenuSelection), this, m_MenuItem_InsertVideo->GetId());
+    this->m_Menu_Edit->Bind(wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(Main::m_MenuItem_InsertTOC_OnMenuSelection), this, m_MenuItem_InsertTOC->GetId());
     this->m_Timer->Bind(wxEVT_TIMER, wxTimerEventHandler(Main::m_Timer_OnTimer), this, this->m_Timer->GetId());
 
     // Load the projects and blog from the current working directory
@@ -660,6 +663,23 @@ void Main::m_MenuItem_InsertVideo_OnMenuSelection(wxCommandEvent& event)
         frame->SetParent(this->m_TextCtrl_Blog, basepath);
         frame->Show();
     }
+
+    event.Skip();
+}
+
+
+/*==============================
+    m_MenuItem_InsertTOC_OnMenuSelection
+    Handles the Insert TOC menu event
+    @param Unused
+==============================*/
+
+void Main::m_MenuItem_InsertTOC_OnMenuSelection(wxCommandEvent& event)
+{
+    if (wxWindow::FindFocus() == this->m_TextCtrl_Projects_Description)
+        this->m_TextCtrl_Projects_Description->WriteText("[TOC]\r\n\r\n");
+    else if (wxWindow::FindFocus() == this->m_TextCtrl_Blog)
+        this->m_TextCtrl_Blog->WriteText("[TOC]\r\n\r\n");
 
     event.Skip();
 }
@@ -2163,7 +2183,7 @@ void Main::CompileProjects_List()
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/projects_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
         html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
-        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS{.depth=5, .toc_placeholder="[TOC]"});
         if (desc.Length() == 0 && cat->description.Length() > 0)
         {
             wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + cat->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
@@ -2221,7 +2241,7 @@ void Main::CompileProjects_Project(Project* proj)
     html_final = string_fromfile(this->m_WorkingDir + "/templates/project.html");
     html_final.Replace("_TEMPLATE_PROJECTS_TITLE_", proj->displayname);
     html_final.Replace("_TEMPLATE_PROJECTS_DATE_", proj->date);
-    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS{.depth=5, .toc_placeholder="[TOC]"});
     if (html_md.Length() == 0 && proj->description.Length() > 0)
     {
         printf("Hello\n%s\n", mdstr);
@@ -2440,7 +2460,7 @@ void Main::CompileBlog_List()
         html_categories += string_fromfile(this->m_WorkingDir + "/templates/blog_section.html");
         html_categories.Replace("_TEMPLATE_TITLE_", cat->displayname);
         html_categories.Replace("_TEMPLATE_HREF_", cat->foldername);
-        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+        md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &desc, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS{.depth=5, .toc_placeholder="[TOC]"});
         if (desc.Length() == 0 && cat->description.Length() > 0)
         {
             wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + cat->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);
@@ -2495,7 +2515,7 @@ void Main::CompileBlog_Entry(Blog* bentry)
     html_final = string_fromfile(this->m_WorkingDir + "/templates/blog_entry.html");
     html_final.Replace("_TEMPLATE_BLOG_TITLE_", bentry->displayname);
     html_final.Replace("_TEMPLATE_BLOG_DATE_", bentry->date);
-    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS());
+    md_html(mdstr, strlen(mdstr), md4c_funcptr_handlestr, &html_md, MD_FLAG_NOHTMLBLOCKS | MD_FLAG_HEADINGAUTOID, 0, new MD_TOC_OPTIONS{.depth=5, .toc_placeholder="[TOC]"});
     if (html_md.Length() == 0 && bentry->content.Length() > 0)
     {
         wxMessageDialog dialog(this, wxString("Markdown parsing was unsuccessful for '") + bentry->displayname + wxString("'! Do you have some unsupported unicode?"), wxString("MD Generation Failure"), wxICON_EXCLAMATION);

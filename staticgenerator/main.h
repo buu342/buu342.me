@@ -218,6 +218,7 @@ class Main : public wxFrame
         void m_MenuItem_Find_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_InsertImage_OnMenuSelection(wxCommandEvent& event);
         void m_MenuItem_InsertVideo_OnMenuSelection(wxCommandEvent& event);
+        void m_MenuItem_InsertTOC_OnMenuSelection(wxCommandEvent& event);
         void m_Timer_OnTimer(wxTimerEvent& event);
         void OnPopupClick_Projects(wxCommandEvent& event);
         void OnPopupClick_Blog(wxCommandEvent& event);

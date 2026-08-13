@@ -79,17 +79,28 @@ h3 a, h3 a:link, h3 a:visited, h3 a:hover {
     color: #000;
 }
 
+code:not(pre code) {
+    padding: 0.15em 0.3em;
+    background-color: rgba(175, 184, 193, 0.2);
+    border-radius: 6px;
+}
+
+pre code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    font-size: inherit;
+}
+
 pre
 {
 	background-color: #EEEEEE;
     padding: 0px 24px;
     border: 1px solid #000;
     font: 12px/1.5em "Courier New";
-}
-
-.inlinecode
-{
-    font-family: "Courier New";
+    
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 /* Main blog box body */
@@ -216,4 +227,52 @@ pre
 .collapse-button img
 {
     padding-top: 7px;
+}
+
+#TOC {
+    display: table;
+    box-sizing: border-box;
+
+    margin: 0em 0;
+    margin-top: 2em;
+    padding: 0.75em 1em;
+
+    border: 1px solid #a2a9b1;
+    background: #f8f9fa;
+
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+#TOC::before {
+    content: "Table of Contents";
+    display: block;
+    margin-bottom: 0.4em;
+
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+#TOC ul {
+    margin: 0;
+    padding-left: 1.5em;
+    list-style: none;
+}
+
+#TOC li {
+    counter-increment: toc;
+    margin: 0.15em 0;
+}
+
+#TOC li::before {
+    content: counters(toc, ".") " ";
+}
+
+#TOC a {
+    color: #36c;
+    text-decoration: none;
+}
+
+#TOC a:hover {
+    text-decoration: underline;
 }

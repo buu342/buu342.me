@@ -7047,7 +7047,6 @@ abort:
 static int
 md_output_toc(MD_CTX *ctx)
 {
-    /*
     MD_HEADING_DEF *hd;
     MD_BLOCK_LI_DETAIL li_det = {0};
 
@@ -7057,48 +7056,88 @@ md_output_toc(MD_CTX *ctx)
     int ret = 0;
     int level = 0;
     int i;
+    int min_level = 7;
+
+    /* Find the first heading that will actually appear in the TOC so we can normalize it*/
+    for (i = 0; i < ctx->n_heading_defs; ++i) {
+        hd = &ctx->heading_defs[i];
+
+        if (hd->level <= ctx->parser.toc_options.depth &&
+            hd->level < min_level)
+        {
+            min_level = hd->level;
+        }
+    }
+
+    /* No headings to put in the TOC. */
+    if (min_level == 7)
+        goto abort;
 
     for (i = 0; i < ctx->n_heading_defs; ++i){
         hd = &ctx->heading_defs[i];
-        while (hd->level > level){
+
+        int toc_level = hd->level - min_level + 1;
+        if (hd->level > ctx->parser.toc_options.depth)
+            continue;
+
+        while (level < toc_level) {
+            MD_ENTER_BLOCK(MD_BLOCK_UL, NULL);
             ++level;
-            if (level <= ctx->parser.toc_options.depth)
-                MD_ENTER_BLOCK(MD_BLOCK_UL, NULL);
         }
-        while (hd->level < level){
-            if (level <= ctx->parser.toc_options.depth)
-                MD_LEAVE_BLOCK(MD_BLOCK_UL, NULL);
+
+        while (level > toc_level) {
+            MD_LEAVE_BLOCK(MD_BLOCK_UL, NULL);
             --level;
         }
 
-        if (level <= ctx->parser.toc_options.depth){
-            MD_ENTER_BLOCK(MD_BLOCK_LI, &li_det);
-            memset(&a_det, 0, sizeof(MD_SPAN_A_DETAIL));
-            if (hd->postfix == 0){
-                MD_CHECK(md_build_attribute(ctx, hd->identifier, hd->ident_size,
-                                            MD_BUILD_ATTR_NO_ESCAPES,
-                                            &a_det.href, &href_build));
-            } else {
-                MD_CHECK(md_build_attribute_postfix(ctx,
-                                                    hd->identifier, hd->ident_size,
-                                                    hd->postfix, &a_det.href, &href_build));
-            }
+        MD_ENTER_BLOCK(MD_BLOCK_LI, &li_det);
 
-            MD_CHECK(md_build_attribute(ctx, NULL, 0, 0, &a_det.title, &title_build));
+        memset(&a_det, 0, sizeof(MD_SPAN_A_DETAIL));
 
-            MD_ENTER_SPAN(MD_SPAN_A, &a_det);
-
-            MD_TEXT(MD_TEXT_NORMAL, hd->heading, hd->heading_size);
-            MD_LEAVE_SPAN(MD_SPAN_A, NULL);
-            MD_LEAVE_BLOCK(MD_BLOCK_LI, NULL);
+        if (hd->postfix == 0) {
+            MD_CHECK(md_build_attribute(
+                ctx,
+                hd->identifier,
+                hd->ident_size,
+                MD_BUILD_ATTR_NO_ESCAPES,
+                &a_det.href,
+                &href_build
+            ));
+        } else {
+            MD_CHECK(md_build_attribute_postfix(
+                ctx,
+                hd->identifier,
+                hd->ident_size,
+                hd->postfix,
+                &a_det.href,
+                &href_build
+            ));
         }
-      
+
+        MD_CHECK(md_build_attribute(
+            ctx,
+            NULL,
+            0,
+            0,
+            &a_det.title,
+            &title_build
+        ));
+
+        MD_ENTER_SPAN(MD_SPAN_A, &a_det);
+
+        MD_TEXT(
+            MD_TEXT_NORMAL,
+            hd->heading,
+            hd->heading_size
+        );
+
+        MD_LEAVE_SPAN(MD_SPAN_A, NULL);
+        MD_LEAVE_BLOCK(MD_BLOCK_LI, NULL);
     }
 
     // close remaining opened level
     while (level > 0){
-        if (level <= ctx->parser.toc_options.depth)
-            MD_LEAVE_BLOCK(MD_BLOCK_UL, NULL);
+        MD_LEAVE_BLOCK(MD_BLOCK_UL, NULL);
         --level;
     }
 
@@ -7106,8 +7145,6 @@ abort:
     md_free_attribute(ctx, &href_build);
     md_free_attribute(ctx, &title_build);
     return ret;
-    */
-    return 0;
 }
 
 static int
