@@ -881,8 +881,14 @@ Regarding my keyboard, there are some things that need tweaking:
 
 I think the one thing about this project that I am a bit saddened about is how reliant it is on China, because I always like sourcing my things locally as doing so is better for the environment + economy. PCBWay/JLCPCB are both located in China, the European alternatives are twice as expensive for small hobbyist batches, and one of them even multiplied the price by 4 just because I wanted a black PCB. Many electronic components are more expensive if sourced here, and if we're frank they are probably made in China as well. I don't think there's an easy way to escape this unfortunately. But in the unlikely event I decide to make boards to sell, I'll look into trying to get them made here.
 
-This is in no way a dig at the quality of the boards or of the service. JLC did fantastic work, and their support team were super friendly and receptive to feedback from me.
+This is in no way a dig at the quality of the boards or of the service. JLC did fantastic work, and their support team were super friendly and receptive to the feedback that I provided them.
 
 If you are interested in checking out the source code and files for this project, everything is available [on GitHub](https://github.com/buu342/BuuKeeb) as usual.
+
+I would also like to give shout-outs to these folk:
+- [BigBass](https://github.com/bigbass1997) for helping me out with a bunch KiCad questions and reviewing my PCB designs.
+- [Keyboard Atlier Discord community](https://kbatelier.org/) for helping me and doing a keyboard review. Specific shoutouts to Quark, Indeed, Moo, The Great Advisor Xaetral, Sune, and SenseiZé for answering general questions. Another big thanks to cadiremar, galile0, Jubakuba, and SenseiZé for the keyboard review.
+- [QMK Discord community](https://discord.gg/qmk) for helping me bugfix. Specific shoutout to Drashna Jael're for identifying the LED bug.
+- [OpenRGB Discord community](https://discord.gg/AQwjJPY) for answering some OpenRGB questions. Specific shoutout to CalcProgrammer1 for answering my questions.
 
 Now, I need to go down another rabbit hole to find keycaps for my keyboard... I found [these on Etsy](https://www.etsy.com/listing/4410122575/black-refraction-keycap-set-artistic) which look sooo cool but obviously are not made for a Portuguese layout. Oh man, what have I gotten myself into...
