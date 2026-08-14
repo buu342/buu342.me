@@ -470,7 +470,7 @@ Image sourced from <a href="https://tinkersphere.com/breadboarding/3721-5-pin-he
 <pre><code><br>{&quot;matrix&quot;: [row, col], &quot;x&quot;: xu, &quot;y&quot;: yu, &quot;w&quot;:wu, &quot;h&quot;:hu},
 <br></code></pre>
 <ul>
-<li><code>row</code> is the row number of the key, and <code>col</code> is the column number. Both numbers start at zero. For instance, my Esc key is <code>[0,0]</code> since it corresponds to row 1 and column 1 on the keyboard. F1 is <code>[0,2]</code> which corresponds to row 1 and column 3, etc...</li>
+<li><code>row</code> is the row number of the key, and <code>col</code> is the column number. Both numbers start at zero. For instance, my Esc key is <code>[0,0]</code> since it corresponds to row 1 and column 1 on the keyboard matrix. F1 is <code>[0,2]</code> which corresponds to row 1 and column 3, etc...</li>
 <li><code>xu</code> and <code>yu</code> are the positions of the top left of the key on the keyboard based on its unit size. A unit (u for short) is the measurement used to define the physical size of a key, with a standard key size (like your letter keys) being equivalent to 1u. Your backspace key is as long as 2 single keys, so it has a size of 2u. <a href="images/BuuKeeb/KeySizes.jpg">This diagram</a> from <a href="https://www.keychron.com/pages/keychron-k8-keyboard-keycaps-layout-and-keycap-size-hd-picture">Keychron</a> demonstrates it visually. The <code>xu</code> and <code>yu</code> is the coordinate of the key if you think of the keyboard as a grid of u's starting at <code>[0,0]</code> on the top left. The ESC key is at <code>[0,0]</code>, however on my keyboard there is a gap between F1 and ESC that is as big as a single key, so F1 is at <code>[2,0]</code>. The key just below ESC on my layout has a gap of half a key, so it's position is <code>[0,1.5]</code> . This can be a bit confusing, so I hope <a href="images/BuuKeeb/KeyPositionsExample.png">this diagram</a> helps. If you used the Keyboard Layout Editor to make your layout, the coordinates used there are equivalent to these ones.</li>
 <li><code>wu</code> and <code>hu</code> are the unit sizes of the key. If you don't put <code>w</code> or <code>h</code>, it will assume 1u width and height. Again, if you used the Keyboard Layout Editor, the sizes used there are equivalent to these.</li>
 </ul>
@@ -494,7 +494,7 @@ Image sourced from <a href="https://tinkersphere.com/breadboarding/3721-5-pin-he
 <li><code>layers</code> is a bit mask of the layer you want to be affected. I only have one layer, but if I decide to have more I want all of them to be affected, so I bitwise NOT'ed 0 to create a mask that occupies all the bits (I couldn't find a definitive size for <code>layers</code> so I opted for this instead of <code>0xFFFF...</code>).</li>
 <li><code>suppressed_mods</code> is the keys you want to suppress when the modifier is pressed. For instance, if you decide to make CTRL+S a secret combo to type the Z key instead, if you don't suppress it the keyboard will send the Z key as well as CTRL, which will trigger an undo on most programs. I want to suppress the AltGR key from being sent if I press my override so I add the mask to it as well.</li>
 <li><code>trigger</code> is the key you want to trigger the override.</li>
-<li><code>replacement</code> is the key you want the keyboard to send instead. In my case, I want AltGR+F1 to send a &quot;brightness down&quot; key. The keycode of the key is the same as the list of keycodes used in the layout.</li>
+<li><code>replacement</code> is the key you want the keyboard to send instead. In my case, I want AltGR+F1 to send a &quot;screen brightness down&quot; key. The keycode of the key is the same as the list of keycodes used in the layout.</li>
 </ul>
 <p>And then you have to create a file named <code>rules.mk</code> with:</p>
 <pre><code><br>KEY_OVERRIDE_ENABLE = yes
@@ -542,7 +542,7 @@ Image sourced from <a href="https://tinkersphere.com/breadboarding/3721-5-pin-he
 <li>You need to list the LEDs in the same order as they are wired in the schematic, so in my case that's the status LEDs first, then the pause, scroll lock, and print screen buttons, etc...</li>
 <li>The X and Y coordinates use the same coordinate system as the keys, but multiplied by 10. Decimal places aren't allowed, so if you end up with a decimal after multiplying the coordinate by 10, you need to round it up or down.</li>
 <li><code>&quot;flags&quot;</code> is <code>4</code> for key LEDs, and <code>8</code> for status indicator LEDs.</li>
-<li>Key LEDs need a <code>&quot;matrix&quot;</code> value so that QMK knows what key on your layout that LED maps to.</li>
+<li>Key LEDs need a <code>&quot;matrix&quot;</code> value so that QMK knows what row and column on your layout that LED maps to.</li>
 <li>The SK6812 MINI-E uses the same driver as the WS2812 LEDs, so that's the driver I chose.</li>
 <li><code>max_brightness</code> is the maximum brightness you want the LEDs to be able to reach, from 0 to 255. I used 50 as my initial value because I didn't want to risk popping the fuse.</li>
 <li><code>&quot;pin&quot;</code> was set to <code>&quot;A3&quot;</code> because that's the <code>LED_DATA</code> pin in my STM32.</li>
@@ -649,7 +649,7 @@ A keyboard that supports LGBT+ rights.
 <p>The reasons why you shouldn't:</p>
 <ul>
 <li>Much more expensive than getting a pre-built. If you make a mistake in the board, you'll potentially have a bunch of useless boards.</li>
-<li>Takes a lot of time to make. Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.</li>
+<li>Takes a lot of time to make (took me about 2 months, but to be fair I was cloning a board). Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.</li>
 </ul>
 <p>How much you weigh these pros and cons depends on you. For me, the learning experience far outweighed the cons. Honestly, it's kinda bewildering that you can, as a hobbyist, make affordable printed circuit boards in your spare time for fun. A few years ago I couldn't even dream of such a possibility.</p>
 <p>Regarding my keyboard, there are some things that need tweaking:</p>

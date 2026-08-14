@@ -649,7 +649,7 @@ Now, the important part is to fill in the layout. The structure of each key is l
 ```
 {"matrix": [row, col], "x": xu, "y": yu, "w":wu, "h":hu},
 ``` 
-* `row` is the row number of the key, and `col` is the column number. Both numbers start at zero. For instance, my Esc key is `[0,0]` since it corresponds to row 1 and column 1 on the keyboard. F1 is `[0,2]` which corresponds to row 1 and column 3, etc...
+* `row` is the row number of the key, and `col` is the column number. Both numbers start at zero. For instance, my Esc key is `[0,0]` since it corresponds to row 1 and column 1 on the keyboard matrix. F1 is `[0,2]` which corresponds to row 1 and column 3, etc...
 * `xu` and `yu` are the positions of the top left of the key on the keyboard based on its unit size. A unit (u for short) is the measurement used to define the physical size of a key, with a standard key size (like your letter keys) being equivalent to 1u. Your backspace key is as long as 2 single keys, so it has a size of 2u. [This diagram](images/BuuKeeb/KeySizes.jpg) from [Keychron](https://www.keychron.com/pages/keychron-k8-keyboard-keycaps-layout-and-keycap-size-hd-picture) demonstrates it visually. The `xu` and `yu` is the coordinate of the key if you think of the keyboard as a grid of u's starting at `[0,0]` on the top left. The ESC key is at `[0,0]`, however on my keyboard there is a gap between F1 and ESC that is as big as a single key, so F1 is at `[2,0]`. The key just below ESC on my layout has a gap of half a key, so it's position is `[0,1.5]` . This can be a bit confusing, so I hope [this diagram](images/BuuKeeb/KeyPositionsExample.png) helps. If you used the Keyboard Layout Editor to make your layout, the coordinates used there are equivalent to these ones.
 * `wu` and `hu` are the unit sizes of the key. If you don't put `w` or `h`, it will assume 1u width and height. Again, if you used the Keyboard Layout Editor, the sizes used there are equivalent to these.
 
@@ -679,7 +679,7 @@ Where:
 * `layers` is a bit mask of the layer you want to be affected. I only have one layer, but if I decide to have more I want all of them to be affected, so I bitwise NOT'ed 0 to create a mask that occupies all the bits (I couldn't find a definitive size for `layers` so I opted for this instead of `0xFFFF...`).
 * `suppressed_mods` is the keys you want to suppress when the modifier is pressed. For instance, if you decide to make CTRL+S a secret combo to type the Z key instead, if you don't suppress it the keyboard will send the Z key as well as CTRL, which will trigger an undo on most programs. I want to suppress the AltGR key from being sent if I press my override so I add the mask to it as well.
 * `trigger` is the key you want to trigger the override.
-* `replacement` is the key you want the keyboard to send instead. In my case, I want AltGR+F1 to send a "brightness down" key. The keycode of the key is the same as the list of keycodes used in the layout.
+* `replacement` is the key you want the keyboard to send instead. In my case, I want AltGR+F1 to send a "screen brightness down" key. The keycode of the key is the same as the list of keycodes used in the layout.
 
 And then you have to create a file named `rules.mk` with:
 
@@ -738,7 +738,7 @@ Adding LED support for the keys is easy (in theory), you add `"rgb_matrix": true
 * You need to list the LEDs in the same order as they are wired in the schematic, so in my case that's the status LEDs first, then the pause, scroll lock, and print screen buttons, etc... 
 * The X and Y coordinates use the same coordinate system as the keys, but multiplied by 10. Decimal places aren't allowed, so if you end up with a decimal after multiplying the coordinate by 10, you need to round it up or down. 
 * `"flags"` is `4` for key LEDs, and `8` for status indicator LEDs. 
-* Key LEDs need a `"matrix"` value so that QMK knows what key on your layout that LED maps to. 
+* Key LEDs need a `"matrix"` value so that QMK knows what row and column on your layout that LED maps to. 
 * The SK6812 MINI-E uses the same driver as the WS2812 LEDs, so that's the driver I chose. 
 * `max_brightness` is the maximum brightness you want the LEDs to be able to reach, from 0 to 255. I used 50 as my initial value because I didn't want to risk popping the fuse. 
 * `"pin"` was set to `"A3"` because that's the `LED_DATA` pin in my STM32.
@@ -866,7 +866,7 @@ Here are good reasons to do so:
 
 The reasons why you shouldn't:
 * Much more expensive than getting a pre-built. If you make a mistake in the board, you'll potentially have a bunch of useless boards.
-* Takes a lot of time to make. Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.
+* Takes a lot of time to make (took me about 2 months, but to be fair I was cloning a board). Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.
 
 How much you weigh these pros and cons depends on you. For me, the learning experience far outweighed the cons. Honestly, it's kinda bewildering that you can, as a hobbyist, make affordable printed circuit boards in your spare time for fun. A few years ago I couldn't even dream of such a possibility.
 
