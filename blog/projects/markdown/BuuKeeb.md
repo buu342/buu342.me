@@ -161,7 +161,7 @@ On the STM32, the PA11 and PA12 pins are *specifically* for USB D- and D+ respec
 Since the D+ and D- are both inputs and outputs, the flag I gave them points in both directions. The flag directions are purely cosmetic and don't affect functionality whatsoever.
 </p>
 
-To hook up USB to the STM32, we need to have a connector. I would've loved to put USB-C on my keyboard, but after a lot of measuring and trying, there is unfortunately no space inside the case for it. So I'm gonna have to use the same 90º 5 pin connector that the original board uses (the 5th pin is "Shield Ground"). It's usually a good idea to have a 500mA fuse on the USB connector's power line in case we plug the keyboard into a faulty USB that allows the device to pull too much current from the 5V line. The fuse will pop but it will save everything else on our board. USB 2.0 is usually limited by 500mA, USB 3.0 can do 900mA, and USB-C varies because the USB-C spec is a headache. 
+To hook up USB to the STM32, we need to have a connector. I would've loved to put USB-C on my keyboard, but after a lot of measuring and trying, there is unfortunately no space inside the case for it. So I'm gonna have to use the same 90º 5-pin connector that the original board uses (the 5th pin is "Shield Ground"). It's usually a good idea to have a 500mA fuse on the USB connector's power line in case we plug the keyboard into a faulty USB that allows the device to pull too much current from the 5V line. The fuse will pop but it will save everything else on our board. USB 2.0 is usually limited by 500mA, USB 3.0 can do 900mA, and USB-C varies because the USB-C spec is a headache. 
 
 <p align="center">
 ![USB connector schematic](images/BuuKeeb/USBConnector.png)</br>
@@ -225,7 +225,7 @@ So how do we fix this? We place a component called a diode on each key, which on
 
 The diode on the S key prevents the current from flowing into it, which is perfect. Putting a diode on each key raises the cost of the keyboard ever so slightly (by a few cents), but it will allow us to have N-key rollover.
 
-In order to place the switches, you need to have marbastlib installed, because keyboard switches are not a standardized SMD parts. Marbastlib will provide schematics for the keyboard switches of your choice, which in my case was hotswappable MX switches.
+In order to place the switches, you need to have marbastlib installed, because keyboard switches are not standardized SMD parts. Marbastlib will provide schematics for the keyboard switches of your choice, which in my case was hotswappable MX switches.
 
 After a bit of CTRL+C and CTRL+V, you can have a nice schematic like this:
 
@@ -256,7 +256,7 @@ The most popular type of LEDs for keyboards are "Neopixels", which are LEDs that
 
 <p align="center">
 ![LED Chain wiring example](images/BuuKeeb/LEDChain.png)</br>
-These LEDs are also not a standardized SMD component, so you need marsbastlib for them as well.
+These LEDs are also not a standardized SMD component, so you need marbastlib for them as well.
 </p>
 
 The keyboard I'm cloning is using SK6812 MINI-E's, so that is what I will use as well. And since I have 105 keys, I will require 105 LEDs, as well as 3 extra LEDs for the CAPS LOCK, Num Lock, and Scroll Lock keys.  Wiring these is super simple, just connect all of them in parallel to the 5V line and the ground line, and then hook the data-out of one LED into the data-in of the next.
@@ -307,7 +307,7 @@ Now we just assign the LED_DATA flag into any free GPIO in the STM32, and we are
 
 So now that we have the schematic outlining what parts we need and how they're connected together, we need to know what the components look like. KiCad has a button called "Assign Footprints" that lets you select what space your component occupies on the board. 
 
-But how do you know what sizes to pick? Well, it depends. For instance, you can get resistors the size of a propane tank, or as small as a grain of sea salt. Different sizes usually mean different operating wattages and temperatures, and since a keyboard is not some hyper complex and power hungry beast, we can get away with small components. For keyboards, it's pretty common to use Surface Mount Devices (SMD) as opposed to larger through-hole components which are much easier to solder. SMD components come in a range of sizes, and typically those are 0402 and 0603, which stand for 0.04x0.02 inches and 0.06x0.03 inches respectively. Annoyingly for the sane parts of the world, when we refer to these sizes it's typically in inches, because if you refer to 0402 in metric you will get a component small enough to lodge itself in between the bumps on your fingerprints, and you will never see it again. Not ideal if you're planning on hand soldering.
+But how do you know what sizes to pick? Well, it depends. For instance, you can get resistors the size of a propane tank, or as small as a grain of sea salt. Different sizes usually mean different operating wattages and temperatures, and since a keyboard is not some hyper complex and power hungry beast, we can get away with small components. For keyboards, it's pretty common to use Surface Mount Devices (SMD) as opposed to larger through-hole components which are much easier to solder. SMD components come in a range of sizes, and typically those are 0402 and 0603, which stand for 0.04x0.02 inches and 0.06x0.03 inches respectively. Annoyingly for the sane parts of the world, when we refer to these sizes it's typically in inches, because if you refer to 0402 in metric you will get a component small enough to lodge itself in between the bumps on your fingerprints, and you will never see it again. Not ideal if you're planning on hand soldering. A 0402 is already a challenge to solder by hand without decent tools, so if you're feeling unadventurous, use a slightly bigger size like 0805.
 
 <p align="center">
 ![Different sized resistors on a match head](images/BuuKeeb/MatchHead.png)</br>
@@ -325,7 +325,7 @@ Lastly, we have ICs, which have a bunch of different designations. Too many abbr
 Image sourced from [here](https://learn.sparkfun.com/tutorials/integrated-circuits/all)
 </p>
 
-You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transceiver is a TSOP-5, the Voltage Regulator is SOT-23 with 3 leads (TSOP-5 and SOT-23 are different names for functionally the same package size), and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
+You should check the spec sheet for the components you selected to see what footprints you should pick for them, it will usually tell you along with the exact size in mm. In my case, the STM32 is LQFP (low profile version of a QFP chip) with 48 leads, the transceiver is a TSOP-5, the voltage regulator is SOT-23 with 3 leads (TSOP-5 and SOT-23 are different names for functionally the same package size, they just have different number of leads), and the ESD protector is SOIC-8. The USB connector will depend on what you selected, I just have a simple horizontal 2mm 5 pin header. The bootloader button can be whichever SMD button that fits your requirements and that you find most adorable. Most buttons come with 4 legs, which are usually the same 2 legs mirrored on the other side for convenience.
 
 The last footprints we need are the LEDs and the MX hotswap sockets. Like I said previously, these are available via marbastlib since they're not standardized parts. Just be careful selecting them because there's a bunch of variants, you'll want to select the one that matches the spec sheet you're using. If you right click a footprint it lets you view it so you can confirm the size and pins match.
 
@@ -378,7 +378,7 @@ KiCad lets you view a 3D render of your board. It's a good idea to look at it a 
 
 The default footprints of components in KiCad come with some drawings on the silkscreen layer. These will usually include an outline or marking that points to the ground pin of a component, and the component's name from the schematic. You can delete these if you want a super clean PCB (don't do it right now though or you will regret it), but if you're planning on hand soldering I would really recommend keeping them.
 
-Then I moved every single keyswitch to its exact position according to the drawing. To do that, I zoomed in as far as I could and tried to manually place them as centered as possible. Even if they're not exact, we're talking sub milimeters here, which is way smaller than the fabrication houses probably have tolerance for.
+Then I moved every single keyswitch to its exact position according to the drawing. To do that, I zoomed in as far as I could and tried to manually place them as centered as possible. Even if they're not exact, we're talking sub-millimeter here, which is way smaller than the fabrication houses probably have tolerance for.
 
 Once the keyboard layout is to your liking, you need to draw an outline of your PCB in the edge cut layer to define the shape of your PCB. Since I had my outline SVG, I just imported it. Those who don't have a prepared SVG (which is probably all of you not cloning an existing keyboard like me) can just draw your own outline freestyle using the program's tools. 
 
@@ -400,7 +400,7 @@ If the only errors you have left on the DRC are unconnected items, let's go over
 
 There are a lot of dos and don'ts when it comes to wiring PCBs, some exist for historical reasons but aren't as relevant today, while others are subject to incredibly fierce and exciting (read: boring) debates between engineers. Probably the big one that gets people fuming is that we can't have 90 degree bends in traces because they introduce electromagnetic interference, so we should only use 45 degree bends. Whether or not this holds true for high frequency devices or high voltage PCBs does not really matter to us because a keyboard is neither. [You can go fully curved](https://community.element14.com/technologies/open-source-hardware/b/blog/posts/vintage-curvy-pcb-traces-with-kicad-7) if a vintage look is your preferred aesthetic! 
 
-The other big one is to minimize is forks:
+The other big one is to minimize forks:
 
 <p align="center">
 ![A track with two different forks on it](images/BuuKeeb/TraceFork.png)
@@ -423,7 +423,7 @@ You can also place vias on pads, but this is generally not recommended because i
 
 The smartest thing you can do is keep one layer with only horizontal traces, and another with only vertical traces. This will help minimize how many vias you need to place and also much space your traces occupy, because bends will take up real estate for both horizontal and vertical traces.
 
-KiCad, by default, uses traces that are 2mm in size, and these are good enough for most things, but it is generally recommended to make traces that carry digital data + traces that carry power thicker. For power traces, the recommendation is because smaller traces will heat up more due to the constant current being pushed through them, while data traces are recommended to be thicker to improve signal integrity. There are math formulas and calculators built into KiCad to help figure out the ideal trace widths, but I am not enough of an electrical engineer to be able to use them, I just went with the recommendations from other people. I chose 6mm for the USB data traces, 4mm for LED data + power traces, and everything else used the default width.
+KiCad, by default, uses traces that are 2mm wide, and these are good enough for most things, but it is generally recommended to make traces that carry digital data + traces that carry power thicker. For power traces, the recommendation is because smaller traces will heat up more due to the constant current being pushed through them, while data traces are recommended to be thicker to improve signal integrity. There are math formulas and calculators built into KiCad to help figure out the ideal trace widths, but I am not enough of an electrical engineer to be able to use them, I just went with the recommendations from other people. I chose 6mm for the USB data traces, 4mm for LED data + power traces, and everything else used the default width.
 
 The track you are probably going to be placing the most will be the ground, which will quickly occupy a lot of your track real-estate. Because of this, a common thing to do is to make a ground plane. The idea is that the entire copper layer becomes ground, and your traces and vias will be carved out of the ground. This picture demonstrates it better than I can explain:
 
@@ -474,7 +474,7 @@ The very first thing you should wire in your PCB should be your USB data lines, 
 ![Wiring a differential pair](images/BuuKeeb/DifferentialPair.png)
 </p>
 
-The important thing about a differential pair is that both traces need to have the same length or the data will not arrive in sync. For USB 2.0, the maximum deviation you can get away with is [a difference in length of 3.81mm between both tracks](https://www.allpcb.com/blog/pcb-design/pcb-constraint-management-for-usb-designs-ensuring-signal-integrity-and-compliance.html). When you need to have your tracks turn, it's common for one to get longer than the other, but luckily KiCad lets you add some curves to make the shorter track longer:
+The important thing about a differential pair is that both traces need to have the same length or the data will not arrive in sync. For USB 2.0, the maximum deviation you can get away with is [a difference of 3.81mm between both tracks](https://www.allpcb.com/blog/pcb-design/pcb-constraint-management-for-usb-designs-ensuring-signal-integrity-and-compliance.html). When you need to have your tracks turn, it's common for one to get longer than the other, but luckily KiCad lets you add some curves to make the shorter track longer:
 
 <p align="center">
 ![Making one track longer to match the lengths](images/BuuKeeb/CoolS.png)</br>
@@ -493,7 +493,7 @@ An interesting recommendation that I was given is to place a bunch of vias that 
 
 Outside of the USB data differential pair, everything else can be routed pretty straightforwardly. There's a lot of different ways of routing the keyboard, I would recommend looking at a bunch of different open source keyboard designs and seeing what other people do. I went through 4 or 5 iterations of my routing before I settled on my current wiring.
 
-I had originally routed my rows and column tracks exactly how I had it in the schematic (i.e. always starting where the flags were positioned), and this resulted in tons of long tracks that surrounded the entire PCB:
+I had originally routed my rows and column tracks exactly how I had it in the schematic (i.e., always starting where the flags were positioned), and this resulted in tons of long tracks that surrounded the entire PCB:
 
 <p align="center">
 ![The original way I wired the keys](images/BuuKeeb/WiringRound1.png)
@@ -551,7 +551,7 @@ I added my face as well as a piece of text marking the revision to the silkscree
 
 Once you are ready to unleash your creation upon the world, export gerber files of your PCB by going to File->Fabrication outputs. Since we are going to use JLCPCB, you'll need to configure the output to match [their requirements](https://jlcpcb.com/help/article/how-to-generate-gerber-and-drill-files-in-kicad-9). If you use the Fabrication Toolkit plugin, you can use it instead which will generate the gerbers (in a convenient zip package) as well as all the other files you're going to need. Either way, once you've exported something, head on over to your fabricator of choice. Most places will require you to place a minimum order of PCBs (because making them is costly). JLCPCB and PCBWay both have a minimum order quantity of 5. You can choose to keep only 1 of them but if you're paying for 5, you might as well get 5. You can share the extras with your friends! :D
 
-The default values in JLCPCB are perfectly fine for a keyboard, because keyboards are very undemanding. The only changes I made were to switch the PCB color to black so that it would match the board I'm cloning, and the surface finish from HASL to lead free HASL because I don't want to be responsible for making people more stupid than they already are. 
+The default values in JLCPCB are perfectly fine for a keyboard, because keyboards are very undemanding. The only changes I made were to switch the PCB color to black so that it would match the board I'm cloning, and the surface finish from HASL to lead-free HASL because I don't want to be responsible for making people more stupid than they already are. 
 
 JLCPCB also supports assembling your keyboards. While I originally planned on hand soldering myself, I thought "since this is my first PCB ever, I want to make sure that any problems on it are **not** because of mistakes in my soldering". JLCPCB's soldering is not perfect, I have heard complaints about it before like I have with PCBWay too. Manufacturing isn't perfect which is why you can also pay extra to have your assembly tested before shipping. Personally I don't mind spending a bit of my time inspecting the board and probing it with a multimeter, so I decided to forgo the cost + having to implement tests for them to run. I chose to have two boards assembled (the minimum amount), the rest I can hand solder if I end up doing anything with them besides collecting dust. Conveniently, since my board only has components on the back side, I didn't have to pay as much for the assembly. 
 
@@ -586,7 +586,7 @@ Afterwards, JLC will give you an interactive 3D view of the keyboard so that you
 Those switches need rotation and repositioning.</br>It was also very tempting to send the PCB off to fabrication with the connector rotated like that because I wanted to see how they would accomplish it.
 </p>
 
-ICs will usually have a little punched hole marking on one of the corners, and this punch will usually also correspond with a small arrow indicator in the silkscreen. Components that are polarized or that have a specific direction (for instance, diodes) will also usually have a line, a graphic, or even a specific shape on them to indicate their ground pin. Electrolytic capacitors usually are polarized and will explode epicly if wired backwards, however the ones used on SMD are ceramic capacitors, thus are not polarized. Again, do not rush through this step unless wasting money is something you enjoy doing!
+ICs will usually have a little punched hole marking on one of the corners, and this punch will usually also correspond with a small arrow indicator in the silkscreen. Components that are polarized or that have a specific direction (for instance, diodes) will also usually have a line, a graphic, or even a specific shape on them to indicate their ground pin. Electrolytic capacitors usually are polarized and will explode epically if wired backwards, however the ones mainly used on SMD are ceramic capacitors, thus are not polarized. Again, do not rush through this step unless wasting money is something you enjoy doing!
 
 After a bit of tweaking, everything looked good but the voltage regulator for some reason had a missing model:
 
@@ -628,7 +628,7 @@ Now, to fully test if everything is working, we would need to have the firmware 
 
 Except my dear reader, I am actually a big fat liar. You see, as I was writing this article (while I waited for the boards to arrive) I made a horrible realization that in my many attempts of rewiring the board, I swapped the USB D+ and D- labels on the STM32 without thinking of the consequences. My revision 1 boards all came with this mistake (the drawings in the article have it correct), and now I was presented with two choices: cut the traces on the board with an x-acto knife and solder some bodge wires to swap them around, or swap the wires on the USB cable itself.
 
-I went with option 2 since the USB cable is specifically for the keyboard, given that it uses a female header connector. The cable conveniently came with the 5 wires correctly colored (red for vcc, green for D+, white for D-, and black for the two ground cables), and I confirmed that was the case by probing with a multimeter in continuity mode. Swapping the cables is relatively easy, the connector has a small plastic tab on each of the wires, lifting the tab releases the tension and allows you to pull out the wire:
+I went with option 2 since the USB cable is specifically for the keyboard, given that it uses a female header connector. The cable conveniently came with the 5 wires correctly colored (red for VCC, green for D+, white for D-, and black for the two ground cables), and I confirmed that was the case by probing with a multimeter in continuity mode. Swapping the cables is relatively easy, the connector has a small plastic tab on each of the wires, lifting the tab releases the tension and allows you to pull out the wire:
 
 <p align="center">
 ![Female header connector with a wire pulled out](images/BuuKeeb/FemaleConnector.png)</br>
@@ -650,7 +650,7 @@ Now, the important part is to fill in the layout. The structure of each key is l
 {"matrix": [row, col], "x": xu, "y": yu, "w":wu, "h":hu},
 ``` 
 * `row` is the row number of the key, and `col` is the column number. Both numbers start at zero. For instance, my Esc key is `[0,0]` since it corresponds to row 1 and column 1 on the keyboard matrix. F1 is `[0,2]` which corresponds to row 1 and column 3, etc...
-* `xu` and `yu` are the positions of the top left of the key on the keyboard based on its unit size. A unit (u for short) is the measurement used to define the physical size of a key, with a standard key size (like your letter keys) being equivalent to 1u. Your backspace key is as long as 2 single keys, so it has a size of 2u. [This diagram](images/BuuKeeb/KeySizes.jpg) from [Keychron](https://www.keychron.com/pages/keychron-k8-keyboard-keycaps-layout-and-keycap-size-hd-picture) demonstrates it visually. The `xu` and `yu` is the coordinate of the key if you think of the keyboard as a grid of u's starting at `[0,0]` on the top left. The ESC key is at `[0,0]`, however on my keyboard there is a gap between F1 and ESC that is as big as a single key, so F1 is at `[2,0]`. The key just below ESC on my layout has a gap of half a key, so it's position is `[0,1.5]` . This can be a bit confusing, so I hope [this diagram](images/BuuKeeb/KeyPositionsExample.png) helps. If you used the Keyboard Layout Editor to make your layout, the coordinates used there are equivalent to these ones.
+* `xu` and `yu` are the positions of the top left of the key on the keyboard based on its unit size. A unit (u for short) is the measurement used to define the physical size of a key, with a standard key size (like your letter keys) being equivalent to 1u. Your backspace key is as long as 2 single keys, so it has a size of 2u. [This diagram](images/BuuKeeb/KeySizes.jpg) from [Keychron](https://www.keychron.com/pages/keychron-k8-keyboard-keycaps-layout-and-keycap-size-hd-picture) demonstrates it visually. The `xu` and `yu` are the coordinates of the key if you think of the keyboard as a grid of u's starting at `[0,0]` on the top left. The ESC key is at `[0,0]`, however on my keyboard there is a gap between F1 and ESC that is as big as a single key, so F1 is at `[2,0]`. The key just below ESC on my layout has a gap of half a key, so its position is `[0,1.5]` . This can be a bit confusing, so I hope [this diagram](images/BuuKeeb/KeyPositionsExample.png) helps. If you used the Keyboard Layout Editor to make your layout, the coordinates used there are equivalent to these ones.
 * `wu` and `hu` are the unit sizes of the key. If you don't put `w` or `h`, it will assume 1u width and height. Again, if you used the Keyboard Layout Editor, the sizes used there are equivalent to these.
 
 The order of the keys on the layout section doesn't matter, but it would be best for you to keep it in sinistrodextral order (start from left to right, and when you reach the end of the row you move to the row below). The default key layout for a 100% ISO keyboard uses way more columns and rows than I did. Honestly, I feel like there should be a tool to autogenerate this layout data for me, but I searched around and found nothing...
@@ -661,7 +661,7 @@ Now that my JSON and keymap was fully defined, it was time to flash it onto the 
 
 If for some reason one of your rows is misaligned (for instance, pressing the S key inputs an A), that means you missed a key in your keymap or in your layout. Try to find what key you can correctly press before the misalignment occurs, the issue will be in that area.
 
-The next thing I wanted was to add Media Keys. Usually keyboards will have an FN key to switch between F key overrides, but I don't have an FN key on my board design. Instead, I wanted to treat AltGR as a hidden FN key, since the key doesn't get a lot of use outside of placing the euro symbol or brackets on the Portuguese layout. There are a few ways to go about doing this, the more popular option is to use layers, which allows you to have multiple defined keymaps and switch between them as needed. I opted to use key overrides instead, because I only wanted a few keys changed and because they support more complex behaviour.
+The next thing I wanted was to add media keys. Usually keyboards will have an FN key to switch between F key overrides, but I don't have an FN key on my board design. Instead, I wanted to treat AltGR as a hidden FN key, since the key doesn't get a lot of use outside of placing the euro symbol or brackets on the Portuguese layout. There are a few ways to go about doing this, the more popular option is to use layers, which allows you to have multiple defined keymaps and switch between them as needed. I opted to use key overrides instead, because I only wanted a few keys changed and because they support more complex behaviour.
 
 Adding a key override is just a matter of defining a struct like so:
 
@@ -689,7 +689,7 @@ KEY_OVERRIDE_ENABLE = yes
 
 And the key overrides should now function.
 
-Sometimes you will want some more complex logic in your override, or some keycodes simply do not work properly with the override system. In these situations, you can set `replacement` to `KC_NO`, and then add `.custom_action` to the override structure and have it point to a C function you want to execute. For instance, I had to do this for the `RM_VALD` key which is a key that's supposed to lower the RGB lighting (I'll get to lighting in a sec). I had custom action point to a function I called `keylayer_rgb_val_down` and then wrote this C function:
+Sometimes you will want some more complex logic in your override, or some keycodes simply do not work properly with the override system. In these situations, you can set `replacement` to `KC_NO`, and then add `.custom_action` to the override structure and have it point to a C function you want to execute. For instance, I had to do this for the `RM_VALD` key which is a key that's supposed to lower the RGB lighting (I'll get to lighting in a sec). I had the custom action point to a function I called `keylayer_rgb_val_down` and then wrote this C function:
 
 ```
 static bool keylayer_rgb_val_down(bool activated, void *context)
@@ -700,7 +700,7 @@ static bool keylayer_rgb_val_down(bool activated, void *context)
 }
 ```
 
-Once all key overrides structures are written, you need to place them in a global array called `key_overrides`, like so:
+Once all key override structures are written, you need to place them in a global array called `key_overrides`, like so:
 ``` 
 const key_override_t *key_overrides[] = {
     &myoverride_altgr_f1,
@@ -735,7 +735,7 @@ Adding LED support for the keys is easy (in theory), you add `"rgb_matrix": true
     "pin": "A3"
 },
 ```
-* You need to list the LEDs in the same order as they are wired in the schematic, so in my case that's the status LEDs first, then the pause, scroll lock, and print screen buttons, etc... 
+* You need to list the LEDs in the same order as they are wired in the schematic, so in my case that's the status LEDs first, then the pause, scroll lock, and print screen button LEDs, etc... 
 * The X and Y coordinates use the same coordinate system as the keys, but multiplied by 10. Decimal places aren't allowed, so if you end up with a decimal after multiplying the coordinate by 10, you need to round it up or down. 
 * `"flags"` is `4` for key LEDs, and `8` for status indicator LEDs. 
 * Key LEDs need a `"matrix"` value so that QMK knows what row and column on your layout that LED maps to. 
@@ -743,7 +743,7 @@ Adding LED support for the keys is easy (in theory), you add `"rgb_matrix": true
 * `max_brightness` is the maximum brightness you want the LEDs to be able to reach, from 0 to 255. I used 50 as my initial value because I didn't want to risk popping the fuse. 
 * `"pin"` was set to `"A3"` because that's the `LED_DATA` pin in my STM32.
 
-Pretty simple right? I did all of that, and when I flashed my board all my keys were super bright, and they were white but quickly faded into red and remained there. "That's a weird default" I said to myself, but I didn't think much more of it, until I tried pressing keys and the keyboard would not respond. This meant that the LEDs were pulling too much current and so the STM32 was not being properly powered, so I removed all the LEDs except the status LEDs while I tried to diagnose why they were pulling so much juice. With only the 3 LEDs active, the LEDs would start red (which was the supposed default for QMK, not white) and keyboard would function normally. I tried changing the brightness value to something lower, but the keys remained at the same brightness, even when I set it to zero. Strange... Apparently LED brightness is stored in the keyboard's EEPROM (I'll get to explaining the EEPROM in a sec), so I tried clearing the EEPROM by assigning the `EE_CLR` key to my ESC key, and that didn't seem to do anything. Bizarre... When I tried to set colors on my LEDs via code in the `keymap.c`, the LEDs remained red. Very suspicious... I spent an entire afternoon trying to solve this, but no luck.
+Pretty simple right? I did all of that, and when I flashed my board all my keys were super bright, and they were white but quickly faded into red and remained there. "That's a weird default" I said to myself, but I didn't think much more of it, until I tried pressing keys and the keyboard would not respond. This meant that the LEDs were pulling too much current and so the STM32 was not being properly powered, so I removed all the LEDs except the status LEDs while I tried to diagnose why they were pulling so much juice. With only the 3 LEDs active, the LEDs would start red (which was the supposed default for QMK, not white) and the keyboard would function normally. I tried changing the brightness value to something lower, but the keys remained at the same brightness, even when I set it to zero. Strange... Apparently LED brightness is stored in the keyboard's EEPROM (I'll get to explaining the EEPROM in a sec), so I tried clearing the EEPROM by assigning the `EE_CLR` key to my ESC key, and that didn't seem to do anything. Bizarre... When I tried to set colors on my LEDs via code in the `keymap.c`, the LEDs remained red. Very suspicious... I spent an entire afternoon trying to solve this, but no luck.
 
 Defeated, I decided the next step would be to ask in the QMK Discord server (a last resort for me because I hate joining Discord servers, but that's a rant for another day...). After explaining my issue, someone brought up that the LED driver defaults to bitbang mode for the WS2812 driver. This normally isn't an issue, however the code compiled by GCC 15 for the STM32F072 is slightly different from previous GCC versions, which mess with the timings of the LED data. Switching the driver to PWM mode by adding `"driver": "pwm",` to the `"ws2812":` section of the JSON, creating a config.h file with:
 ```
@@ -780,7 +780,7 @@ Fixed the issue. I could finally manipulate the LED colors after clearing the EE
 
 I never would've gotten there on my own. The alternative solution was to switch to GCC 14 but this is a pain to do in Ubuntu thanks to how amazing `apt` is.
 
-I added all the other LEDs back to the JSON, and now the LEDs were finally respecting the `max_brightness` value I set, meaning I could use the keyboard while having all the lights on. A normal fuse would've popped when the LEDs were at max brightness, but since I have a resettable fuse it instead increased its resistance, which explains why the LEDs faded to red and why the keyboard stopped working. However, the voltage limiting could have been on the USB driver in the PC instead of the fuse! I'd have to do some better measurements to give a definitive answer, but I think you can understand my hesitancy in wanting to sacrifice some fuses and potentially USB ports to find out :)
+I added all the other LEDs back to the JSON, and now the LEDs were finally respecting the `max_brightness` value I set, meaning I could use the keyboard while having all the lights on. A normal fuse would've popped when the LEDs were at max brightness, but since I have a resettable fuse it instead increased its resistance, which explains why the LEDs faded to red and why the keyboard stopped working. However, the voltage limiting could have been on the USB port/controller in the PC instead of the fuse! I'd have to do some better measurements to give a definitive answer, but I think you can understand my hesitancy in wanting to sacrifice some fuses and potentially USB ports to find out :)
 
 I wanted my keyboard to default to a blue hue (to match my PC case), so I added this to `rgb_matrix` section of the JSON file:
 
@@ -872,7 +872,7 @@ How much you weigh these pros and cons depends on you. For me, the learning expe
 
 Regarding my keyboard, there are some things that need tweaking:
 * The swapped USB data lines. This is a big issue, so I have published a rev 2 board that fixes this problem, as well as production files
-* The numpad on my final PCB is actually shifted to the left by a few tenths of a millimeter, which meant that the keys switches are *very subtly* tilted because they didn't fit properly. This has also been corrected in the rev 2 board and the published SVGs.
+* The numpad on my final PCB is actually shifted to the left by a few tenths of a millimeter, which meant that the key switches are *very subtly* tilted because they didn't fit properly. This has also been corrected in the rev 2 board and the published SVGs.
 * I would like to make some modifications to the firmware, but I'll leave that as an exercise for later since they're all related to OpenRGB:
     * OpenRGB's direct mode purposefully ignores the `max_brightness` setting. I want to add a limiter for this in the firmware, although give users the choice to disable it if they want to "overclock" the LEDs but risk killing the fuse or something else.
     * Speaking of direct mode, it's not saved into EEPROM, probably because the per LED data would consume a lot of memory. I would like to try adding this by myself, however.
@@ -886,8 +886,8 @@ This is in no way a dig at the quality of the boards or of the service. JLC did 
 If you are interested in checking out the source code and files for this project, everything is available [on GitHub](https://github.com/buu342/BuuKeeb) as usual.
 
 I would also like to give shout-outs to these folk:
-- [BigBass](https://github.com/bigbass1997) for helping me out with a bunch KiCad questions and reviewing my PCB designs.
-- [Keyboard Atlier Discord community](https://kbatelier.org/) for helping me and doing a keyboard review. Specific shoutouts to Quark, Indeed, Moo, The Great Advisor Xaetral, Sune, and SenseiZé for answering general questions. Another big thanks to cadiremar, galile0, Jubakuba, and SenseiZé for the keyboard review.
+- [BigBass](https://github.com/bigbass1997) for helping me out with a bunch of KiCad questions and reviewing my PCB designs.
+- [Keyboard Atelier Discord community](https://kbatelier.org/) for helping me and doing a keyboard review. Specific shoutouts to Quark, Indeed, Moo, The Great Advisor Xaetral, Sune, and SenseiZé for answering general questions. Another big thanks to cadiremar, galile0, Jubakuba, and SenseiZé for the keyboard review.
 - [QMK Discord community](https://discord.gg/qmk) for helping me bugfix. Specific shoutout to Drashna Jael're for identifying the LED bug.
 - [OpenRGB Discord community](https://discord.gg/AQwjJPY) for answering some OpenRGB questions. Specific shoutout to CalcProgrammer1 for answering my questions.
 
