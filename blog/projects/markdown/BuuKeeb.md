@@ -280,12 +280,12 @@ I put the LED chain in a separate schematic to reduce clutter, like I did with t
 <p align="center">
 ![LED Chain final](images/BuuKeeb/LEDChainFinal.png)</br>
 Notice how the chain starts on the right side, this is on purpose and will make more sense later, but you don't have to start there if you don't want to!</br>
-Since I'm starting on the left, I have to flip each odd row as opposed to each even row.
+Since I'm starting on the right, I have to flip each odd row as opposed to each even row.
 </p>
 
 Do keep in mind that each LED can pull up to 13mA if it is running at full brightness. 108 LEDs means 1.3A which will pop our 500mA fuse. Luckily, we don't need to run the LEDs at max brightness, we can limit how bright they are in software.
 
-Now, we can't just directly connect the LED data pin to the STM32, for one specific reason: The GPIO pins output 3.3V, and this _might_ work fine, but it might not considering it's a really long chain of LEDs. Since the logic operates anywhere between 3.2 and 6V, I am going to add a "logic level shifter" to boost the LED data voltage from 3.3 to 5V. One good device for this is the 74AHCT1G125, which has 5 leads:
+Now, we can't just directly connect the LED data pin to the STM32, for one specific reason: The GPIO pins output 3.3V, and this _might_ work fine, but it might not considering it's a really long chain of LEDs and 3.3 is cutting it really close to the minimum value. Since the logic operates anywhere between 3.2 and 6V, I am going to add a "logic level shifter" to boost the LED data voltage from 3.3 to 5V. One good device for this is the 74AHCT1G125, which has 5 leads:
 1. Output enable
 2. Input data
 3. Ground
@@ -345,7 +345,7 @@ Basically, KiCad sometimes struggles to understand where exactly power comes fro
 
 Making the PCB is the most fun part, and it will probably be where you will spend a lot of time if you're like me and you can't help yourself but George Lucas a project.
 
-So, what exactly is a PCB? It's essentially a really convenient and compact package for a circuit. PCBs are usually a sandwich of multiple layers of fiberglass and copper, each copper layer is electrically isolated from one another by the fiberglass. Simple PCBs are typically 1 or 2 layers of copper, but slightly more complex designs push four layers, while motherboards can go as high as 16 or 32.
+So, what exactly is a PCB? It's essentially a really convenient and compact package for a circuit. PCBs are usually a sandwich of multiple layers of fiberglass and copper, each copper layer is electrically isolated from one another by the fiberglass. Simple PCBs are typically 1 or 2 layers of copper, but slightly more complex designs push 4 layers, while motherboards can go as high as 16 or 32.
 
 <p align="center">
 ![A diagram of PCB layers](images/BuuKeeb/PCBLayers.png)</br>
@@ -355,7 +355,7 @@ Image sourced from [here](https://www.pcbasic.com/blog/pcb-layers.html)
 
 The important thing to understand about PCBs is that a fabrication plant will lay an entire layer of copper first and then etch away what isn't needed. You don't need to worry about spending money on copper, you're already paying for the whole layer.
 
-For a keyboard, 2 copper layers is what is recommended. One is too constrained, and more than two is generally unnecessary. KiCad creates PCBs with two copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCad provides. The most useful ones for us are:
+For a keyboard, 2 copper layers is what is recommended. 1 is too constrained, and more than 2 is generally unnecessary. KiCad creates PCBs with 2 copper layers by default (convenient!), usually referred to at the "front" and "back" layer. But copper isn't the only layer you have to worry about, because there's a lot of them that KiCad provides. The most useful ones for us are:
 - F.Cu and B.Cu - The front and back copper layers (since we have 2 copper layers)
 - F.Silkscreen and B.Silkscreen - The front and back silkscreen layers, where you can put drawings on your PCB.
 - User.Drawings - Helper drawings that won't show up on the final PCB.
@@ -549,7 +549,7 @@ I added my face as well as a piece of text marking the revision to the silkscree
 
 ### Ordering
 
-Once you are ready to unleash your creation upon the world, export gerber files of your PCB by going to File->Fabrication outputs. Since we are going to use JLCPCB, you'll need to configure the output to match [their requirements](https://jlcpcb.com/help/article/how-to-generate-gerber-and-drill-files-in-kicad-9). If you use the Fabrication Toolkit plugin, you can use it instead which will generate the gerbers (in a convenient zip package) as well as all the other files you're going to need. Either way, once you've exported something, head on over to your fabricator of choice. Most places will require you to place a minimum order of PCBs (because making them is costly). JLCPCB and PCBWay both have a minimum order quantity of 5. You can choose to keep only 1 of them but if you're paying for 5, you might as well get 5. You can share the extras with your friends! :D
+Once you are ready to unleash your creation upon the world, export gerber files of your PCB by going to File->Fabrication outputs. Since we are going to use JLCPCB, you'll need to configure the output to match [their requirements](https://jlcpcb.com/help/article/how-to-generate-gerber-and-drill-files-in-kicad-9). If you have the Fabrication Toolkit plugin, you can use it instead which will generate the gerbers (in a convenient zip package) as well as all the other files you're going to need. Either way, once you've exported something, head on over to your fabricator of choice. Most places will require you to place a minimum order of PCBs (because making them is costly). JLCPCB and PCBWay both have a minimum order quantity of 5. You can choose to keep only 1 of them but if you're paying for 5, you might as well get 5. You can share the extras with your friends! :D
 
 The default values in JLCPCB are perfectly fine for a keyboard, because keyboards are very undemanding. The only changes I made were to switch the PCB color to black so that it would match the board I'm cloning, and the surface finish from HASL to lead-free HASL because I don't want to be responsible for making people more stupid than they already are. 
 
@@ -657,11 +657,11 @@ The order of the keys on the layout section doesn't matter, but it would be best
 
 Once every key has been assigned its data, the next thing we need is the keymap, which tells the firmware what key gets sent to the computer when you press that switch. The list of keys will need to be in the same order as you defined your layout, so if you used sinistrodextral order then you shouldn't need to change keys around. The default generated layout matched my layout exactly, so I didn't need to change anything. If you need to, you can find the list of keycodes [here](https://docs.qmk.fm/keycodes_basic).  
 
-Now that my JSON and keymap was fully defined, it was time to flash it onto the board. I typed `qmk compile -kb buukeeb -km default` in the terminal to compile the keyboard, and I got an error. Apparently, QMK wants you to include a URL inside the `keyboard.json` or it will refuse to compile. So I had to add `"url":` followed by my project's GitHub link to the JSON, but if you don't have one yet you can just leave the URL itself blank. After adding this, the firmware compiled successfully. To flash it, I keep the boot button on my board pressed while plugging in the USB, and then I run `qmk flash -kb buukeeb -km default`, and after about 3 seconds, the keyboard has its firmware updated. I Googled a completely random [keyboard tester site](https://www.keyboardtester.com/tester.html), and made sure that all the keys were working. Not all keys will be properly detected by the website so you might need to test them outside as well. 
+Now that my JSON and keymap was fully defined, it was time to flash it onto the board. I typed `qmk compile -kb buukeeb -km default` in the terminal to compile the keyboard, and I got an error. Apparently, QMK wants you to include a URL inside the `keyboard.json` or it will refuse to compile, and for some reason this critical line is not auto generated in the JSON...? So I had to add `"url":` followed by my project's GitHub link to the JSON, but if you don't have one yet you can just leave the URL itself blank. After adding this, the firmware compiled successfully. To flash it, I keep the boot button on my board pressed while plugging in the USB, and then I run `qmk flash -kb buukeeb -km default`, and after about 3 seconds, the keyboard has its firmware updated. I Googled a completely random [keyboard tester site](https://www.keyboardtester.com/tester.html), and made sure that all the keys were working. Not all keys will be properly detected by the website so you might need to test them outside as well. 
 
 If for some reason one of your rows is misaligned (for instance, pressing the S key inputs an A), that means you missed a key in your keymap or in your layout. Try to find what key you can correctly press before the misalignment occurs, the issue will be in that area.
 
-The next thing I wanted was to add media keys. Usually keyboards will have an FN key to switch between F key overrides, but I don't have an FN key on my board design. Instead, I wanted to treat AltGR as a hidden FN key, since the key doesn't get a lot of use outside of placing the euro symbol or brackets on the Portuguese layout. There are a few ways to go about doing this, the more popular option is to use layers, which allows you to have multiple defined keymaps and switch between them as needed. I opted to use key overrides instead, because I only wanted a few keys changed and because they support more complex behaviour.
+The next thing I wanted was to add media keys. Usually keyboards will have an FN key to switch between F key overrides, but I don't have an FN key on my board design. Instead, I wanted to treat AltGR as a hidden FN key, since the key doesn't get a lot of use outside of placing the euro symbol or programmer brackets on the Portuguese layout. There are a few ways to go about doing this, the more popular option is to use layers, which allows you to have multiple defined keymaps and switch between them as needed. I opted to use key overrides instead, because I only wanted a few keys changed and because they support more complex behaviour.
 
 Adding a key override is just a matter of defining a struct like so:
 
@@ -675,7 +675,7 @@ const key_override_t myoverride_altgr_f1 = {
 };
 ``` 
 Where:
-* `trigger_mods` is the modifier key combination I want to trigger the override. Usually the modifiers are the ones listed in [this table](https://docs.qmk.fm/feature_advanced_keycodes), but since there wasn't a mask specifically for AltGR I had to use `MOD_BIT` to create the mask
+* `trigger_mods` is the modifier key combination I want to trigger the override. Usually the modifiers are the ones listed in [this table](https://docs.qmk.fm/feature_advanced_keycodes#checking-modifier-state), but since there wasn't a `MOD_MASK_` defined specifically for AltGR I had to use `MOD_BIT` to create the mask
 * `layers` is a bit mask of the layer you want to be affected. I only have one layer, but if I decide to have more I want all of them to be affected, so I bitwise NOT'ed 0 to create a mask that occupies all the bits (I couldn't find a definitive size for `layers` so I opted for this instead of `0xFFFF...`).
 * `suppressed_mods` is the keys you want to suppress when the modifier is pressed. For instance, if you decide to make CTRL+S a secret combo to type the Z key instead, if you don't suppress it the keyboard will send the Z key as well as CTRL, which will trigger an undo on most programs. I want to suppress the AltGR key from being sent if I press my override so I add the mask to it as well.
 * `trigger` is the key you want to trigger the override.
@@ -745,7 +745,7 @@ Adding LED support for the keys is easy (in theory), you add `"rgb_matrix": true
 
 Pretty simple right? I did all of that, and when I flashed my board all my keys were super bright, and they were white but quickly faded into red and remained there. "That's a weird default" I said to myself, but I didn't think much more of it, until I tried pressing keys and the keyboard would not respond. This meant that the LEDs were pulling too much current and so the STM32 was not being properly powered, so I removed all the LEDs except the status LEDs while I tried to diagnose why they were pulling so much juice. With only the 3 LEDs active, the LEDs would start red (which was the supposed default for QMK, not white) and the keyboard would function normally. I tried changing the brightness value to something lower, but the keys remained at the same brightness, even when I set it to zero. Strange... Apparently LED brightness is stored in the keyboard's EEPROM (I'll get to explaining the EEPROM in a sec), so I tried clearing the EEPROM by assigning the `EE_CLR` key to my ESC key, and that didn't seem to do anything. Bizarre... When I tried to set colors on my LEDs via code in the `keymap.c`, the LEDs remained red. Very suspicious... I spent an entire afternoon trying to solve this, but no luck.
 
-Defeated, I decided the next step would be to ask in the QMK Discord server (a last resort for me because I hate joining Discord servers, but that's a rant for another day...). After explaining my issue, someone brought up that the LED driver defaults to bitbang mode for the WS2812 driver. This normally isn't an issue, however the code compiled by GCC 15 for the STM32F072 is slightly different from previous GCC versions, which mess with the timings of the LED data. Switching the driver to PWM mode by adding `"driver": "pwm",` to the `"ws2812":` section of the JSON, creating a config.h file with:
+Defeated, I decided the next step would be to ask in the QMK Discord server (a last resort for me because I hate joining Discord servers, but that's a rant for another day...). After explaining my issue, someone brought up that the LED driver defaults to bitbang mode for the WS2812 driver. This normally isn't an issue, however the code compiled by GCC 15 for the STM32F072 is slightly different from previous GCC versions, which mess with the timings of the LED data. Switching the driver to PWM mode by adding `"driver": "pwm",` to the `"ws2812":` section of the JSON, creating a `config.h` file with:
 ```
 #define WS2812_PWM_DRIVER PWMD15
 #define WS2812_PWM_CHANNEL 2
@@ -772,7 +772,7 @@ And creating `mcuconf.h` with:
 
 #define STM32_TIM15_SUPPRESS_ISR
 ``` 
-Fixed the issue. I could finally manipulate the LED colors after clearing the EEPROM:
+Fixed the issue. I could finally manipulate the LED colors programatically after clearing the EEPROM:
 
 <p align="center">
 ![The status LEDs displaying 3 different colors.](images/BuuKeeb/StatusRGB.jpg)
@@ -780,7 +780,7 @@ Fixed the issue. I could finally manipulate the LED colors after clearing the EE
 
 I never would've gotten there on my own. The alternative solution was to switch to GCC 14 but this is a pain to do in Ubuntu thanks to how amazing `apt` is.
 
-I added all the other LEDs back to the JSON, and now the LEDs were finally respecting the `max_brightness` value I set, meaning I could use the keyboard while having all the lights on. A normal fuse would've popped when the LEDs were at max brightness, but since I have a resettable fuse it instead increased its resistance, which explains why the LEDs faded to red and why the keyboard stopped working. However, the voltage limiting could have been on the USB port/controller in the PC instead of the fuse! I'd have to do some better measurements to give a definitive answer, but I think you can understand my hesitancy in wanting to sacrifice some fuses and potentially USB ports to find out :)
+I added all the other LEDs back to the JSON, and now the LEDs were finally respecting the `max_brightness` value I set, meaning I could use the keyboard while having all the lights on. A normal fuse would've popped when the LEDs were at max brightness, but since I have a resettable fuse it instead increased its resistance, which explains why the LEDs faded to red and why the keyboard stopped working. However, the voltage limiting *could* have been on the USB port/controller in the PC instead of the fuse! I'd have to do some better measurements to give a definitive answer, but I think you can understand my hesitancy in wanting to sacrifice some fuses and potentially USB ports to find out :)
 
 I wanted my keyboard to default to a blue hue (to match my PC case), so I added this to `rgb_matrix` section of the JSON file:
 
@@ -845,7 +845,7 @@ bool rgb_matrix_indicators_user(void)
 }
 ```
 
-Last thing I wanted to add support for was OpenRGB, which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone [OpenRGB's QMK Community Module](https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB) into the `qmk_firmware/modules` folder, rename the folder to `openrgb`, and then in my `keyboard.json file` I just add `"modules": ["openrgb"],`. After reflashing and adding my keyboard to OpenRGB's "Manually Added Devices" section (using the Name, USB VID, and USB PID values defined in the `keyboard.json`), I could turn my keyboard gay with the click of a button:
+Last thing I wanted to add support for was [OpenRGB](https://openrgb.org/), which would allow me to add custom effects and patterns to the lights, manipulate the LEDs individually, etc... I don't intend on using these features but they're a nice to have. Luckily, this was really easy to do. All I had to do was to clone [OpenRGB's QMK Community Module](https://gitlab.com/OpenRGBDevelopers/QMK-OpenRGB) into the `qmk_firmware/modules` folder, rename the folder to `openrgb`, and then in my `keyboard.json file` I just add `"modules": ["openrgb"],`. After reflashing and adding my keyboard to OpenRGB's "Manually Added Devices" section (using the Name, USB VID, and USB PID values defined in the `keyboard.json`), I could turn my keyboard gay with the click of a button:
 
 <p align="center">
 <video width="50%" controls>
@@ -854,24 +854,24 @@ Last thing I wanted to add support for was OpenRGB, which would allow me to add 
 A keyboard that supports LGBT+ rights.
 </p>
 
-That was surprisingly easy to do, I was expecting much more of a fight...
+That was surprisingly easy to do, I was expecting much more of a fight... It even supports saving the effects and their settings to EEPROM out of the box!
 
 ### Wrapping Up
 
 So, to wrap up this behemoth of a blog post, should you make your own custom keyboard PCB?
 
 Here are good reasons to do so:
-* If you've never done it before, this is an awesome multi-disciplinary learning experience
+* If you've never done this sort of stuff before, this is an awesome multi-disciplinary learning experience.
 * You can have a keyboard 100% tailored to your physical needs, as well as a keyboard that can do whatever you can program it to.
 
 The reasons why you shouldn't:
 * Much more expensive than getting a pre-built. If you make a mistake in the board, you'll potentially have a bunch of useless boards.
-* Takes a lot of time to make (took me about 2 months, but to be fair I was cloning a board). Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.
+* Takes a lot of time to make (took me about 2 months, but to be fair I was cloning a board which takes an extra degree of care). Requires electronics, programming, and potentially soldering experience. It will also require you to have the tools to do this stuff to begin with.
 
 How much you weigh these pros and cons depends on you. For me, the learning experience far outweighed the cons. Honestly, it's kinda bewildering that you can, as a hobbyist, make affordable printed circuit boards in your spare time for fun. A few years ago I couldn't even dream of such a possibility.
 
 Regarding my keyboard, there are some things that need tweaking:
-* The swapped USB data lines. This is a big issue, so I have published a rev 2 board that fixes this problem, as well as production files
+* The swapped USB data lines. This is a big issue, so I have published a rev 2 board that fixes this problem, as well as production files for this revision.
 * The numpad on my final PCB is actually shifted to the left by a few tenths of a millimeter, which meant that the key switches are *very subtly* tilted because they didn't fit properly. This has also been corrected in the rev 2 board and the published SVGs.
 * I would like to make some modifications to the firmware, but I'll leave that as an exercise for later since they're all related to OpenRGB:
     * OpenRGB's direct mode purposefully ignores the `max_brightness` setting. I want to add a limiter for this in the firmware, although give users the choice to disable it if they want to "overclock" the LEDs but risk killing the fuse or something else.
@@ -879,7 +879,7 @@ Regarding my keyboard, there are some things that need tweaking:
     * OpenRGB's LED view mode does not display the keyboard layout correctly because it ignores the status LEDs, which can make setting the key colors a bit confusing. It also prevents you from setting the color of the status LEDs, which remain red. 
     * Status LEDs don't change color properly with certain effects, they remain red. Effects that set the entire keyboard a single color, however, do properly change the status LED colors.
 
-I think the one thing about this project that I am a bit saddened about is how reliant it is on China, because I always like sourcing my things locally as doing so is better for the environment + economy. PCBWay/JLCPCB are both located in China, the European alternatives are twice as expensive for small hobbyist batches, and one of them even multiplied the price by 4 just because I wanted a black PCB. Many electronic components are more expensive if sourced here, and if we're frank they are probably made in China as well. I don't think there's an easy way to escape this unfortunately. But in the unlikely event I decide to make boards to sell, I'll look into trying to get them made here.
+I think the one thing about this project that I am a bit saddened about is how reliant it is on China, because I always like sourcing my things locally as doing so is better for the environment + economy. PCBWay/JLCPCB are both located in China, the European alternatives are twice as expensive for small hobbyist batches, and one of them even multiplied the price by 4 just because I wanted a black PCB. Many electronic components are more expensive if sourced here, and if we're frank they are probably made in China as well, so I don't think there's an easy way to escape this unfortunately... But in the unlikely event I decide to make boards to sell, I'll look into trying to get them made here.
 
 This is in no way a dig at the quality of the boards or of the service. JLC did fantastic work, and their support team were super friendly and receptive to the feedback that I provided them.
 

@@ -613,7 +613,7 @@
                     "Images": [
                         "images/Victory.JPG"
                     ],
-                    "Index": 1,
+                    "Index": 2,
                     "Tags": [
                         "C",
                         "Arduino"
@@ -630,7 +630,7 @@
                     "Images": [
                         "images/StaticSiteGenerator.png"
                     ],
-                    "Index": 2,
+                    "Index": 3,
                     "Tags": [
                         "Bad Life Decisions",
                         "Web Development",
@@ -646,6 +646,27 @@
                         "https://buu342.me/blog/meta/SiteGenerator.html"
                     ]
                 },
+                "buukeeb": {
+                    "Date": "August 14, 2026",
+                    "DisplayName": "BuuKeeb",
+                    "Icon": "icons/buukeeb.png",
+                    "Images": [
+                        "../../blog/projects/images/BuuKeeb/Board1.jpg",
+                        "../../blog/projects/images/BuuKeeb/Board3.jpg",
+                        "images/KeyboardLogo.jpg"
+                    ],
+                    "Index": 0,
+                    "Tags": [
+                        "CAD",
+                        "Soldering",
+                        "C"
+                    ],
+                    "ToolTip": "A custom mechanical Keyboard PCB",
+                    "URLs": [
+                        "https://buu342.me/blog/projects/BuuKeeb.html",
+                        "https://github.com/buu342/BuuKeeb"
+                    ]
+                },
                 "sgiindypc": {
                     "Date": "September 4, 2022",
                     "DisplayName": "SGI Indy Sleeper PC",
@@ -655,7 +676,7 @@
                         "../../blog/projects/images/SGIIndySleeper/PCInside.jpg",
                         "../../blog/projects/images/SGIIndySleeper/Chassis.jpg"
                     ],
-                    "Index": 0,
+                    "Index": 1,
                     "Tags": [
                         "PC Building",
                         "CAD",
